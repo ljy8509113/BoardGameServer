@@ -13,7 +13,7 @@ import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
 
 public class HttpServerHandler extends ChannelInboundHandlerAdapter{
 	WebSocketServerHandshaker handshaker;
-
+	
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 

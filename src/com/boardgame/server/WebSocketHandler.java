@@ -13,7 +13,7 @@ public class WebSocketHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-
+    	
         if (msg instanceof WebSocketFrame) {
             System.out.println("This is a WebSocket frame");
             System.out.println("Client Channel : " + ctx.channel());
