@@ -1,5 +1,7 @@
 package com.boardgame.server;
 
+import com.boardgame.controller.GameController;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -11,6 +13,8 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 		//접속
 		System.out.println("active");		
 		ctx.write("connection success 1");
+		
+//		GameController.Instance().getRoomList(gameNo);
 	}
 	
 	@Override
