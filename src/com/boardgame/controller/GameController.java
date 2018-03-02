@@ -1,16 +1,25 @@
 package com.boardgame.controller;
 
+import java.lang.reflect.Type;
 import java.sql.SQLException;
+import java.util.LinkedList;
 import java.util.List;
 
+import com.boardgame.common.Common;
 import com.boardgame.model.GameRoom;
-import com.boardgame.model.GameUser;
+import com.boardgame.request.RequestBase;
+import com.boardgame.response.ResponseRoomList;
 import com.boardgame.service.GameService;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import io.netty.channel.ChannelHandlerContext;
 
 public class GameController {
 
 	private GameService gameService;
-	
+	private Gson gson = new Gson();
+
 	private static GameController instance = null;
 	public static GameController Instance() {
 		if(instance == null) {
@@ -19,12 +28,12 @@ public class GameController {
 		}
 		return instance;
 	}
-	
-	public void createRoom(GameRoom room) {
+
+	public void createRoom(GameRoom room, ChannelHandlerContext ctx) {
 		gameService.createRoom(room);
 	}
-	
-	public List<GameRoom> getRoomList(Integer gameNo){
+
+	public List<GameRoom> getRoomList(Integer gameNo, ChannelHandlerContext ctx){
 		List<GameRoom> list = null;
 		try {
 			list = gameService.getRoomList(gameNo);
@@ -32,8 +41,40 @@ public class GameController {
 			e.printStackTrace();
 		}catch(SQLException e) {
 			e.printStackTrace();
-		}
-		
+		}		
 		return list;
+	}
+
+	public void reqData(StringBuffer buffer, ChannelHandlerContext ctx) {
+		RequestBase header = gson.fromJson(buffer.toString(), RequestBase.class);
+		String identifier = header.identifier;
+		String uuid = header.uuid;
+		
+		switch(identifier) {
+		case "game_room_list":
+			List<GameRoom> list = getRoomList(header.gameNo, ctx);
+			
+			ResponseRoomList res = new ResponseRoomList(identifier, "0", list);
+			String json = gson.toJson(res);
+			response(json, ctx);
+
+			break;
+		case "create_room":
+			
+			GameRoom room = new GameRoom();
+			
+			break;
+		}
+
+		switch(header.gameNo) {
+		case Common.GAME_DAVINCICODE :
+			DavinciCodeController.Instance().reqData(buffer, identifier);
+			break;
+		}
+	}
+
+	void response(String res, ChannelHandlerContext ctx) {
+		ctx.write(res);
+		ctx.flush();
 	}
 }

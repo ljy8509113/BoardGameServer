@@ -1,6 +1,11 @@
 package com.boardgame.server;
 
+import com.boardgame.common.Common;
+import com.boardgame.controller.DavinciCodeController;
 import com.boardgame.controller.GameController;
+import com.boardgame.request.RequestBase;
+import com.boardgame.response.ResponseBase;
+import com.google.gson.Gson;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -8,6 +13,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 
 public class GameServerHandler extends ChannelInboundHandlerAdapter {
 
+	Gson gson = new Gson();
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		//접속
@@ -21,18 +27,24 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 	public void channelRead(ChannelHandlerContext ctx, Object msg) { // (2)
 		// 클라이언트 메시지 왔을때
 		ByteBuf in = (ByteBuf) msg;
+		StringBuffer buffer = new StringBuffer();
+		
 	    try {
 	        while (in.isReadable()) { // (1)
-	            System.out.print((char) in.readByte());
-	            System.out.flush();
+//	            System.out.print((char) in.readByte());
+//	            System.out.flush();
+	        	 buffer.append((char) in.readByte());
 	        }
-	        ctx.write("server");
-	        ctx.flush();
+//	        ctx.write("server");
+//	        ctx.flush();
 	    }catch(Exception e) {
 	    	e.printStackTrace();
 	    }finally {
 	    	
 	    }
+		
+	    GameController.Instance().reqData(buffer, ctx);
+	    
 	}
 
 	@Override
