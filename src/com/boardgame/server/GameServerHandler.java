@@ -1,13 +1,10 @@
 package com.boardgame.server;
 
-import com.boardgame.common.Common;
-import com.boardgame.controller.DavinciCodeController;
 import com.boardgame.controller.GameController;
-import com.boardgame.request.RequestBase;
-import com.boardgame.response.ResponseBase;
 import com.google.gson.Gson;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
@@ -42,10 +39,9 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 	    }finally {
 	    	
 	    }
-		
+		System.out.println(buffer.toString());
 	    GameController.Instance().reqData(buffer, ctx);
-	    
-	}
+			}
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) { // (4)
@@ -57,9 +53,10 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 	@Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
 		//클라이언트 메시지 완료
+		
+		//ctx.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
+		ctx.writeAndFlush(Unpooled.EMPTY_BUFFER);
 		System.out.println("complete");
-		ctx.write("connection success 2");
-		ctx.flush();
     }
 	
 	@Override

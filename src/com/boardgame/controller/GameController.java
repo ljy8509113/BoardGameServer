@@ -1,8 +1,6 @@
 package com.boardgame.controller;
 
-import java.lang.reflect.Type;
 import java.sql.SQLException;
-import java.util.LinkedList;
 import java.util.List;
 
 import com.boardgame.common.Common;
@@ -11,9 +9,10 @@ import com.boardgame.request.RequestBase;
 import com.boardgame.response.ResponseRoomList;
 import com.boardgame.service.GameService;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.CharsetUtil;
 
 public class GameController {
 
@@ -63,6 +62,7 @@ public class GameController {
 			
 			GameRoom room = new GameRoom();
 			
+			
 			break;
 		}
 
@@ -74,7 +74,8 @@ public class GameController {
 	}
 
 	void response(String res, ChannelHandlerContext ctx) {
-		ctx.write(res);
-		ctx.flush();
+		System.out.println("res : " + res);
+		ctx.write(Unpooled.copiedBuffer(res, CharsetUtil.UTF_8));
+		ctx.flush();		
 	}
 }

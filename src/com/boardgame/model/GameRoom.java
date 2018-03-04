@@ -11,6 +11,7 @@ public class GameRoom implements Serializable{
 	Integer fullUser;
 	String state;
 	String masterUuid;
+	Integer current;
 	
 	public GameRoom() {
 	}
@@ -59,6 +60,14 @@ public class GameRoom implements Serializable{
 	}
 	public void setMasterUuid(String masterUuid) {
 		this.masterUuid = masterUuid;
+	}
+
+	public Integer getCurrent() {
+		return current;
+	}
+
+	public void setCurrent(Integer current) {
+		this.current = current;
 	}
 	
 	

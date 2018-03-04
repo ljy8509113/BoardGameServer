@@ -38,7 +38,7 @@ public class GameRoomDao {
 			room.setFullUser(rs.getInt("full_user"));
 			room.setMasterUuid(rs.getString("master_uuid"));
 			room.setState(rs.getString("state"));
-			
+			room.setCurrent(0);
 			list.add(room);
 		}
 

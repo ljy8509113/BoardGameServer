@@ -36,9 +36,13 @@ public class DBUtil {
 	public Connection getConnection() throws ClassNotFoundException, SQLException {
 		
 		try{
+			
+			String path = DBUtil.class.getResource("").getPath(); 
+			
             // 프로퍼티 파일 위치
-            String propFile = "classpath:/config/jdbc.properties";
-             
+			String propFile = path+"jdbc.properties";
+			System.out.println(propFile);
+			
             // 프로퍼티 객체 생성
             Properties props = new Properties();
             // 프로퍼티 파일 스트림에 담기
@@ -48,7 +52,6 @@ public class DBUtil {
              
             // 항목 읽기
             String url = props.getProperty("url") ;
-            String dbName = props.getProperty("dbname");
             String id = props.getProperty("username");
             String password = props.getProperty("password");
             
@@ -56,7 +59,7 @@ public class DBUtil {
     		Class.forName("com.mysql.jdbc.Driver");
     		
     		// 2. 데이터베이스 연결
-    		Connection conn = DriverManager.getConnection(url + "/" + dbName, id, password);
+    		Connection conn = DriverManager.getConnection(url, id, password);
     		
     		return conn;
              
