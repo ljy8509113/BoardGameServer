@@ -1,6 +1,7 @@
 package com.boardgame.server;
 
 import com.boardgame.controller.GameController;
+import com.boardgame.controller.RequestController;
 import com.google.gson.Gson;
 
 import io.netty.buffer.ByteBuf;
@@ -15,9 +16,7 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		//접속
 		System.out.println("active");		
-		ctx.write("connection success 1");
 		
-//		GameController.Instance().getRoomList(gameNo);
 	}
 	
 	@Override
@@ -40,8 +39,8 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 	    	
 	    }
 		System.out.println(buffer.toString());
-	    GameController.Instance().reqData(buffer, ctx);
-			}
+	    RequestController.Instance().reqData(buffer, ctx);
+	}
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) { // (4)

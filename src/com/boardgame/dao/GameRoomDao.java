@@ -48,7 +48,35 @@ public class GameRoomDao {
 		return list;
 	}
 	
-	public void insertRoom(GameRoom room) {
+	
+	Integer no;
+	String title;
+	Integer gameNo;
+	Integer fullUser;
+	String state;
+	String masterUuid;
+	Integer current;
+	
+	
+	public void insertRoom(GameRoom room) throws SQLException, ClassNotFoundException {
+		Connection conn = DBUtil.getInstance().getConnection();
+
+		// 2. SQL문 작성 (글 번호 내림차순 정렬, 최신글 우선)
+		//		String sql = "SELECT * FROM board ORDER BY no DESC";
+		String sql="insert into game_room(title, game_no, full_user, state, master_uuid, current)"
+				+ " values(?,?,?,?,?,?)";
 		
+		// 3. PreparedStatement 객체 생성
+		PreparedStatement pstmt = conn.prepareStatement(sql);
+		pstmt.setString(1, room.getTitle());
+		pstmt.setInt(2, room.getGameNo());
+		pstmt.setInt(3, room.getFullUser());
+		pstmt.setString(4, room.getState());
+		pstmt.setString(5, room.getMasterUuid());
+		
+		pstmt.executeUpdate();
+		
+		// 6. 객체 해제
+		DBUtil.getInstance().close(null, pstmt, conn);
 	}
 }
