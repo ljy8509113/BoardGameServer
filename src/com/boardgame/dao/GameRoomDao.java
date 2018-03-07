@@ -31,7 +31,7 @@ public class GameRoomDao {
 			room.setFullUser(rs.getInt("full_user"));
 			room.setMasterUuid(rs.getString("master_uuid"));
 			room.setState(rs.getString("state"));
-			room.setCurrent(rs.getInt("current"));
+//			room.setCurrent(rs.getInt("current"));
 		}
 		
 		return room;
@@ -63,7 +63,7 @@ public class GameRoomDao {
 			room.setFullUser(rs.getInt("full_user"));
 			room.setMasterUuid(rs.getString("master_uuid"));
 			room.setState(rs.getString("state"));
-			room.setCurrent(0);
+//			room.setCurrent(0);
 			list.add(room);
 		}
 

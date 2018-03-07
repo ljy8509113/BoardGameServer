@@ -21,7 +21,7 @@ public enum ResCode {
 			break;
 		case "101":
 		case "102":
-			message = "선택하신 방은 참여가 불가능합니다.";
+			message = "선택하신 방은 입장 불가능합니다.";
 			break;
 		}
 	}

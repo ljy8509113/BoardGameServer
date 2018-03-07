@@ -6,57 +6,16 @@ import java.util.List;
 import java.util.Map;
 
 import com.boardgame.common.Common;
-import com.boardgame.common.GameState;
+import com.boardgame.common.ResCode;
 import com.boardgame.model.GameRoom;
+import com.boardgame.model.RoomUserList;
 import com.boardgame.model.UserInfo;
+import com.boardgame.response.ResponseGamingUser;
+import com.boardgame.util.CustomException;
 
-import io.netty.buffer.Unpooled;
-import io.netty.util.CharsetUtil;
+import io.netty.channel.ChannelHandlerContext;
 
 public class RoomManager {
-	class RoomUserList{
-		int roomNo;
-		Map<String, UserInfo> mapInfo = new HashMap<>();
-		GameRoom room;
-
-		public RoomUserList(GameRoom room) {
-			this.room = room;
-			this.roomNo = room.getNo();
-		}
-
-		public boolean addUser(UserInfo info) {
-			if(room.getFullUser() > mapInfo.size())
-				mapInfo.put(info.getUuid(), info);
-			else if( room.getState().equals(GameState.WAITING.getValue()) != false)
-				return false;
-			else 
-				return false;
-
-			return true;
-		}
-
-		public void removeUser(UserInfo info) {
-			mapInfo.remove(info.getUuid());
-		}
-
-		public void setState(String state) {
-			room.setState(state);
-		}
-
-		public String getState() {
-			return room.getState();
-		}
-
-		public void sendMessage(String res) {
-			for(String uuid : mapInfo.keySet()) {
-				UserInfo info = mapInfo.get(uuid);
-				info.getCtx().write(Unpooled.copiedBuffer(res, CharsetUtil.UTF_8));
-				info.getCtx().flush();
-			}
-		}
-
-	}
-
 	private static RoomManager instance = null;
 	private HashMap<Integer,RoomUserList> mapDavincicodeUser = new HashMap<>();
 	private List<GameRoom> listDavincicodeRoom = new ArrayList<>();
@@ -64,40 +23,44 @@ public class RoomManager {
 	public static RoomManager Instance() {
 		if(instance == null)
 			instance = new RoomManager();
-
 		return instance;
 	}
 
 	public void addRoom(GameRoom room) {
-		switch(room.getGameNo()) {
-
-		case Common.GAME_DAVINCICODE :
-			room.setNo(mapDavincicodeUser.size() + 1);
-			RoomUserList roomInfo = new RoomUserList(room);
-			mapDavincicodeUser.put(room.getNo(), roomInfo);
-			break;
-		}
+		Map<Integer, RoomUserList> map = getMap( room.getGameNo() );
+		room.setNo(makeRoomNo(room.getGameNo()));
+		
+		RoomUserList roomInfo = new RoomUserList(room);
+		map.put(room.getNo(), roomInfo);
+		
+		List<GameRoom> list = getRoomList(room.getGameNo());
+		list.add(room);		
 	}
 
 	public void removeRoom(int gameNo, int roomNo) {
 		Map<Integer, RoomUserList> map = getMap(gameNo);
 		map.remove(roomNo);
 		
-		
-
+		List<GameRoom> list = getRoomList(gameNo);
+		for(GameRoom room : list) {
+			if(room.getNo() == roomNo) {
+				list.remove(room);
+				break;
+			}
+		}
 	}
 
-	public boolean addUser(int gameNo, int roomNo, UserInfo info) {
+	public void addUser(int gameNo, int roomNo, UserInfo info) throws CustomException {
 		RoomUserList roomInfo = getMap(gameNo).get(roomNo);
-		return roomInfo.addUser(info);		
+		roomInfo.addUser(info);		
 	}
 
-	public List<GameRoom> getRoomList(int gameNo){
-		List<GameRoom> list = new ArrayList<>();
-		
-		Map<Integer, RoomUserList> map = getMap(gameNo);
-		
-		return null;
+	public int makeRoomNo(int gameNo) {
+		List<GameRoom> list = getRoomList(gameNo);
+		if(list.size() == 0)
+			return 1;
+		else
+			return list.get(list.size()-1).getNo() + 1;		
 	}
 	
 	Map<Integer, RoomUserList> getMap(int gameNo){
@@ -109,7 +72,13 @@ public class RoomManager {
 		return null;
 	}
 	
-	
+	public List<GameRoom> getRoomList(int gameNo){
+		switch(gameNo) {
+			case Common.GAME_DAVINCICODE :
+				return listDavincicodeRoom;				
+		}		
+		return null;
+	}
 	
 	public void setState(int gameNo, int roomNo, String state) {
 		switch(gameNo) {
@@ -117,6 +86,20 @@ public class RoomManager {
 			RoomUserList roomInfo = mapDavincicodeUser.get(roomNo);
 			roomInfo.setState(state);			
 		}
+	}
+	
+	public ResponseGamingUser checkGaming(String uuid, int gameNo) {
+		Map<Integer, RoomUserList> map = getMap(gameNo);
+		ResponseGamingUser res = new ResponseGamingUser(Common.IDENTIFIER_GAMING_USER, ResCode.SUCCESS.getResCode());
+		
+		for(Integer key : map.keySet()) {
+			RoomUserList item = map.get(key);
+			if(item.checkUuid(uuid)) {
+				res.setGaming(true);
+			}			
+		}
+		
+		return res;
 	}
 
 	public void sendMessage(String msg) {
@@ -127,17 +110,15 @@ public class RoomManager {
 
 	public void sendMessage(int gameNo, String msg) {
 		switch(gameNo) {
-
-		case Common.GAME_DAVINCICODE:
-			for(int roomNo : mapDavincicodeUser.keySet()) {
-				sendMessage(mapDavincicodeUser, roomNo, msg);
-			}
+			case Common.GAME_DAVINCICODE:
+				for(int roomNo : mapDavincicodeUser.keySet()) {
+					sendMessage(mapDavincicodeUser, roomNo, msg);
+				}
 			break;
 		}
 	}
 
 	public void sendMessage(int gameNo, int roomNo, String msg) {
-
 		switch(gameNo) {
 
 		case Common.GAME_DAVINCICODE:
