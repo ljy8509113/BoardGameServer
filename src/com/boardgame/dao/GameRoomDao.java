@@ -12,6 +12,31 @@ import com.boardgame.util.DBUtil;
 
 public class GameRoomDao {
 	
+	public GameRoom select(Integer no, Integer gameNo) throws ClassNotFoundException, SQLException {
+		Connection conn = DBUtil.getInstance().getConnection();
+		
+		String sql = "select * from game_room where game_no = ? and no = ?";
+		
+		PreparedStatement pstmt = conn.prepareStatement(sql);
+		pstmt.setInt(1, gameNo);
+		pstmt.setInt(2, no);
+		
+		ResultSet rs = pstmt.executeQuery();
+		GameRoom room = null;
+		while(rs.next()) {
+			room = new GameRoom();
+			room.setGameNo(rs.getInt("game_no"));
+			room.setNo(rs.getInt("no"));
+			room.setTitle(rs.getString("title"));
+			room.setFullUser(rs.getInt("full_user"));
+			room.setMasterUuid(rs.getString("master_uuid"));
+			room.setState(rs.getString("state"));
+			room.setCurrent(rs.getInt("current"));
+		}
+		
+		return room;
+	}
+	
 	public List<GameRoom> selectAll(Integer gameNo) throws ClassNotFoundException, SQLException{
 		Connection conn = DBUtil.getInstance().getConnection();
 
@@ -48,17 +73,7 @@ public class GameRoomDao {
 		return list;
 	}
 	
-	
-	Integer no;
-	String title;
-	Integer gameNo;
-	Integer fullUser;
-	String state;
-	String masterUuid;
-	Integer current;
-	
-	
-	public void insertRoom(GameRoom room) throws SQLException, ClassNotFoundException {
+	public Integer insertRoom(GameRoom room) throws SQLException, ClassNotFoundException {
 		Connection conn = DBUtil.getInstance().getConnection();
 
 		// 2. SQL문 작성 (글 번호 내림차순 정렬, 최신글 우선)
@@ -76,7 +91,18 @@ public class GameRoomDao {
 		
 		pstmt.executeUpdate();
 		
+		sql = "SELECT last_insert_id()"; 
+		pstmt = conn.prepareStatement(sql);
+		ResultSet result = pstmt.executeQuery();
+		
+		Integer roomNumber = null;
+		if(result.next()) {
+			roomNumber = result.getInt("last_insert_id()");
+		}
+		
 		// 6. 객체 해제
 		DBUtil.getInstance().close(null, pstmt, conn);
+		
+		return roomNumber;
 	}
 }

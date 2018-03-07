@@ -1,6 +1,5 @@
 package com.boardgame.server;
 
-import com.boardgame.controller.GameController;
 import com.boardgame.controller.RequestController;
 import com.google.gson.Gson;
 
@@ -27,12 +26,8 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 		
 	    try {
 	        while (in.isReadable()) { // (1)
-//	            System.out.print((char) in.readByte());
-//	            System.out.flush();
 	        	 buffer.append((char) in.readByte());
 	        }
-//	        ctx.write("server");
-//	        ctx.flush();
 	    }catch(Exception e) {
 	    	e.printStackTrace();
 	    }finally {
@@ -52,7 +47,6 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 	@Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
 		//클라이언트 메시지 완료
-		
 		//ctx.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
 		ctx.writeAndFlush(Unpooled.EMPTY_BUFFER);
 		System.out.println("complete");

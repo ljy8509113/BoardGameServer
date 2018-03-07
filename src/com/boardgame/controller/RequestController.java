@@ -5,10 +5,13 @@ import java.util.List;
 
 import com.boardgame.common.Common;
 import com.boardgame.common.GameState;
+import com.boardgame.common.ResCode;
 import com.boardgame.model.GameRoom;
 import com.boardgame.request.RequestBase;
+import com.boardgame.request.RequestConnectionRoom;
 import com.boardgame.request.RequestCreateRoom;
 import com.boardgame.response.ResponseBase;
+import com.boardgame.response.ResponseConnectionRoom;
 import com.boardgame.response.ResponseCreateRoom;
 import com.boardgame.response.ResponseRoomList;
 import com.google.gson.Gson;
@@ -30,47 +33,61 @@ public class RequestController {
 	
 	public synchronized void reqData(StringBuffer buffer, ChannelHandlerContext ctx) {
 		RequestBase header = gson.fromJson(buffer.toString(), RequestBase.class);
-		String identifier = header.identifier;
-		String uuid = header.uuid;
+		String identifier = header.getIdentifier();
+		String uuid = header.getUuid();
 		
-		String json = null;
-		ResponseBase res;
+		ResponseBase res = null;
 		
 		switch(identifier) {
-			case "game_room_list":{
-				List<GameRoom> list = GameController.Instance().getRoomList(header.gameNo, ctx);
-				
-				res = new ResponseRoomList(identifier, "0", list);
-				json = gson.toJson(res);
-				
+			case Common.IDENTIFIER_ROOM_LIST:{
+				List<GameRoom> list = GameController.Instance().getRoomList(header.getGameNo(), ctx);
+				res = new ResponseRoomList(Common.IDENTIFIER_ROOM_LIST, ResCode.SUCCESS.getResCode(), list);
 			}
-				break;
-			case "create_room":
+			break;
+			case Common.IDENTIFIER_CREATE_ROOM:
 			{
 				RequestCreateRoom cr = gson.fromJson(buffer.toString(), RequestCreateRoom.class); 
-				GameRoom room = new GameRoom(null, cr.title, cr.gameNo, cr.fullUser, GameState.WAITING.getValue(), cr.uuid);
+				GameRoom room = new GameRoom(null, cr.getTitle(), cr.getGameNo(), cr.getFullUser(), GameState.WAITING.getValue(), cr.getUuid());
 			
 				try {
 					GameController.Instance().createRoom(room, ctx);
-					res = new ResponseCreateRoom(identifier, "0", room.getTitle());
-					json = gson.toJson(res);
-					
+					res = new ResponseCreateRoom(Common.IDENTIFIER_CREATE_ROOM, ResCode.SUCCESS.getResCode(), room.getTitle());
 				} catch (ClassNotFoundException | SQLException e) {
-					e.printStackTrace();
+					res = new ResponseBase(Common.IDENTIFIER_CREATE_ROOM, ResCode.ERROR_DB.getResCode(), ResCode.ERROR_DB.getMessage());
+				} catch(Exception e) {
+					res = new ResponseBase(Common.IDENTIFIER_CREATE_ROOM, ResCode.ERROR_DB.getResCode(), ResCode.ERROR_DB.getMessage());
 				}
 			}
-				break;
-				
-			case "connection":
+			break;
+			case Common.IDENTIFIER_CONNECT_ROOM:
 			{
+				RequestConnectionRoom cr = gson.fromJson(buffer.toString(), RequestConnectionRoom.class);
+				Integer roomId = cr.getRoomId();
+				Integer gameNo = cr.getGameNo();
+				GameRoom room = null;
 				
+				try {
+					room = GameController.Instance().getRoom(gameNo, roomId);
+					
+					if(room == null) {
+						res = new ResponseBase(Common.IDENTIFIER_CREATE_ROOM, ResCode.ERROR_DB.getResCode(), ResCode.ERROR_DB.getMessage());						
+					}else if(room.getCurrent() == room.getFullUser()) {
+						res = new ResponseBase(Common.IDENTIFIER_CREATE_ROOM, ResCode.ERROR_FULL.getResCode(), ResCode.ERROR_FULL.getMessage());
+					}else if(room.getState().equals(GameState.WAITING.getValue()) == false) {
+						res = new ResponseBase(Common.IDENTIFIER_CREATE_ROOM, ResCode.ERROR_FULL.getResCode(), ResCode.ERROR_FULL.getMessage());
+					}else {
+						res = new ResponseConnectionRoom(Common.IDENTIFIER_CONNECT_ROOM, ResCode.SUCCESS.getResCode());
+					}
+					
+				} catch (ClassNotFoundException | SQLException e) {
+					res = new ResponseBase(Common.IDENTIFIER_CREATE_ROOM, ResCode.ERROR_DB.getResCode(), ResCode.ERROR_DB.getMessage());					
+				}
 			}
 		}
-
 		
-		response(json, ctx);
+		response(gson.toJson(res), ctx);
 		
-		switch(header.gameNo) {
+		switch(header.getGameNo()) {
 		case Common.GAME_DAVINCICODE :
 			DavinciCodeController.Instance().reqData(buffer, identifier);
 			break;

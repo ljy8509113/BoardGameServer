@@ -17,7 +17,11 @@ public class GameService {
 		return gameDao.selectAll(gameNo);
 	}
 	
-	public void createRoom(GameRoom room) throws ClassNotFoundException, SQLException {
-		gameDao.insertRoom(room);
+	public Integer createRoom(GameRoom room) throws ClassNotFoundException, SQLException {
+		return gameDao.insertRoom(room);
+	}
+	
+	public GameRoom getRoom(Integer gameNo, Integer roomId) throws ClassNotFoundException, SQLException {
+		return gameDao.select(gameNo, roomId);
 	}
 }

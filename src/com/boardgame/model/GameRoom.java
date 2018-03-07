@@ -1,6 +1,10 @@
 package com.boardgame.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.boardgame.common.GameState;
 
 public class GameRoom implements Serializable{
 	private static final long serialVersionUID = 1L;
@@ -11,7 +15,6 @@ public class GameRoom implements Serializable{
 	Integer fullUser;
 	String state;
 	String masterUuid;
-	Integer current;
 	
 	public GameRoom() {
 	}
@@ -60,16 +63,5 @@ public class GameRoom implements Serializable{
 	}
 	public void setMasterUuid(String masterUuid) {
 		this.masterUuid = masterUuid;
-	}
-
-	public Integer getCurrent() {
-		return current;
-	}
-
-	public void setCurrent(Integer current) {
-		this.current = current;
-	}
-	
-	
-	
+	}	
 }
