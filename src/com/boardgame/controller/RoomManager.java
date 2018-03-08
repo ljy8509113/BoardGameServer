@@ -24,12 +24,10 @@ public class RoomManager {
 	public static RoomManager Instance() {
 		if(instance == null) {
 			instance = new RoomManager();
-			GameRoom room1 = new GameRoom(1, "test-1", 1, 2, GameState.WAITING.getValue(), "test_master_1");
-			GameRoom room2 = new GameRoom(2, "test-2", 1, 4, GameState.WAITING.getValue(), "test_master_2");
-			GameRoom room3 = new GameRoom(3, "test-3", 1, 4, GameState.WAITING.getValue(), "test_master_3");
-			instance.addRoom(room1);
-			instance.addRoom(room2);
-			instance.addRoom(room3);
+			for(int i=1; i<=100; i++) {
+				GameRoom room = new GameRoom(i, "test-"+i, 1, 2, GameState.WAITING.getValue(), "test_master_"+i);
+				instance.addRoom(room);
+			}
 		}
 		return instance;
 	}
@@ -86,6 +84,30 @@ public class RoomManager {
 				return listDavincicodeRoom;				
 		}		
 		return null;
+	}
+	
+	public List<GameRoom> getRoomList(int gameNo, int current, int count){
+		List<GameRoom> list = getRoomList(gameNo);
+		int maxLength = 0;
+		
+		if( current+count > list.size()) {
+			maxLength = list.size();
+		}else {
+			maxLength = current+count;
+		}
+		
+		List<GameRoom> resultList = new ArrayList<GameRoom>();
+		
+		for(int i=current; i<maxLength; i++)
+		{
+			resultList.add(list.get(i));
+		}
+		
+		return resultList;
+	}
+	
+	public int getRoomMaxLength(int gameNo) {
+		return getRoomList(gameNo).size();
 	}
 	
 	public void setState(int gameNo, int roomNo, String state) {

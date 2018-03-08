@@ -10,6 +10,7 @@ import com.boardgame.model.UserInfo;
 import com.boardgame.request.RequestBase;
 import com.boardgame.request.RequestConnectionRoom;
 import com.boardgame.request.RequestCreateRoom;
+import com.boardgame.request.RequestRoomList;
 import com.boardgame.response.ResponseBase;
 import com.boardgame.response.ResponseCreateRoom;
 import com.boardgame.response.ResponseRoomList;
@@ -40,8 +41,14 @@ public class RequestController {
 		
 		switch(identifier) {
 			case Common.IDENTIFIER_ROOM_LIST:{
-				List<GameRoom> list = RoomManager.Instance().getRoomList(header.getGameNo()); //GameController.Instance().getRoomList(header.getGameNo(), ctx);
-				res = new ResponseRoomList(Common.IDENTIFIER_ROOM_LIST, ResCode.SUCCESS.getResCode(), list);
+				RequestRoomList req = gson.fromJson(buffer.toString(), RequestRoomList.class);
+				int current = req.getCurrent();
+				int count = req.getCount();
+				int max = RoomManager.Instance().getRoomMaxLength(req.getGameNo());
+				
+				//List<GameRoom> list = RoomManager.Instance().getRoomList(header.getGameNo()); //GameController.Instance().getRoomList(header.getGameNo(), ctx);
+				List<GameRoom> list = RoomManager.Instance().getRoomList(req.getGameNo(), current, count);
+				res = new ResponseRoomList(Common.IDENTIFIER_ROOM_LIST, ResCode.SUCCESS.getResCode(), list, current, max);
 			}
 			break;
 			
