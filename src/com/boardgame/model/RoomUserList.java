@@ -7,6 +7,8 @@ import com.boardgame.common.ResCode;
 import com.boardgame.util.CustomException;
 
 import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.CharsetUtil;
 
 public class RoomUserList {
@@ -41,7 +43,7 @@ public class RoomUserList {
 	public void sendMessage(String res) {
 		for(String uuid : mapUsers.keySet()) {
 			UserInfo info = mapUsers.get(uuid);
-			info.getCtx().write(Unpooled.copiedBuffer(res, CharsetUtil.UTF_8));
+			ChannelFuture ex = info.getCtx().write(Unpooled.copiedBuffer(res, CharsetUtil.UTF_8));
 			info.getCtx().flush();
 		}
 	}
@@ -52,5 +54,10 @@ public class RoomUserList {
 			return false;
 		else
 			return true;
+	}
+	
+	public void updateCtx(ChannelHandlerContext ctx, String uuid) {
+		UserInfo info = mapUsers.get(uuid);
+		info.setCtx(ctx);
 	}
 }

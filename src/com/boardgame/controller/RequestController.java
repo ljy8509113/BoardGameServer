@@ -12,12 +12,12 @@ import com.boardgame.request.RequestConnectionRoom;
 import com.boardgame.request.RequestCreateRoom;
 import com.boardgame.response.ResponseBase;
 import com.boardgame.response.ResponseCreateRoom;
-import com.boardgame.response.ResponseGamingUser;
 import com.boardgame.response.ResponseRoomList;
 import com.boardgame.util.CustomException;
 import com.google.gson.Gson;
 
 import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.CharsetUtil;
 
@@ -76,6 +76,11 @@ public class RequestController {
 				res = RoomManager.Instance().checkGaming(uuid, header.getGameNo());				
 			}
 			break;
+			case Common.IDENTIFIER_TEST :
+			{
+				
+			}
+				break;
 		}
 		
 		response(gson.toJson(res), ctx);
@@ -89,7 +94,7 @@ public class RequestController {
 
 	void response(String res, ChannelHandlerContext ctx) {
 		System.out.println("res : " + res);
-		ctx.write(Unpooled.copiedBuffer(res, CharsetUtil.UTF_8));
+		ChannelFuture future = ctx.write(Unpooled.copiedBuffer(res, CharsetUtil.UTF_8));
 		ctx.flush();		
 	}
 }

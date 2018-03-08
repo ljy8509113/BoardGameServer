@@ -42,6 +42,7 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 		//오류났을때
 		cause.printStackTrace();
 		ctx.close();
+		System.out.println("exceptionCaught");
 	}
 	
 	@Override

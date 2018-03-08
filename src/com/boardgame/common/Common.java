@@ -7,6 +7,8 @@ public class Common {
 	public static final String IDENTIFIER_ROOM_LIST = "game_room_list";
 	public static final String IDENTIFIER_CREATE_ROOM = "create_room";
 	public static final String IDENTIFIER_GAMING_USER = "gaming_user";
+	
+	public static final String IDENTIFIER_TEST = "test";
 	//public static final String IDENTIFIER_
 	
 }

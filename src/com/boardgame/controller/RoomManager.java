@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.boardgame.common.Common;
+import com.boardgame.common.GameState;
 import com.boardgame.common.ResCode;
 import com.boardgame.model.GameRoom;
 import com.boardgame.model.RoomUserList;
@@ -21,8 +22,15 @@ public class RoomManager {
 	private List<GameRoom> listDavincicodeRoom = new ArrayList<>();
 	
 	public static RoomManager Instance() {
-		if(instance == null)
+		if(instance == null) {
 			instance = new RoomManager();
+			GameRoom room1 = new GameRoom(1, "test-1", 1, 2, GameState.WAITING.getValue(), "test_master_1");
+			GameRoom room2 = new GameRoom(2, "test-2", 1, 4, GameState.WAITING.getValue(), "test_master_2");
+			GameRoom room3 = new GameRoom(3, "test-3", 1, 4, GameState.WAITING.getValue(), "test_master_3");
+			instance.addRoom(room1);
+			instance.addRoom(room2);
+			instance.addRoom(room3);
+		}
 		return instance;
 	}
 
@@ -90,16 +98,30 @@ public class RoomManager {
 	
 	public ResponseGamingUser checkGaming(String uuid, int gameNo) {
 		Map<Integer, RoomUserList> map = getMap(gameNo);
-		ResponseGamingUser res = new ResponseGamingUser(Common.IDENTIFIER_GAMING_USER, ResCode.SUCCESS.getResCode());
+		
+		boolean isGaming = false;
+		for(Integer key : map.keySet()) {
+			RoomUserList item = map.get(key);
+			if(item.checkUuid(uuid)) {
+				isGaming = true;
+				break;
+			}			
+		}
+		
+		ResponseGamingUser res = new ResponseGamingUser(Common.IDENTIFIER_GAMING_USER, ResCode.SUCCESS.getResCode(), isGaming);
+		return res;
+	}
+	
+	public void moveRoom(String uuid, int gameNo, ChannelHandlerContext ctx) {
+		Map<Integer, RoomUserList> map = getMap(gameNo);
 		
 		for(Integer key : map.keySet()) {
 			RoomUserList item = map.get(key);
 			if(item.checkUuid(uuid)) {
-				res.setGaming(true);
+				
+				break;
 			}			
 		}
-		
-		return res;
 	}
 
 	public void sendMessage(String msg) {
