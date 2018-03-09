@@ -28,7 +28,7 @@ public class GameRoomDao {
 			room.setGameNo(rs.getInt("game_no"));
 			room.setNo(rs.getInt("no"));
 			room.setTitle(rs.getString("title"));
-			room.setFullUser(rs.getInt("full_user"));
+			//room.setFullUser(rs.getInt("full_user"));
 			room.setMasterUuid(rs.getString("master_uuid"));
 			room.setState(rs.getString("state"));
 //			room.setCurrent(rs.getInt("current"));
@@ -60,7 +60,7 @@ public class GameRoomDao {
 			room.setGameNo(rs.getInt("game_no"));
 			room.setNo(rs.getInt("no"));
 			room.setTitle(rs.getString("title"));
-			room.setFullUser(rs.getInt("full_user"));
+			//room.setFullUser(rs.getInt("full_user"));
 			room.setMasterUuid(rs.getString("master_uuid"));
 			room.setState(rs.getString("state"));
 //			room.setCurrent(0);
@@ -85,7 +85,7 @@ public class GameRoomDao {
 		PreparedStatement pstmt = conn.prepareStatement(sql);
 		pstmt.setString(1, room.getTitle());
 		pstmt.setInt(2, room.getGameNo());
-		pstmt.setInt(3, room.getFullUser());
+		//pstmt.setInt(3, room.getFullUser());
 		pstmt.setString(4, room.getState());
 		pstmt.setString(5, room.getMasterUuid());
 		

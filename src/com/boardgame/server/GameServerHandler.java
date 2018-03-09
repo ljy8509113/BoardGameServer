@@ -15,26 +15,27 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		//접속
 		System.out.println("active");		
-		
+
 	}
-	
+
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) { // (2)
 		// 클라이언트 메시지 왔을때
 		ByteBuf in = (ByteBuf) msg;
 		StringBuffer buffer = new StringBuffer();
-		
-	    try {
-	        while (in.isReadable()) { // (1)
-	        	 buffer.append((char) in.readByte());
-	        }
-	    }catch(Exception e) {
-	    	e.printStackTrace();
-	    }finally {
-	    	
-	    }
+
+		try {
+			while (in.isReadable()) { // (1)
+				buffer.append((char) in.readByte());
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+
+		}
 		System.out.println(buffer.toString());
-	    RequestController.Instance().reqData(buffer, ctx);
+		RequestController.Instance().reqData(buffer, ctx);
+		
 	}
 
 	@Override
@@ -44,20 +45,20 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 		ctx.close();
 		System.out.println("exceptionCaught");
 	}
-	
+
 	@Override
-    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+	public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
 		//클라이언트 메시지 완료
 		//ctx.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
 		ctx.writeAndFlush(Unpooled.EMPTY_BUFFER);
 		System.out.println("complete");
-    }
-	
+	}
+
 	@Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        //클라 접속 종료
+	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+		//클라 접속 종료
 		System.out.println("in active");
-    }
-	
+	}
+
 
 }

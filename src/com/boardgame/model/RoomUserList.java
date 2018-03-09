@@ -22,7 +22,7 @@ public class RoomUserList {
 	}
 
 	public void addUser(UserInfo info) throws CustomException {
-		if(room.getFullUser() <= mapUsers.size())
+		if(room.getMaxUser() <= mapUsers.size())
 			throw new CustomException(ResCode.ERROR_FULL.getResCode(), ResCode.ERROR_FULL.getMessage());
 		else 
 			mapUsers.put(info.getUuid(), info);

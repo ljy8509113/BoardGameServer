@@ -1,7 +1,5 @@
 package com.boardgame.server;
 
-import java.net.ServerSocket;
-
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -73,8 +71,6 @@ public class GameServer{
             bossGroup.shutdownGracefully();
         }
     }
-
-	static ServerSocket serverSocket = null;
 
 	public static void main(String[] args) {
 		try {

@@ -24,7 +24,7 @@ public class RoomManager {
 	public static RoomManager Instance() {
 		if(instance == null) {
 			instance = new RoomManager();
-			for(int i=1; i<=100; i++) {
+			for(int i=1; i<=87; i++) {
 				GameRoom room = new GameRoom(i, "test-"+i, 1, 2, GameState.WAITING.getValue(), "test_master_"+i);
 				instance.addRoom(room);
 			}
@@ -88,17 +88,17 @@ public class RoomManager {
 	
 	public List<GameRoom> getRoomList(int gameNo, int current, int count){
 		List<GameRoom> list = getRoomList(gameNo);
-		int maxLength = 0;
+		int endCount = current * count;
 		
-		if( current+count > list.size()) {
-			maxLength = list.size();
-		}else {
-			maxLength = current+count;
+		if( endCount > list.size()) {
+			endCount = list.size();
 		}
 		
 		List<GameRoom> resultList = new ArrayList<GameRoom>();
 		
-		for(int i=current; i<maxLength; i++)
+		int startIndex = count * (current-1); 
+		
+		for(int i=startIndex; i<endCount; i++)
 		{
 			resultList.add(list.get(i));
 		}

@@ -55,7 +55,7 @@ public class RequestController {
 			case Common.IDENTIFIER_CREATE_ROOM:
 			{
 				RequestCreateRoom cr = gson.fromJson(buffer.toString(), RequestCreateRoom.class); 
-				GameRoom room = new GameRoom(null, cr.getTitle(), cr.getGameNo(), cr.getFullUser(), GameState.WAITING.getValue(), cr.getUuid());
+				GameRoom room = new GameRoom(null, cr.getTitle(), cr.getGameNo(), cr.getMaxUser(), GameState.WAITING.getValue(), cr.getUuid());
 			
 				//GameController.Instance().createRoom(room, ctx);
 				RoomManager.Instance().addRoom(room);

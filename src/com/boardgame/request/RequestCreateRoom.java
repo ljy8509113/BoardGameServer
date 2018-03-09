@@ -2,20 +2,20 @@ package com.boardgame.request;
 
 public class RequestCreateRoom extends RequestBase {
 	private String title;
-	private Integer fullUser;
+	private Integer maxUser;
 	
-	public RequestCreateRoom(String identifier, Integer gameNo, String uuid, String title, Integer fullUser) {
+	public RequestCreateRoom(String identifier, Integer gameNo, String uuid, String title, Integer maxUser) {
 		super(identifier, gameNo, uuid);		
 		this.title = title;
-		this.fullUser = fullUser;
+		this.maxUser = maxUser;
 	}
 
 	public String getTitle() {
 		return title;
 	}
 	
-	public Integer getFullUser() {
-		return fullUser;
+	public Integer getMaxUser() {
+		return maxUser;
 	}
 	
 }

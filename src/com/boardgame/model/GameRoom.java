@@ -12,18 +12,20 @@ public class GameRoom implements Serializable{
 	Integer no;
 	String title;
 	Integer gameNo;
-	Integer fullUser;
+	Integer maxUser;
+	Integer currentUser;
 	String state;
 	String masterUuid;
+	
 	
 	public GameRoom() {
 	}
 	
-	public GameRoom(Integer no, String title, Integer gameNo, Integer fullUser, String state, String masterUuid) {
+	public GameRoom(Integer no, String title, Integer gameNo, Integer maxUser, String state, String masterUuid) {
 		this.no = no;
 		this.title = title;
 		this.gameNo = gameNo;
-		this.fullUser = fullUser;
+		this.maxUser = maxUser;
 		this.state = state;
 		this.masterUuid = masterUuid;
 	}
@@ -46,11 +48,11 @@ public class GameRoom implements Serializable{
 	public void setGameNo(Integer gameNo) {
 		this.gameNo = gameNo;
 	}
-	public Integer getFullUser() {
-		return fullUser;
+	public Integer getMaxUser() {
+		return maxUser;
 	}
-	public void setFullUser(Integer fullUser) {
-		this.fullUser = fullUser;
+	public void setMaxUser(Integer maxUser) {
+		this.maxUser = maxUser;
 	}
 	public String getState() {
 		return state;
@@ -63,5 +65,15 @@ public class GameRoom implements Serializable{
 	}
 	public void setMasterUuid(String masterUuid) {
 		this.masterUuid = masterUuid;
+	}
+
+	public Integer getCurrentUser() {
+		return currentUser;
+	}
+
+	public void setCurrentUser(Integer currentUser) {
+		this.currentUser = currentUser;
 	}	
+	
+	
 }
