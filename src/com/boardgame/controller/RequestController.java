@@ -1,6 +1,14 @@
 package com.boardgame.controller;
 
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 import com.boardgame.common.Common;
 import com.boardgame.common.GameState;
@@ -10,12 +18,15 @@ import com.boardgame.model.UserInfo;
 import com.boardgame.request.RequestBase;
 import com.boardgame.request.RequestConnectionRoom;
 import com.boardgame.request.RequestCreateRoom;
+import com.boardgame.request.RequestLogin;
 import com.boardgame.request.RequestRoomList;
 import com.boardgame.response.ResponseBase;
 import com.boardgame.response.ResponseCreateRoom;
+import com.boardgame.response.ResponseLogin;
 import com.boardgame.response.ResponseRoomList;
 import com.boardgame.util.CustomException;
 import com.google.gson.Gson;
+import com.security.Security;
 
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
@@ -48,7 +59,7 @@ public class RequestController {
 				
 				//List<GameRoom> list = RoomManager.Instance().getRoomList(header.getGameNo()); //GameController.Instance().getRoomList(header.getGameNo(), ctx);
 				List<GameRoom> list = RoomManager.Instance().getRoomList(req.getGameNo(), current, count);
-				res = new ResponseRoomList(Common.IDENTIFIER_ROOM_LIST, ResCode.SUCCESS.getResCode(), list, current, max);
+				res = new ResponseRoomList(ResCode.SUCCESS.getResCode(), list, current, max);
 			}
 			break;
 			
@@ -59,7 +70,7 @@ public class RequestController {
 			
 				//GameController.Instance().createRoom(room, ctx);
 				RoomManager.Instance().addRoom(room);
-				res = new ResponseCreateRoom(Common.IDENTIFIER_CREATE_ROOM, ResCode.SUCCESS.getResCode(), room.getTitle()); 
+				res = new ResponseCreateRoom(ResCode.SUCCESS.getResCode(), room.getTitle()); 
 			}
 			break;
 			case Common.IDENTIFIER_CONNECT_ROOM:
@@ -72,9 +83,9 @@ public class RequestController {
 				try {
 					UserInfo info = new UserInfo(ctx, uuid);
 					RoomManager.Instance().addUser(gameNo, roomNo, info); //GameController.Instance().getRoom(gameNo, roomId);
-					res = new ResponseBase(Common.IDENTIFIER_CONNECT_ROOM, ResCode.SUCCESS.getResCode(), ResCode.SUCCESS.getMessage());
+					res = new ResponseBase(ResCode.SUCCESS.getResCode(), ResCode.SUCCESS.getMessage());
 				} catch (CustomException e) {
-					res = new ResponseBase(Common.IDENTIFIER_CREATE_ROOM, e.getResCode(), e.getMessage());					
+					res = new ResponseBase(e.getResCode(), e.getMessage());					
 				}
 			}
 			break;
@@ -83,6 +94,26 @@ public class RequestController {
 				res = RoomManager.Instance().checkGaming(uuid, header.getGameNo());				
 			}
 			break;
+			case Common.IDENTIFIER_LOGIN :
+			{
+				RequestLogin login = gson.fromJson(buffer.toString(), RequestLogin.class);
+				try {
+					String password = Security.Instance().deCryption(login.password);
+					
+					System.out.println("password : " + login.password);
+					System.out.println("password dec : " + password);
+					
+					res = new ResponseLogin(ResCode.SUCCESS.getResCode(), login.isAutoLogin, login.email, login.password);
+					
+				} catch (InvalidKeyException | UnsupportedEncodingException | NoSuchAlgorithmException
+						| NoSuchPaddingException | InvalidAlgorithmParameterException | IllegalBlockSizeException
+						| BadPaddingException e) {
+					
+					e.printStackTrace();
+					res = new ResponseLogin(ResCode.ERROR_DECRYPTION.getResCode(), ResCode.ERROR_DECRYPTION.getMessage());
+				}
+			}
+				break;
 			case Common.IDENTIFIER_TEST :
 			{
 				

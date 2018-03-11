@@ -24,10 +24,10 @@ public class RoomManager {
 	public static RoomManager Instance() {
 		if(instance == null) {
 			instance = new RoomManager();
-			for(int i=1; i<=87; i++) {
-				GameRoom room = new GameRoom(i, "test-"+i, 1, 2, GameState.WAITING.getValue(), "test_master_"+i);
-				instance.addRoom(room);
-			}
+//			for(int i=1; i<=87; i++) {
+//				GameRoom room = new GameRoom(i, "test-"+i, 1, 2, GameState.WAITING.getValue(), "test_master_"+i);
+//				instance.addRoom(room);
+//			}
 		}
 		return instance;
 	}
@@ -130,7 +130,7 @@ public class RoomManager {
 			}			
 		}
 		
-		ResponseGamingUser res = new ResponseGamingUser(Common.IDENTIFIER_GAMING_USER, ResCode.SUCCESS.getResCode(), isGaming);
+		ResponseGamingUser res = new ResponseGamingUser(ResCode.SUCCESS.getResCode(), isGaming);
 		return res;
 	}
 	

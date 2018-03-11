@@ -4,7 +4,8 @@ public enum ResCode {
 	SUCCESS("0"),
 	ERROR_DB("100"),
 	ERROR_FULL("101"),
-	ERROR_CONNECTION_ROOM("102");
+	ERROR_CONNECTION_ROOM("102"),
+	ERROR_DECRYPTION("103");
 	
 	String resCode;
 	String message;
@@ -22,6 +23,9 @@ public enum ResCode {
 		case "101":
 		case "102":
 			message = "선택하신 방은 입장 불가능합니다.";
+			break;
+		case "103":
+			message = "로그인중 오류가 발생하였습니다.\n잠시 후 다시 시도해주세요.";
 			break;
 		}
 	}

@@ -1,10 +1,12 @@
 package com.boardgame.request;
 
+import com.boardgame.common.Common;
+
 public class RequestConnectionRoom extends RequestBase {
 
 	private Integer roomId;
-	public RequestConnectionRoom(String identifier, Integer gameNo, String uuid, Integer roomId) {
-		super(identifier, gameNo, uuid);
+	public RequestConnectionRoom(Integer gameNo, String uuid, Integer roomId) {
+		super(Common.IDENTIFIER_CONNECT_ROOM, gameNo, uuid);
 		this.roomId = roomId;
 	}
 

@@ -1,8 +1,10 @@
 package com.boardgame.request;
 
+import com.boardgame.common.Common;
+
 public class RequestUserInfo extends RequestBase {
 	
-	public RequestUserInfo(String identifier, Integer gameNo, String uuid) {
-		super(identifier, gameNo, uuid);
+	public RequestUserInfo(Integer gameNo, String uuid) {
+		super(Common.IDENTIFIER_USER_INFO, gameNo, uuid);
 	}
 }

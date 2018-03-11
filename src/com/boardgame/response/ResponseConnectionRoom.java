@@ -1,13 +1,15 @@
 package com.boardgame.response;
 
+import com.boardgame.common.Common;
+
 public class ResponseConnectionRoom extends ResponseBase {
 	 
-	public ResponseConnectionRoom(String identifier, String resCode) {
-		super(identifier, resCode);		
+	public ResponseConnectionRoom(String resCode) {
+		super(Common.IDENTIFIER_CONNECT_ROOM, resCode);		
 	}
 	
-	public ResponseConnectionRoom(String identifier, String resCode, String message) {
-		super(identifier, resCode, message);
+	public ResponseConnectionRoom(String resCode, String message) {
+		super(Common.IDENTIFIER_CONNECT_ROOM, resCode, message);
 	}
 	
 }
