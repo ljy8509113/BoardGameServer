@@ -1,5 +1,8 @@
 package com.boardgame.server;
 
+import java.util.Base64;
+import java.util.Base64.Decoder;
+
 import com.boardgame.controller.RequestController;
 import com.google.gson.Gson;
 
@@ -33,8 +36,18 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 		}finally {
 
 		}
-		System.out.println(buffer.toString());
-		RequestController.Instance().reqData(buffer, ctx);
+		
+		try {
+			Decoder decode = Base64.getDecoder();
+			byte[] result = decode.decode(buffer.toString());
+			
+			System.out.println( new String(result));
+			RequestController.Instance().reqData(buffer, ctx);
+		}catch(Exception e) {
+			System.out.println("decoding error");
+			e.printStackTrace();
+		}
+		
 		
 	}
 

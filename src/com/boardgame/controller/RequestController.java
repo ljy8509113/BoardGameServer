@@ -4,6 +4,9 @@ import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
+import java.util.Base64;
+import java.util.Base64.Decoder;
 import java.util.List;
 
 import javax.crypto.BadPaddingException;
@@ -18,13 +21,16 @@ import com.boardgame.model.UserInfo;
 import com.boardgame.request.RequestBase;
 import com.boardgame.request.RequestConnectionRoom;
 import com.boardgame.request.RequestCreateRoom;
+import com.boardgame.request.RequestJoin;
 import com.boardgame.request.RequestLogin;
 import com.boardgame.request.RequestRoomList;
 import com.boardgame.response.ResponseBase;
 import com.boardgame.response.ResponseCreateRoom;
+import com.boardgame.response.ResponseJoin;
 import com.boardgame.response.ResponseLogin;
 import com.boardgame.response.ResponseRoomList;
 import com.boardgame.util.CustomException;
+import com.boardgame.util.DBUtil;
 import com.google.gson.Gson;
 import com.security.Security;
 
@@ -98,12 +104,14 @@ public class RequestController {
 			{
 				RequestLogin login = gson.fromJson(buffer.toString(), RequestLogin.class);
 				try {
-					String password = Security.Instance().deCryption(login.password);
+					String password = Security.Instance().deCryptionClient(login.getPassword());
 					
-					System.out.println("password : " + login.password);
+					System.out.println("password : " + login.getPassword());
 					System.out.println("password dec : " + password);
 					
-					res = new ResponseLogin(ResCode.SUCCESS.getResCode(), login.isAutoLogin, login.email, login.password);
+					GameController.Instance().login(login.getEmail(), password);
+					
+					res = new ResponseLogin(ResCode.SUCCESS.getResCode(), login.isAutoLogin(), login.getEmail(), login.getPassword(), login.getNickName());
 					
 				} catch (InvalidKeyException | UnsupportedEncodingException | NoSuchAlgorithmException
 						| NoSuchPaddingException | InvalidAlgorithmParameterException | IllegalBlockSizeException
@@ -111,6 +119,34 @@ public class RequestController {
 					
 					e.printStackTrace();
 					res = new ResponseLogin(ResCode.ERROR_DECRYPTION.getResCode(), ResCode.ERROR_DECRYPTION.getMessage());
+				}catch (ClassNotFoundException | SQLException e) {
+					res = new ResponseLogin(ResCode.ERROR_DB.getResCode(), ResCode.ERROR_DB.getMessage());
+				}catch (CustomException e) {
+					res = new ResponseLogin(e.getResCode(), e.getMessage());
+				}
+			}
+				break;
+			case Common.IDENTIFIER_JOIN:
+			{
+				RequestJoin req = gson.fromJson(buffer.toString(), RequestJoin.class);
+				String password;
+				
+				try {
+					password = Security.Instance().deCryptionClient(req.getPassword());
+					GameController.Instance().join(req.getEmail(), password, req.getNickName(), req.getBirthday());
+					res = new ResponseJoin(ResCode.SUCCESS.getResCode(), ResCode.SUCCESS.getMessage());
+				} catch (ClassNotFoundException | SQLException e) {
+					e.printStackTrace();
+					res = new ResponseJoin(ResCode.ERROR_DB.getResCode(), ResCode.ERROR_DB.getMessage());
+				} catch (CustomException e) {
+					e.printStackTrace();
+					res = new ResponseJoin(e.getResCode(), e.getMessage());
+				}catch (InvalidKeyException | UnsupportedEncodingException | NoSuchAlgorithmException
+						| NoSuchPaddingException | InvalidAlgorithmParameterException | IllegalBlockSizeException
+						| BadPaddingException e1) {
+					
+					res = new ResponseJoin(ResCode.ERROR_DECRYPTION.getResCode(), ResCode.ERROR_DECRYPTION.getMessage());
+					e1.printStackTrace();
 				}
 			}
 				break;

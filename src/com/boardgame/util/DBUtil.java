@@ -54,12 +54,13 @@ public class DBUtil {
             String url = props.getProperty("url") ;
             String id = props.getProperty("username");
             String password = props.getProperty("password");
+            String dbName = props.getProperty("dbname");
             
     		// 1. 드라이버 로드
     		Class.forName("com.mysql.jdbc.Driver");
     		
     		// 2. 데이터베이스 연결
-    		Connection conn = DriverManager.getConnection(url, id, password);
+    		Connection conn = DriverManager.getConnection(url+"/"+dbName, id, password);
     		
     		return conn;
              

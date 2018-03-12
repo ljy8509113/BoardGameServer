@@ -1,23 +1,21 @@
 package com.boardgame.request;
 
+import java.util.Date;
+
 import com.boardgame.common.Common;
 
-public class RequestLogin extends RequestBase {
-	private boolean isAutoLogin;
+public class RequestJoin extends RequestBase{
 	private String email;
 	private String password;
+	private Date birthday;
 	private String nickName;
 	
-	public RequestLogin(Integer gameNo, String uuid) {
-		super(Common.IDENTIFIER_LOGIN, gameNo, uuid);
-	}
-
-	public boolean isAutoLogin() {
-		return isAutoLogin;
-	}
-
-	public void setAutoLogin(boolean isAutoLogin) {
-		this.isAutoLogin = isAutoLogin;
+	public RequestJoin(Integer gameNo, String uuid, String email, String password, String nickName, Date birthday) {
+		super(Common.IDENTIFIER_JOIN, gameNo, uuid);
+		this.email = email;
+		this.password = password;
+		this.birthday = birthday;
+		this.nickName = nickName;
 	}
 
 	public String getEmail() {
@@ -36,6 +34,14 @@ public class RequestLogin extends RequestBase {
 		this.password = password;
 	}
 
+	public Date getBirthday() {
+		return birthday;
+	}
+
+	public void setBirthday(Date birthday) {
+		this.birthday = birthday;
+	}
+
 	public String getNickName() {
 		return nickName;
 	}
@@ -43,6 +49,7 @@ public class RequestLogin extends RequestBase {
 	public void setNickName(String nickName) {
 		this.nickName = nickName;
 	}
-
 	
+	
+
 }
