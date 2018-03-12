@@ -25,12 +25,14 @@ import com.boardgame.request.RequestJoin;
 import com.boardgame.request.RequestLogin;
 import com.boardgame.request.RequestRoomList;
 import com.boardgame.response.ResponseBase;
+import com.boardgame.response.ResponseConnectionRoom;
 import com.boardgame.response.ResponseCreateRoom;
 import com.boardgame.response.ResponseJoin;
 import com.boardgame.response.ResponseLogin;
 import com.boardgame.response.ResponseRoomList;
 import com.boardgame.util.CustomException;
 import com.boardgame.util.DBUtil;
+import com.database.model.User;
 import com.google.gson.Gson;
 import com.security.Security;
 
@@ -49,8 +51,8 @@ public class RequestController {
 		return instance;
 	}
 	
-	public synchronized void reqData(StringBuffer buffer, ChannelHandlerContext ctx) {
-		RequestBase header = gson.fromJson(buffer.toString(), RequestBase.class);
+	public synchronized void reqData(String result, ChannelHandlerContext ctx) {
+		RequestBase header = gson.fromJson(result, RequestBase.class);
 		String identifier = header.getIdentifier();
 		String uuid = header.getUuid();
 		
@@ -58,7 +60,7 @@ public class RequestController {
 		
 		switch(identifier) {
 			case Common.IDENTIFIER_ROOM_LIST:{
-				RequestRoomList req = gson.fromJson(buffer.toString(), RequestRoomList.class);
+				RequestRoomList req = gson.fromJson(result, RequestRoomList.class);
 				int current = req.getCurrent();
 				int count = req.getCount();
 				int max = RoomManager.Instance().getRoomMaxLength(req.getGameNo());
@@ -71,7 +73,7 @@ public class RequestController {
 			
 			case Common.IDENTIFIER_CREATE_ROOM:
 			{
-				RequestCreateRoom cr = gson.fromJson(buffer.toString(), RequestCreateRoom.class); 
+				RequestCreateRoom cr = gson.fromJson(result, RequestCreateRoom.class); 
 				GameRoom room = new GameRoom(null, cr.getTitle(), cr.getGameNo(), cr.getMaxUser(), GameState.WAITING.getValue(), cr.getUuid());
 			
 				//GameController.Instance().createRoom(room, ctx);
@@ -81,7 +83,7 @@ public class RequestController {
 			break;
 			case Common.IDENTIFIER_CONNECT_ROOM:
 			{
-				RequestConnectionRoom cr = gson.fromJson(buffer.toString(), RequestConnectionRoom.class);
+				RequestConnectionRoom cr = gson.fromJson(result, RequestConnectionRoom.class);
 				Integer roomNo = cr.getRoomId();
 				Integer gameNo = cr.getGameNo();
 //				GameRoom room = null;
@@ -89,9 +91,9 @@ public class RequestController {
 				try {
 					UserInfo info = new UserInfo(ctx, uuid);
 					RoomManager.Instance().addUser(gameNo, roomNo, info); //GameController.Instance().getRoom(gameNo, roomId);
-					res = new ResponseBase(ResCode.SUCCESS.getResCode(), ResCode.SUCCESS.getMessage());
+					res = new ResponseConnectionRoom(ResCode.SUCCESS.getResCode(), ResCode.SUCCESS.getMessage());
 				} catch (CustomException e) {
-					res = new ResponseBase(e.getResCode(), e.getMessage());					
+					res = new ResponseConnectionRoom(e.getResCode(), e.getMessage());					
 				}
 			}
 			break;
@@ -102,16 +104,15 @@ public class RequestController {
 			break;
 			case Common.IDENTIFIER_LOGIN :
 			{
-				RequestLogin login = gson.fromJson(buffer.toString(), RequestLogin.class);
+				RequestLogin login = gson.fromJson(result, RequestLogin.class);
 				try {
-					String password = Security.Instance().deCryptionClient(login.getPassword());
+					String password = Security.Instance().deCryption(login.getPassword(), false);
 					
 					System.out.println("password : " + login.getPassword());
 					System.out.println("password dec : " + password);
 					
-					GameController.Instance().login(login.getEmail(), password);
-					
-					res = new ResponseLogin(ResCode.SUCCESS.getResCode(), login.isAutoLogin(), login.getEmail(), login.getPassword(), login.getNickName());
+					User user = GameController.Instance().login(login.getEmail(), password);
+					res = new ResponseLogin(ResCode.SUCCESS.getResCode(), login.isAutoLogin(), user.getEmail(), user.getPassword(), user.getNickname());
 					
 				} catch (InvalidKeyException | UnsupportedEncodingException | NoSuchAlgorithmException
 						| NoSuchPaddingException | InvalidAlgorithmParameterException | IllegalBlockSizeException
@@ -128,11 +129,11 @@ public class RequestController {
 				break;
 			case Common.IDENTIFIER_JOIN:
 			{
-				RequestJoin req = gson.fromJson(buffer.toString(), RequestJoin.class);
+				RequestJoin req = gson.fromJson(result, RequestJoin.class);
 				String password;
 				
 				try {
-					password = Security.Instance().deCryptionClient(req.getPassword());
+					password = Security.Instance().deCryption(req.getPassword(), false);
 					GameController.Instance().join(req.getEmail(), password, req.getNickName(), req.getBirthday());
 					res = new ResponseJoin(ResCode.SUCCESS.getResCode(), ResCode.SUCCESS.getMessage());
 				} catch (ClassNotFoundException | SQLException e) {
@@ -161,7 +162,7 @@ public class RequestController {
 		
 		switch(header.getGameNo()) {
 		case Common.GAME_DAVINCICODE :
-			DavinciCodeController.Instance().reqData(buffer, identifier);
+			DavinciCodeController.Instance().reqData(result, identifier);
 			break;
 		}
 	}

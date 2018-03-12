@@ -12,10 +12,10 @@ public enum ResCode {
 	ERROR_PASSWORD_FAIL_FULL(Common.CODE_ERROR_PASSWORD_FAIL_FULL),
 	ERROR_NICKNAME_OVERLAP(Common.CODE_ERROR_NICKNAME_OVERLAP);
 	
-	String resCode;
+	int resCode;
 	String message;
 	
-	ResCode(String resCode){
+	ResCode(int resCode){
 		this.resCode = resCode;
 		
 		switch(resCode) {
@@ -50,7 +50,7 @@ public enum ResCode {
 		}
 	}
 	
-	public String getResCode() {
+	public int getResCode() {
 		return resCode;
 	}
 	

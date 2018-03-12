@@ -8,7 +8,7 @@ public class ResponseLogin extends ResponseBase{
 	private String password;
 	private String nickName;
 	
-	public ResponseLogin(String resCode, boolean isAutoLogin, String email, String password, String nickName) {
+	public ResponseLogin(int resCode, boolean isAutoLogin, String email, String password, String nickName) {
 		super(Common.IDENTIFIER_LOGIN, resCode);
 		this.isAutoLogin = isAutoLogin;
 		this.password = password;
@@ -16,7 +16,7 @@ public class ResponseLogin extends ResponseBase{
 		this.nickName = nickName;
 	}
 	
-	public ResponseLogin(String resCode, String msg) {
+	public ResponseLogin(int resCode, String msg) {
 		super(Common.IDENTIFIER_LOGIN, resCode, msg);
 	}
 

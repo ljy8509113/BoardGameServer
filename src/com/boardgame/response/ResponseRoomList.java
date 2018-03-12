@@ -11,14 +11,14 @@ public class ResponseRoomList extends ResponseBase {
 	private int current;
 	private int max;
 	
-	public ResponseRoomList(String resCode, List<GameRoom> list, int current, int max) {
+	public ResponseRoomList(int resCode, List<GameRoom> list, int current, int max) {
 		super(Common.IDENTIFIER_ROOM_LIST, resCode);
 		this.list = list;
 		this.current = current;
 		this.max = max;
 	}
 	
-	public ResponseRoomList(String resCode, String message) {
+	public ResponseRoomList(int resCode, String message) {
 		super(Common.IDENTIFIER_ROOM_LIST, resCode, message);
 	}
 

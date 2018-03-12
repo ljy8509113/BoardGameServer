@@ -6,7 +6,6 @@ public class RequestLogin extends RequestBase {
 	private boolean isAutoLogin;
 	private String email;
 	private String password;
-	private String nickName;
 	
 	public RequestLogin(Integer gameNo, String uuid) {
 		super(Common.IDENTIFIER_LOGIN, gameNo, uuid);
@@ -35,14 +34,5 @@ public class RequestLogin extends RequestBase {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-
-	public String getNickName() {
-		return nickName;
-	}
-
-	public void setNickName(String nickName) {
-		this.nickName = nickName;
-	}
-
 	
 }

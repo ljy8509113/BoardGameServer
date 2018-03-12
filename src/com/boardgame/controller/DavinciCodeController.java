@@ -15,7 +15,7 @@ public class DavinciCodeController {
 		return instance;
 	}
 	
-	public void reqData(StringBuffer buffer, String identifier) {
+	public void reqData(String result, String identifier) {
 		switch(identifier) {
 		case "":
 			break;

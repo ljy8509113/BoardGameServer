@@ -2,15 +2,15 @@ package com.boardgame.response;
 
 public class ResponseBase {
 	private String identifier;
-	private String resCode;
+	private int resCode;
 	private String message;
 	
-	public ResponseBase(String identifier, String resCode) {
+	public ResponseBase(String identifier, int resCode) {
 		this.identifier = identifier;
 		this.resCode = resCode;
 	}
 	
-	public ResponseBase(String identifier, String resCode, String message) {
+	public ResponseBase(String identifier, int resCode, String message) {
 		this.identifier = identifier;
 		this.resCode = resCode;
 		this.message = message;
@@ -24,11 +24,11 @@ public class ResponseBase {
 		this.identifier = identifier;
 	}
 
-	public String getResCode() {
+	public int getResCode() {
 		return resCode;
 	}
 
-	public void setResCode(String resCode) {
+	public void setResCode(int resCode) {
 		this.resCode = resCode;
 	}
 

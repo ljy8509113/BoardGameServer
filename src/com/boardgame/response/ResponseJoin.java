@@ -4,12 +4,12 @@ import com.boardgame.common.Common;
 
 public class ResponseJoin extends ResponseBase {
 
-	public ResponseJoin(String resCode) {
+	public ResponseJoin(int resCode) {
 		super(Common.IDENTIFIER_JOIN, resCode);
 		
 	}
 	
-	public ResponseJoin(String resCode, String msg) {
+	public ResponseJoin(int resCode, String msg) {
 		super(Common.IDENTIFIER_JOIN, resCode, msg);
 	}
 

@@ -52,7 +52,7 @@ public class UserDao {
 		if(count > 0)
 			throw new CustomException(ResCode.ERROR_NICKNAME_OVERLAP.getResCode(), ResCode.ERROR_NICKNAME_OVERLAP.getMessage());
 		
-		String password = Security.Instance().cryptionDB(user.getPassword());
+		String password = Security.Instance().cryption(user.getPassword(), true);
 		sql = "INSERT INTO user (email, password, nickname, birthday, join_date, fail_count) " + 
 				"VALUES (?,?,?,?,CURDATE(),0)";
 		
@@ -96,11 +96,14 @@ public class UserDao {
 			DBUtil.getInstance().close(rs, pstmt, conn);
 			throw new CustomException(ResCode.ERROR_PASSWORD_FAIL_FULL.getResCode(), ResCode.ERROR_PASSWORD_FAIL_FULL.getMessage());
 		}else {
-			if(password.equals(Security.Instance().deCryptionDB(user.getPassword()))) {
+			if(password.equals(Security.Instance().deCryption(user.getPassword(), true))) {
 				sql = "update user set fail_count=0 where email=?";
 				pstmt = conn.prepareStatement(sql);
 				pstmt.setString(1, user.getEmail());
 				pstmt.executeUpdate();
+				
+				String pw = Security.Instance().deCryption(user.getPassword(), true);
+				user.setPassword(Security.Instance().cryption(pw, false));
 				
 				DBUtil.getInstance().close(rs, pstmt, conn);
 				return user;
