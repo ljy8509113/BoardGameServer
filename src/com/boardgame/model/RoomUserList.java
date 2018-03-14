@@ -3,8 +3,8 @@ package com.boardgame.model;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.boardgame.common.ResCode;
-import com.boardgame.util.CustomException;
+import com.database.common.ResCode;
+import com.database.util.CustomException;
 
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
@@ -25,11 +25,11 @@ public class RoomUserList {
 		if(room.getMaxUser() <= mapUsers.size())
 			throw new CustomException(ResCode.ERROR_FULL.getResCode(), ResCode.ERROR_FULL.getMessage());
 		else 
-			mapUsers.put(info.getUuid(), info);
+			mapUsers.put(info.getEmail(), info);
 	}
 
 	public void removeUser(UserInfo info) {
-		mapUsers.remove(info.getUuid());
+		mapUsers.remove(info.getEmail());
 	}
 
 	public void setState(String state) {

@@ -6,13 +6,13 @@ import io.netty.channel.ChannelHandlerContext;
 
 public class UserInfo {
 	private Integer gameRoomId = null;
-	private String uuid = null;
+	private String email = null;
 	private ChannelHandlerContext ctx;
 	private UserState status;
 	
-	public UserInfo(ChannelHandlerContext ctx, String uuid) {
+	public UserInfo(ChannelHandlerContext ctx, String email) {
 		this.ctx = ctx;
-		this.uuid = uuid;
+		this.email = email;
 		status = UserState.CONNECTION;
 	}
 	
@@ -28,14 +28,14 @@ public class UserInfo {
 
 
 
-	public String getUuid() {
-		return uuid;
+	public String getEmail() {
+		return email;
 	}
 
 
 
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 

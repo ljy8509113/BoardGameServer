@@ -10,8 +10,8 @@ public class RequestJoin extends RequestBase{
 	private Date birthday;
 	private String nickName;
 	
-	public RequestJoin(Integer gameNo, String uuid, String email, String password, String nickName, Date birthday) {
-		super(Common.IDENTIFIER_JOIN, gameNo, uuid);
+	public RequestJoin(Integer gameNo, String email, String password, String nickName, Date birthday) {
+		super(Common.IDENTIFIER_JOIN, gameNo, email);
 		this.email = email;
 		this.password = password;
 		this.birthday = birthday;

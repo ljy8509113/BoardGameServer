@@ -4,8 +4,8 @@ import com.boardgame.common.Common;
 
 public class RequestGamingUser extends RequestBase {
 
-	public RequestGamingUser(Integer gameNo, String uuid) {
-		super(Common.IDENTIFIER_GAMING_USER, gameNo, uuid);		
+	public RequestGamingUser(Integer gameNo, String email) {
+		super(Common.IDENTIFIER_GAMING_USER, gameNo, email);		
 	}
 
 }

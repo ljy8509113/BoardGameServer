@@ -3,12 +3,12 @@ package com.boardgame.request;
 public class RequestBase {
 	private String identifier;
 	private Integer gameNo;
-	private String uuid;
+	private String email;
 	
-	public RequestBase(String identifier, Integer gameNo, String uuid) {
+	public RequestBase(String identifier, Integer gameNo, String email) {
 		this.identifier = identifier;
 		this.gameNo = gameNo;
-		this.uuid = uuid;		
+		this.email = email;		
 	}
 
 	public String getIdentifier() {
@@ -19,8 +19,8 @@ public class RequestBase {
 		return gameNo;
 	}
 
-	public String getUuid() {
-		return uuid;
+	public String getEmail() {
+		return email;
 	}
 	
 }

@@ -4,7 +4,7 @@ import com.boardgame.common.Common;
 
 public class RequestUserInfo extends RequestBase {
 	
-	public RequestUserInfo(Integer gameNo, String uuid) {
-		super(Common.IDENTIFIER_USER_INFO, gameNo, uuid);
+	public RequestUserInfo(Integer gameNo, String email) {
+		super(Common.IDENTIFIER_USER_INFO, gameNo, email);
 	}
 }

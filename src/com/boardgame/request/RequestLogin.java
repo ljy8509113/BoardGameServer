@@ -4,11 +4,10 @@ import com.boardgame.common.Common;
 
 public class RequestLogin extends RequestBase {
 	private boolean isAutoLogin;
-	private String email;
 	private String password;
 	
-	public RequestLogin(Integer gameNo, String uuid) {
-		super(Common.IDENTIFIER_LOGIN, gameNo, uuid);
+	public RequestLogin(Integer gameNo, String email) {
+		super(Common.IDENTIFIER_LOGIN, gameNo, email);
 	}
 
 	public boolean isAutoLogin() {
@@ -20,11 +19,7 @@ public class RequestLogin extends RequestBase {
 	}
 
 	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
+		return super.getEmail();
 	}
 
 	public String getPassword() {

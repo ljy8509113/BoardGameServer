@@ -6,13 +6,12 @@ import java.util.List;
 import java.util.Map;
 
 import com.boardgame.common.Common;
-import com.boardgame.common.GameState;
-import com.boardgame.common.ResCode;
 import com.boardgame.model.GameRoom;
 import com.boardgame.model.RoomUserList;
 import com.boardgame.model.UserInfo;
 import com.boardgame.response.ResponseGamingUser;
-import com.boardgame.util.CustomException;
+import com.database.common.ResCode;
+import com.database.util.CustomException;
 
 import io.netty.channel.ChannelHandlerContext;
 

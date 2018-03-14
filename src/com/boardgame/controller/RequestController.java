@@ -5,8 +5,6 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
-import java.util.Base64;
-import java.util.Base64.Decoder;
 import java.util.List;
 
 import javax.crypto.BadPaddingException;
@@ -15,7 +13,6 @@ import javax.crypto.NoSuchPaddingException;
 
 import com.boardgame.common.Common;
 import com.boardgame.common.GameState;
-import com.boardgame.common.ResCode;
 import com.boardgame.model.GameRoom;
 import com.boardgame.model.UserInfo;
 import com.boardgame.request.RequestBase;
@@ -30,9 +27,9 @@ import com.boardgame.response.ResponseCreateRoom;
 import com.boardgame.response.ResponseJoin;
 import com.boardgame.response.ResponseLogin;
 import com.boardgame.response.ResponseRoomList;
-import com.boardgame.util.CustomException;
-import com.boardgame.util.DBUtil;
+import com.database.common.ResCode;
 import com.database.model.User;
+import com.database.util.CustomException;
 import com.google.gson.Gson;
 import com.security.Security;
 
@@ -54,7 +51,7 @@ public class RequestController {
 	public synchronized void reqData(String result, ChannelHandlerContext ctx) {
 		RequestBase header = gson.fromJson(result, RequestBase.class);
 		String identifier = header.getIdentifier();
-		String uuid = header.getUuid();
+		String email = header.getEmail();
 		
 		ResponseBase res = null;
 		
@@ -74,7 +71,7 @@ public class RequestController {
 			case Common.IDENTIFIER_CREATE_ROOM:
 			{
 				RequestCreateRoom cr = gson.fromJson(result, RequestCreateRoom.class); 
-				GameRoom room = new GameRoom(null, cr.getTitle(), cr.getGameNo(), cr.getMaxUser(), GameState.WAITING.getValue(), cr.getUuid());
+				GameRoom room = new GameRoom(null, cr.getTitle(), cr.getGameNo(), cr.getMaxUser(), GameState.WAITING.getValue(), cr.getEmail());
 			
 				//GameController.Instance().createRoom(room, ctx);
 				RoomManager.Instance().addRoom(room);
@@ -89,7 +86,7 @@ public class RequestController {
 //				GameRoom room = null;
 				
 				try {
-					UserInfo info = new UserInfo(ctx, uuid);
+					UserInfo info = new UserInfo(ctx, email);
 					RoomManager.Instance().addUser(gameNo, roomNo, info); //GameController.Instance().getRoom(gameNo, roomId);
 					res = new ResponseConnectionRoom(ResCode.SUCCESS.getResCode(), ResCode.SUCCESS.getMessage());
 				} catch (CustomException e) {
@@ -99,7 +96,7 @@ public class RequestController {
 			break;
 			case Common.IDENTIFIER_GAMING_USER :
 			{
-				res = RoomManager.Instance().checkGaming(uuid, header.getGameNo());				
+				res = RoomManager.Instance().checkGaming(email, header.getGameNo());				
 			}
 			break;
 			case Common.IDENTIFIER_LOGIN :
