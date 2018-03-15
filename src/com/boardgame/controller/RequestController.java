@@ -71,11 +71,10 @@ public class RequestController {
 			case Common.IDENTIFIER_CREATE_ROOM:
 			{
 				RequestCreateRoom cr = gson.fromJson(result, RequestCreateRoom.class); 
-				GameRoom room = new GameRoom(null, cr.getTitle(), cr.getGameNo(), cr.getMaxUser(), GameState.WAITING.getValue(), cr.getEmail());
+				GameRoom room = new GameRoom(null, cr.getTitle(), cr.getGameNo(), cr.getMaxUser(), GameState.WAITING.getValue(), cr.getEmail(), cr.getNickName());
 			
-				//GameController.Instance().createRoom(room, ctx);
 				RoomManager.Instance().addRoom(room);
-				res = new ResponseCreateRoom(ResCode.SUCCESS.getResCode(), room.getTitle(), cr.getNickName()); 
+				res = new ResponseCreateRoom(ResCode.SUCCESS.getResCode(), room.getTitle()); 
 			}
 			break;
 			case Common.IDENTIFIER_CONNECT_ROOM:

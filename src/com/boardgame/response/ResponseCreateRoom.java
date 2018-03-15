@@ -4,12 +4,10 @@ import com.boardgame.common.Common;
 
 public class ResponseCreateRoom extends ResponseBase{
 	String title;
-	String nickName;
 	
-	public ResponseCreateRoom(int resCode, String title, String nickName) {
+	public ResponseCreateRoom(int resCode, String title) {
 		super(Common.IDENTIFIER_CREATE_ROOM, resCode);
-		this.title = title;
-		this.nickName = nickName;
+		this.title = title;		
 	}
 
 	public String getTitle() {
@@ -18,14 +16,6 @@ public class ResponseCreateRoom extends ResponseBase{
 
 	public void setTitle(String title) {
 		this.title = title;
-	}
-
-	public String getNickName() {
-		return nickName;
-	}
-
-	public void setNickName(String nickName) {
-		this.nickName = nickName;
 	}
 	
 }

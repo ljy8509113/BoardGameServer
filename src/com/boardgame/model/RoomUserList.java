@@ -12,13 +12,13 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.CharsetUtil;
 
 public class RoomUserList {
-	int roomNo;
+	String masterEmail;
 	Map<String, UserInfo> mapUsers = new HashMap<>();
 	GameRoom room;
 
 	public RoomUserList(GameRoom room) {
 		this.room = room;
-		this.roomNo = room.getNo();
+		this.masterEmail = room.getMasterEmail();
 	}
 
 	public void addUser(UserInfo info) throws CustomException {
@@ -48,16 +48,16 @@ public class RoomUserList {
 		}
 	}
 	
-	public boolean checkUuid(String uuid) {
-		UserInfo info = mapUsers.get(uuid);
+	public boolean checkUuid(String email) {
+		UserInfo info = mapUsers.get(email);
 		if(info == null)
 			return false;
 		else
 			return true;
 	}
 	
-	public void updateCtx(ChannelHandlerContext ctx, String uuid) {
-		UserInfo info = mapUsers.get(uuid);
+	public void updateCtx(ChannelHandlerContext ctx, String email) {
+		UserInfo info = mapUsers.get(email);
 		info.setCtx(ctx);
 	}
 }
