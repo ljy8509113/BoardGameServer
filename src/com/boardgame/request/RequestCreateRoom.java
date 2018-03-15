@@ -7,8 +7,8 @@ public class RequestCreateRoom extends RequestBase {
 	private Integer maxUser;
 	private String nickName;
 	
-	public RequestCreateRoom(Integer gameNo, String uuid, String title, Integer maxUser, String nickName) {
-		super(Common.IDENTIFIER_CREATE_ROOM, gameNo, uuid);		
+	public RequestCreateRoom(Integer gameNo, String email, String title, Integer maxUser, String nickName) {
+		super(Common.IDENTIFIER_CREATE_ROOM, gameNo, email);		
 		this.title = title;
 		this.maxUser = maxUser;
 		this.nickName = nickName;

@@ -75,7 +75,7 @@ public class RequestController {
 			
 				//GameController.Instance().createRoom(room, ctx);
 				RoomManager.Instance().addRoom(room);
-				res = new ResponseCreateRoom(ResCode.SUCCESS.getResCode(), room.getTitle()); 
+				res = new ResponseCreateRoom(ResCode.SUCCESS.getResCode(), room.getTitle(), cr.getNickName()); 
 			}
 			break;
 			case Common.IDENTIFIER_CONNECT_ROOM:
@@ -86,7 +86,7 @@ public class RequestController {
 //				GameRoom room = null;
 				
 				try {
-					UserInfo info = new UserInfo(ctx, email);
+					UserInfo info = new UserInfo(ctx, email, cr.getNickName());
 					RoomManager.Instance().addUser(gameNo, roomNo, info); //GameController.Instance().getRoom(gameNo, roomId);
 					res = new ResponseConnectionRoom(ResCode.SUCCESS.getResCode(), ResCode.SUCCESS.getMessage());
 				} catch (CustomException e) {
