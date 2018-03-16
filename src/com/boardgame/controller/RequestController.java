@@ -14,6 +14,8 @@ import javax.crypto.NoSuchPaddingException;
 import com.boardgame.common.Common;
 import com.boardgame.common.GameState;
 import com.boardgame.model.GameRoom;
+import com.boardgame.model.RoomUser;
+import com.boardgame.model.RoomUserList;
 import com.boardgame.model.UserInfo;
 import com.boardgame.request.RequestBase;
 import com.boardgame.request.RequestConnectionRoom;
@@ -86,8 +88,8 @@ public class RequestController {
 				
 				try {
 					UserInfo info = new UserInfo(ctx, email, cr.getNickName());
-					RoomManager.Instance().addUser(gameNo, roomNo, info); //GameController.Instance().getRoom(gameNo, roomId);
-					res = new ResponseConnectionRoom(ResCode.SUCCESS.getResCode(), ResCode.SUCCESS.getMessage());
+					List<RoomUser> userList = RoomManager.Instance().addUser(gameNo, roomNo, info);
+					res = new ResponseConnectionRoom(ResCode.SUCCESS.getResCode(), userList);
 				} catch (CustomException e) {
 					res = new ResponseConnectionRoom(e.getResCode(), e.getMessage());					
 				}

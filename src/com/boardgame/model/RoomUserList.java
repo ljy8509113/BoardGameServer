@@ -48,7 +48,7 @@ public class RoomUserList {
 		}
 	}
 	
-	public boolean checkUuid(String email) {
+	public boolean checkEmail(String email) {
 		UserInfo info = mapUsers.get(email);
 		if(info == null)
 			return false;
@@ -59,5 +59,13 @@ public class RoomUserList {
 	public void updateCtx(ChannelHandlerContext ctx, String email) {
 		UserInfo info = mapUsers.get(email);
 		info.setCtx(ctx);
+	}
+	
+	public Map<String, UserInfo> getMapUser(){
+		return mapUsers;
+	}
+	
+	public String getMasterEmail() {
+		return masterEmail;
 	}
 }

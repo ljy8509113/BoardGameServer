@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.boardgame.common.Common;
 import com.boardgame.model.GameRoom;
+import com.boardgame.model.RoomUser;
 import com.boardgame.model.RoomUserList;
 import com.boardgame.model.UserInfo;
 import com.boardgame.response.ResponseGamingUser;
@@ -31,7 +32,7 @@ public class RoomManager {
 		return instance;
 	}
 
-	public void addRoom(GameRoom room) {
+	public List<RoomUser> addRoom(GameRoom room) {
 		Map<Integer, RoomUserList> map = getMap( room.getGameNo() );
 		room.setNo(makeRoomNo(room.getGameNo()));
 		
@@ -39,7 +40,10 @@ public class RoomManager {
 		map.put(room.getNo(), roomInfo);
 		
 		List<GameRoom> list = getRoomList(room.getGameNo());
-		list.add(room);		
+		list.add(room);	
+		
+		return getRoomUserList(room.getGameNo(), room.getNo());
+		
 	}
 
 	public void removeRoom(int gameNo, int roomNo) {
@@ -55,9 +59,11 @@ public class RoomManager {
 		}
 	}
 
-	public void addUser(int gameNo, int roomNo, UserInfo info) throws CustomException {
+	public List<RoomUser> addUser(int gameNo, int roomNo, UserInfo info) throws CustomException {
 		RoomUserList roomInfo = getMap(gameNo).get(roomNo);
-		roomInfo.addUser(info);		
+		roomInfo.addUser(info);	
+		
+		return getRoomUserList(gameNo, roomNo);
 	}
 
 	public int makeRoomNo(int gameNo) {
@@ -117,13 +123,13 @@ public class RoomManager {
 		}
 	}
 	
-	public ResponseGamingUser checkGaming(String uuid, int gameNo) {
+	public ResponseGamingUser checkGaming(String email, int gameNo) {
 		Map<Integer, RoomUserList> map = getMap(gameNo);
 		
 		boolean isGaming = false;
 		for(Integer key : map.keySet()) {
 			RoomUserList item = map.get(key);
-			if(item.checkUuid(uuid)) {
+			if(item.checkEmail(email)) {
 				isGaming = true;
 				break;
 			}			
@@ -133,12 +139,12 @@ public class RoomManager {
 		return res;
 	}
 	
-	public void moveRoom(String uuid, int gameNo, ChannelHandlerContext ctx) {
+	public void moveRoom(String email, int gameNo, ChannelHandlerContext ctx) {
 		Map<Integer, RoomUserList> map = getMap(gameNo);
 		
 		for(Integer key : map.keySet()) {
 			RoomUserList item = map.get(key);
-			if(item.checkUuid(uuid)) {
+			if(item.checkEmail(email)) {
 				
 				break;
 			}			
@@ -174,6 +180,24 @@ public class RoomManager {
 		RoomUserList info = map.get(roomNo);
 		if(info != null)
 			info.sendMessage(msg);
+	}
+	
+	public List<RoomUser> getRoomUserList(int gameNo, int roomNo){
+		List<RoomUser> list = new ArrayList<RoomUser>();
+		RoomUserList roomInfo = getMap(gameNo).get(roomNo);
+		
+		for(String key : roomInfo.getMapUser().keySet()) {
+			UserInfo i = roomInfo.getMapUser().get(key);
+			boolean isMaster = false;
+			
+			if(i.getEmail().equals(roomInfo.getMasterEmail()))
+				isMaster = true;
+			
+			RoomUser user = new RoomUser(i.getEmail(), i.getNickName(), isMaster, i.getTotalCount(), i.getWin(), i.getLose());
+			list.add(user);	
+		}
+		
+		return list;
 	}
 
 }
