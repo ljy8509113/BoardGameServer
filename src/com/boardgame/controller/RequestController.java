@@ -76,7 +76,7 @@ public class RequestController {
 				GameRoom room = new GameRoom(null, cr.getTitle(), cr.getGameNo(), cr.getMaxUser(), GameState.WAITING.getValue(), cr.getEmail(), cr.getNickName());
 			
 				RoomManager.Instance().addRoom(room);
-				res = new ResponseCreateRoom(ResCode.SUCCESS.getResCode(), room.getTitle()); 
+				//res = new ResponseCreateRoom(ResCode.SUCCESS.getResCode(), room.getTitle()); 
 			}
 			break;
 			case Common.IDENTIFIER_CONNECT_ROOM:

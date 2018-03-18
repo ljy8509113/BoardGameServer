@@ -34,7 +34,7 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 			byte[] data = buffer.toString().getBytes("UTF-8"); 
 			data = Base64.decodeBase64(data);
 			String text = new String(data, "UTF-8"); 
-			System.out.println("res : " + text );
+			System.out.println("req : " + text );
 			RequestController.Instance().reqData(text, ctx);
 		}catch(Exception e) {
 			e.printStackTrace();
