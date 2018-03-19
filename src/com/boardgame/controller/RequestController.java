@@ -20,6 +20,7 @@ import com.boardgame.model.UserInfo;
 import com.boardgame.request.RequestBase;
 import com.boardgame.request.RequestConnectionRoom;
 import com.boardgame.request.RequestCreateRoom;
+import com.boardgame.request.RequestGamingUser;
 import com.boardgame.request.RequestJoin;
 import com.boardgame.request.RequestLogin;
 import com.boardgame.request.RequestRoomList;
@@ -30,6 +31,8 @@ import com.boardgame.response.ResponseJoin;
 import com.boardgame.response.ResponseLogin;
 import com.boardgame.response.ResponseRoomList;
 import com.database.common.ResCode;
+import com.database.controller.DBController;
+import com.database.model.Score;
 import com.database.model.User;
 import com.database.util.CustomException;
 import com.google.gson.Gson;
@@ -62,42 +65,51 @@ public class RequestController {
 				RequestRoomList req = gson.fromJson(result, RequestRoomList.class);
 				int current = req.getCurrent();
 				int count = req.getCount();
-				int max = RoomManager.Instance().getRoomMaxLength(req.getGameNo());
+				//int max = RoomManager.Instance().getRoomMaxLength(req.getGameNo());
 				
 				//List<GameRoom> list = RoomManager.Instance().getRoomList(header.getGameNo()); //GameController.Instance().getRoomList(header.getGameNo(), ctx);
-				List<GameRoom> list = RoomManager.Instance().getRoomList(req.getGameNo(), current, count);
-				res = new ResponseRoomList(ResCode.SUCCESS.getResCode(), list, current, max);
+				List<GameRoom> list = GameController.Instance().getRoomList(header.getGameNo(), current, count); //RoomManager.Instance().getRoomList(req.getGameNo(), current, count);
+				res = new ResponseRoomList(ResCode.SUCCESS.getResCode(), list, current, GameController.Instance().getRommMaxCount(header.getGameNo()));
 			}
 			break;
 			
 			case Common.IDENTIFIER_CREATE_ROOM:
 			{
 				RequestCreateRoom cr = gson.fromJson(result, RequestCreateRoom.class); 
-				GameRoom room = new GameRoom(null, cr.getTitle(), cr.getGameNo(), cr.getMaxUser(), GameState.WAITING.getValue(), cr.getEmail(), cr.getNickName());
+				GameRoom room = new GameRoom(null, cr.getTitle(), cr.getGameNo(), cr.getMaxUser(), GameState.WAITING.getValue(), cr.getEmail(), cr.getNickName(), cr.getPassword());
 			
-				RoomManager.Instance().addRoom(room);
-				//res = new ResponseCreateRoom(ResCode.SUCCESS.getResCode(), room.getTitle()); 
+//				RoomManager.Instance().addRoom(room);
+				Score score;
+				try {
+					score = DBController.Instance().selectScore(cr.getEmail(), cr.getGameNo());
+					res = new ResponseCreateRoom(ResCode.SUCCESS.getResCode(), room.getTitle(), score.getTotal(), score.getWin(), score.getLose(), score.getDisconnect());
+				} catch (CustomException e) {
+					e.printStackTrace();
+					res = new ResponseCreateRoom(e.getResCode(), e.getMessage());//new ResponseBase(e.getResCode(), e.getMessage());
+				}
+				 
 			}
 			break;
 			case Common.IDENTIFIER_CONNECT_ROOM:
 			{
-				RequestConnectionRoom cr = gson.fromJson(result, RequestConnectionRoom.class);
-				Integer roomNo = cr.getRoomId();
-				Integer gameNo = cr.getGameNo();
-//				GameRoom room = null;
-				
-				try {
-					UserInfo info = new UserInfo(ctx, email, cr.getNickName());
-					List<RoomUser> userList = RoomManager.Instance().addUser(gameNo, roomNo, info);
-					res = new ResponseConnectionRoom(ResCode.SUCCESS.getResCode(), userList);
-				} catch (CustomException e) {
-					res = new ResponseConnectionRoom(e.getResCode(), e.getMessage());					
-				}
+//				RequestConnectionRoom cr = gson.fromJson(result, RequestConnectionRoom.class);
+//				Integer roomNo = cr.getRoomId();
+//				Integer gameNo = cr.getGameNo();
+////				GameRoom room = null;
+//				
+//				try {
+//					UserInfo info = new UserInfo(ctx, email, cr.getNickName());
+//					List<RoomUser> userList = RoomManager.Instance().addUser(gameNo, roomNo, info);
+//					res = new ResponseConnectionRoom(ResCode.SUCCESS.getResCode(), userList);
+//				} catch (CustomException e) {
+//					res = new ResponseConnectionRoom(e.getResCode(), e.getMessage());					
+//				}
 			}
 			break;
 			case Common.IDENTIFIER_GAMING_USER :
 			{
-				res = RoomManager.Instance().checkGaming(email, header.getGameNo());				
+				RequestGamingUser req = gson.fromJson(result, RequestGamingUser.class);
+				res = GameController.Instance().checkGaming(header.getGameNo(), req.getEmail()); //RoomManager.Instance().checkGaming(email, header.getGameNo());				
 			}
 			break;
 			case Common.IDENTIFIER_LOGIN :

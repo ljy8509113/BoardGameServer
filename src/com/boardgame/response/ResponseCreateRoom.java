@@ -7,15 +7,19 @@ public class ResponseCreateRoom extends ResponseBase{
 	int total;
     int win;
     int lose;
-    int outCount;
+    int disconnect;
 	
-	public ResponseCreateRoom(int resCode, String title, int total, int win, int lose, int outCount) {
+    public ResponseCreateRoom(int resCode, String message) {
+    	super(Common.IDENTIFIER_CREATE_ROOM, resCode, message);
+    }
+    
+	public ResponseCreateRoom(int resCode, String title, int total, int win, int lose, int disconnect) {
 		super(Common.IDENTIFIER_CREATE_ROOM, resCode);
 		this.title = title;
 		this.total = total;
 		this.win = win;
 		this.lose = lose;
-		this.outCount = outCount;
+		this.disconnect = disconnect;
 	}
 	
 	public String getTitle() {
@@ -50,12 +54,12 @@ public class ResponseCreateRoom extends ResponseBase{
 		this.lose = lose;
 	}
 
-	public int getOutCount() {
-		return outCount;
+	public int getDisconnect() {
+		return disconnect;
 	}
 
-	public void setOutCount(int outCount) {
-		this.outCount = outCount;
+	public void setDisconnect(int disconnect) {
+		this.disconnect = disconnect;
 	}
 		
 }

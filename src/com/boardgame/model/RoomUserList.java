@@ -1,6 +1,8 @@
 package com.boardgame.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.database.common.ResCode;
@@ -25,11 +27,11 @@ public class RoomUserList {
 		if(room.getMaxUser() <= mapUsers.size())
 			throw new CustomException(ResCode.ERROR_FULL.getResCode(), ResCode.ERROR_FULL.getMessage());
 		else 
-			mapUsers.put(info.getEmail(), info);
+			mapUsers.put(info.getUser().getEmail(), info);
 	}
 
 	public void removeUser(UserInfo info) {
-		mapUsers.remove(info.getEmail());
+		mapUsers.remove(info.getUser().getEmail());
 	}
 
 	public void setState(String state) {
@@ -67,5 +69,16 @@ public class RoomUserList {
 	
 	public String getMasterEmail() {
 		return masterEmail;
+	}
+	
+	public List<RoomUser> getUserList(){
+		List<RoomUser> list = new ArrayList<RoomUser>();
+		
+		for(String email : mapUsers.keySet()) {
+			UserInfo info = mapUsers.get(email);
+			list.add(info.getUser());
+		}
+		
+		return list;
 	}
 }

@@ -5,13 +5,17 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 import com.boardgame.model.GameRoom;
+import com.boardgame.response.ResponseGamingUser;
+import com.database.common.Common;
 import com.database.controller.DBController;
 import com.database.model.User;
 
@@ -32,27 +36,45 @@ public class GameController {
 	}
 
 	public void createRoom(GameRoom room, ChannelHandlerContext ctx) throws Exception {
-		RoomManager.Instance().addRoom(room);		
+		switch(room.getGameNo()) {
+		case Common.DIVINCHICODE_GAME_CODE :
+			DavinciCodeController.Instance().addRoom(room, ctx);
+			break;
+		}	
 	}
-
-//	public List<GameRoom> getRoomList(Integer gameNo, ChannelHandlerContext ctx){
-//		List<GameRoom> list = null;
-//		try {
-//			list = gameService.getRoomList(gameNo);
-//		}catch(ClassNotFoundException e) {
-//			e.printStackTrace();
-//		}catch(SQLException e) {
-//			e.printStackTrace();
-//		}		
-//		return list;
-//	}
-
-//	public GameRoom getRoom(Integer gameNo, Integer roomId) throws ClassNotFoundException, SQLException {
-//		GameRoom room = null;
-//		room = gameService.getRoom(gameNo, roomId);
-//		
-//		return room;
-//	}
+	
+	public List<GameRoom> getRoomList(int gameNo, int current, int count){
+		List<GameRoom> list = new ArrayList<GameRoom>();
+		switch(gameNo) {
+		case Common.DIVINCHICODE_GAME_CODE :
+			list = DavinciCodeController.Instance().getRoomList(current, count);
+			break;
+		}
+		
+		return list;
+	}
+	
+	public int getRommMaxCount(int gameNo) {
+		int max = 0;
+		switch(gameNo) {
+		case Common.DIVINCHICODE_GAME_CODE : 
+			max = DavinciCodeController.Instance().getRoomMaxLength();
+			break;
+		}
+		
+		return max;
+	}
+	
+	public ResponseGamingUser checkGaming(int gameNo, String email) {
+		ResponseGamingUser res = null; 
+		switch(gameNo) {
+		case Common.DIVINCHICODE_GAME_CODE :
+			res = DavinciCodeController.Instance().checkGaming(email, gameNo);
+			break;
+		}
+		
+		return res;
+	}
 	
 	public void join(String email, String password, String nickName, Date birthday) throws ClassNotFoundException, SQLException, InvalidKeyException, UnsupportedEncodingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, com.database.util.CustomException {
 		User user = new User(email, password, nickName, birthday);

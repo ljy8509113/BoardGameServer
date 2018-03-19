@@ -9,11 +9,12 @@ public class GameRoom {
 	String state;
 	String masterEmail;
 	String masterNickName;
+	String password;
 	
 	public GameRoom() {
 	}
 	
-	public GameRoom(Integer no, String title, Integer gameNo, Integer maxUser, String state, String masterEmail, String masterNickName) {
+	public GameRoom(Integer no, String title, Integer gameNo, Integer maxUser, String state, String masterEmail, String masterNickName, String password) {
 		this.no = no;
 		this.title = title;
 		this.gameNo = gameNo;
@@ -21,6 +22,7 @@ public class GameRoom {
 		this.state = state;
 		this.masterEmail = masterEmail;
 		this.masterNickName = masterNickName;
+		this.password = password;
 	}
 	
 	public Integer getNo() {
@@ -74,6 +76,14 @@ public class GameRoom {
 
 	public void setMasterNickName(String masterNickName) {
 		this.masterNickName = masterNickName;
-	}	
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
 	
 }

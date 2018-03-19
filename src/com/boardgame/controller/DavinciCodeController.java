@@ -2,7 +2,7 @@ package com.boardgame.controller;
 
 import com.boardgame.service.GameService;
 
-public class DavinciCodeController {
+public class DavinciCodeController extends BaseController {
 	//game_id = 1
 	private GameService gameService;
 	
@@ -21,5 +21,8 @@ public class DavinciCodeController {
 			break;
 		}
 	}
+	
+	
+	
 	
 }
