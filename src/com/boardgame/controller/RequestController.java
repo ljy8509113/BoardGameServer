@@ -56,7 +56,7 @@ public class RequestController {
 	public synchronized void reqData(String result, ChannelHandlerContext ctx) {
 		RequestBase header = gson.fromJson(result, RequestBase.class);
 		String identifier = header.getIdentifier();
-		String email = header.getEmail();
+		int gameNo = header.getGameNo();
 		
 		ResponseBase res = null;
 		
@@ -65,11 +65,9 @@ public class RequestController {
 				RequestRoomList req = gson.fromJson(result, RequestRoomList.class);
 				int current = req.getCurrent();
 				int count = req.getCount();
-				//int max = RoomManager.Instance().getRoomMaxLength(req.getGameNo());
 				
-				//List<GameRoom> list = RoomManager.Instance().getRoomList(header.getGameNo()); //GameController.Instance().getRoomList(header.getGameNo(), ctx);
-				List<GameRoom> list = GameController.Instance().getRoomList(header.getGameNo(), current, count); //RoomManager.Instance().getRoomList(req.getGameNo(), current, count);
-				res = new ResponseRoomList(ResCode.SUCCESS.getResCode(), list, current, GameController.Instance().getRommMaxCount(header.getGameNo()));
+				List<GameRoom> list = getController(gameNo).getRoomList(current, count);
+				res = new ResponseRoomList(ResCode.SUCCESS.getResCode(), list, current, getController(gameNo).getRoomMaxLength());
 			}
 			break;
 			
@@ -81,48 +79,50 @@ public class RequestController {
 //				RoomManager.Instance().addRoom(room);
 				Score score;
 				try {
+					getController(gameNo).addRoom(room, ctx);
 					score = DBController.Instance().selectScore(cr.getEmail(), cr.getGameNo());
 					res = new ResponseCreateRoom(ResCode.SUCCESS.getResCode(), room.getTitle(), score.getTotal(), score.getWin(), score.getLose(), score.getDisconnect());
 				} catch (CustomException e) {
 					e.printStackTrace();
 					res = new ResponseCreateRoom(e.getResCode(), e.getMessage());//new ResponseBase(e.getResCode(), e.getMessage());
-				}
-				 
+				}				 
 			}
 			break;
 			case Common.IDENTIFIER_CONNECT_ROOM:
-			{
-//				RequestConnectionRoom cr = gson.fromJson(result, RequestConnectionRoom.class);
-//				Integer roomNo = cr.getRoomId();
-//				Integer gameNo = cr.getGameNo();
-////				GameRoom room = null;
-//				
-//				try {
-//					UserInfo info = new UserInfo(ctx, email, cr.getNickName());
-//					List<RoomUser> userList = RoomManager.Instance().addUser(gameNo, roomNo, info);
-//					res = new ResponseConnectionRoom(ResCode.SUCCESS.getResCode(), userList);
-//				} catch (CustomException e) {
-//					res = new ResponseConnectionRoom(e.getResCode(), e.getMessage());					
-//				}
+			{				
+				RequestConnectionRoom cr = gson.fromJson(result, RequestConnectionRoom.class);
+				Integer roomNo = cr.getRoomId();
+				
+				try {
+					
+					Score score = DBController.Instance().selectScore(cr.getEmail(), gameNo);
+					RoomUser user = new RoomUser(cr.getEmail(), cr.getNickName(), false, score.getTotal(), score.getWin(), score.getLose(), score.getDisconnect());
+					UserInfo info = new UserInfo(ctx, user);
+					
+					List<RoomUser> userList = getController(gameNo).addUser(roomNo, info);
+					res = new ResponseConnectionRoom(ResCode.SUCCESS.getResCode(), userList);
+				}catch(CustomException e) {
+					res = new ResponseConnectionRoom(e.getResCode(), e.getMessage());
+				}
 			}
 			break;
 			case Common.IDENTIFIER_GAMING_USER :
 			{
 				RequestGamingUser req = gson.fromJson(result, RequestGamingUser.class);
-				res = GameController.Instance().checkGaming(header.getGameNo(), req.getEmail()); //RoomManager.Instance().checkGaming(email, header.getGameNo());				
+				res = getController(gameNo).checkGaming(req.getEmail(), req.getGameNo());				
 			}
 			break;
 			case Common.IDENTIFIER_LOGIN :
 			{
-				RequestLogin login = gson.fromJson(result, RequestLogin.class);
+				RequestLogin req = gson.fromJson(result, RequestLogin.class);
 				try {
-					String password = Security.Instance().deCryption(login.getPassword(), false);
+					String password = Security.Instance().deCryption(req.getPassword(), false);
 					
-					System.out.println("password : " + login.getPassword());
+					System.out.println("password : " + req.getPassword());
 					System.out.println("password dec : " + password);
 					
-					User user = GameController.Instance().login(login.getEmail(), password);
-					res = new ResponseLogin(ResCode.SUCCESS.getResCode(), login.isAutoLogin(), user.getEmail(), user.getPassword(), user.getNickname());
+					User user = DBController.Instance().login(req.getEmail(), password);
+					res = new ResponseLogin(ResCode.SUCCESS.getResCode(), req.isAutoLogin(), user.getEmail(), user.getPassword(), user.getNickname());
 					
 				} catch (InvalidKeyException | UnsupportedEncodingException | NoSuchAlgorithmException
 						| NoSuchPaddingException | InvalidAlgorithmParameterException | IllegalBlockSizeException
@@ -144,7 +144,9 @@ public class RequestController {
 				
 				try {
 					password = Security.Instance().deCryption(req.getPassword(), false);
-					GameController.Instance().join(req.getEmail(), password, req.getNickName(), req.getBirthday());
+					User user = new User(req.getEmail(), password, req.getNickName(), req.getBirthday());
+					DBController.Instance().join(user);
+					
 					res = new ResponseJoin(ResCode.SUCCESS.getResCode(), ResCode.SUCCESS.getMessage());
 				} catch (ClassNotFoundException | SQLException e) {
 					e.printStackTrace();
@@ -160,26 +162,26 @@ public class RequestController {
 					e1.printStackTrace();
 				}
 			}
-				break;
-			case Common.IDENTIFIER_TEST :
-			{
-				
-			}
-				break;
+				break;			
 		}
 		
 		response(gson.toJson(res), ctx);
 		
-		switch(header.getGameNo()) {
-		case Common.GAME_DAVINCICODE :
-			DavinciCodeController.Instance().reqData(result, identifier);
-			break;
-		}
 	}
 
 	void response(String res, ChannelHandlerContext ctx) {
 		System.out.println("res : " + res);
 		ChannelFuture future = ctx.write(Unpooled.copiedBuffer(res, CharsetUtil.UTF_8));
 		ctx.flush();		
+	}
+	
+	BaseController getController(int gameNo) {
+		switch(gameNo) {
+		case Common.GAME_DAVINCICODE :
+			
+			return DavinciCodeController.Instance();
+		}
+		
+		return null;
 	}
 }

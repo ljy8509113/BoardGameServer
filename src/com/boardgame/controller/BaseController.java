@@ -46,11 +46,11 @@ public abstract class BaseController {
 		}
 	}
 
-	public RoomUserList addUser(int roomNo, UserInfo info) throws CustomException {
+	public List<RoomUser> addUser(int roomNo, UserInfo info) throws CustomException {
 		RoomUserList roomInfo = mapUser.get(roomNo);
 		roomInfo.addUser(info);	
 		
-		return roomInfo;
+		return roomInfo.getUserList();
 	}
 
 	public int makeRoomNo(int gameNo) {
@@ -116,9 +116,7 @@ public abstract class BaseController {
 	}
 	
 	public List<RoomUser> getRoomUserList(int roomNo){
-		List<RoomUser> list = new ArrayList<RoomUser>();
-		return mapUser.get(roomNo).getUserList();
-		
+		return mapUser.get(roomNo).getUserList();		
 	}
 	
 	

@@ -8,17 +8,19 @@ public class RoomUser {
 	private int totalCount;
 	private int win;
 	private int lose;
+	private int discount;
 	
 	public RoomUser() {		
 	}
 	
-	public RoomUser(String email, String nickName, boolean isMaster, int totalCount, int win, int lose) {
+	public RoomUser(String email, String nickName, boolean isMaster, int totalCount, int win, int lose, int discount) {
 		this.email = email;
 		this.nickName = nickName;
 		this.isMaster = isMaster;
 		this.totalCount = totalCount;
 		this.win = win;
 		this.lose = lose;
+		this.discount = discount;
 	}
 
 	public String getEmail() {
@@ -67,6 +69,14 @@ public class RoomUser {
 
 	public void setLose(int lose) {
 		this.lose = lose;
+	}
+
+	public int getDiscount() {
+		return discount;
+	}
+
+	public void setDiscount(int discount) {
+		this.discount = discount;
 	}
 	
 }
