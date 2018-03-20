@@ -4,14 +4,23 @@ import com.boardgame.common.UserState;
 import io.netty.channel.ChannelHandlerContext;
 
 public class UserInfo {
-	private ChannelHandlerContext ctx;
-	private UserState status;
-	private RoomUser user;
+	public class User{
+		UserState status;
+		
+		String email;
+		String nickName;
+		boolean isMaster;
+	}
 	
-	public UserInfo(ChannelHandlerContext ctx, RoomUser user) {
+	private ChannelHandlerContext ctx;
+	private User user = new User();
+	
+	public UserInfo(ChannelHandlerContext ctx, String email, String nickName, boolean isMaster) {
 		this.ctx = ctx;
-		status = UserState.CONNECTION;
-		this.user = user;
+		user.status = UserState.CONNECTION;
+		user.email = email;
+		user.nickName = nickName;
+		user.isMaster = isMaster;		
 	}
 
 	public ChannelHandlerContext getCtx() {
@@ -23,19 +32,34 @@ public class UserInfo {
 	}
 
 	public UserState getStatus() {
-		return status;
+		return user.status;
 	}
 
 	public void setStatus(UserState status) {
-		this.status = status;
+		user.status = status;
 	}
 
-	public RoomUser getUser() {
-		return user;
+	public String getEmail() {
+		return user.email;
 	}
 
-	public void setUser(RoomUser user) {
-		this.user = user;
+	public void setEmail(String email) {
+		user.email = email;
 	}
-	
+
+	public String getNickName() {
+		return user.nickName;
+	}
+
+	public void setNickName(String nickName) {
+		user.nickName = nickName;
+	}
+
+	public boolean isMaster() {
+		return user.isMaster;
+	}
+
+	public void setMaster(boolean isMaster) {
+		user.isMaster = isMaster;
+	}	
 }

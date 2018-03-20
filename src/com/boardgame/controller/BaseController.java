@@ -25,7 +25,7 @@ public abstract class BaseController {
 	
 	
 	public List<RoomUser> addRoom(GameRoom room, ChannelHandlerContext ctx) {
-		room.setNo(makeRoomNo(room.getGameNo()));
+		room.setNo(makeRoomNo());
 		
 		RoomUserList roomInfo = new RoomUserList(room);
 		mapUser.put(room.getNo(), roomInfo);
@@ -53,7 +53,7 @@ public abstract class BaseController {
 		return roomInfo.getUserList();
 	}
 
-	public int makeRoomNo(int gameNo) {
+	public int makeRoomNo() {
 		
 		if(listRoom.size() == 0)
 			return 1;

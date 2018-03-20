@@ -15,7 +15,6 @@ import com.boardgame.common.Common;
 import com.boardgame.common.GameState;
 import com.boardgame.model.GameRoom;
 import com.boardgame.model.RoomUser;
-import com.boardgame.model.RoomUserList;
 import com.boardgame.model.UserInfo;
 import com.boardgame.request.RequestBase;
 import com.boardgame.request.RequestConnectionRoom;
@@ -31,7 +30,8 @@ import com.boardgame.response.ResponseJoin;
 import com.boardgame.response.ResponseLogin;
 import com.boardgame.response.ResponseRoomList;
 import com.database.common.ResCode;
-import com.database.controller.DBController;
+import com.database.dao.ScoreDao;
+import com.database.dao.UserDao;
 import com.database.model.Score;
 import com.database.model.User;
 import com.database.util.CustomException;
@@ -48,10 +48,16 @@ public class RequestController {
 	private static RequestController instance= null;
 	
 	public static RequestController Instance() {
-		if(instance == null)
+		if(instance == null) {
 			instance = new RequestController();
+			instance.scoreDao = new ScoreDao();
+			instance.userDao = new UserDao();
+		}
 		return instance;
 	}
+	
+	ScoreDao scoreDao;
+	UserDao userDao;
 	
 	public synchronized void reqData(String result, ChannelHandlerContext ctx) {
 		RequestBase header = gson.fromJson(result, RequestBase.class);
@@ -76,16 +82,19 @@ public class RequestController {
 				RequestCreateRoom cr = gson.fromJson(result, RequestCreateRoom.class); 
 				GameRoom room = new GameRoom(null, cr.getTitle(), cr.getGameNo(), cr.getMaxUser(), GameState.WAITING.getValue(), cr.getEmail(), cr.getNickName(), cr.getPassword());
 			
+				res = new ResponseCreateRoom(ResCode.SUCCESS.getResCode(), room.getTitle());
+				getController(gameNo).addRoom(room, ctx);
+				
 //				RoomManager.Instance().addRoom(room);
-				Score score;
-				try {
-					getController(gameNo).addRoom(room, ctx);
-					score = DBController.Instance().selectScore(cr.getEmail(), cr.getGameNo());
-					res = new ResponseCreateRoom(ResCode.SUCCESS.getResCode(), room.getTitle(), score.getTotal(), score.getWin(), score.getLose(), score.getDisconnect());
-				} catch (CustomException e) {
-					e.printStackTrace();
-					res = new ResponseCreateRoom(e.getResCode(), e.getMessage());//new ResponseBase(e.getResCode(), e.getMessage());
-				}				 
+//				Score score;
+//				try {
+//					
+////					score = scoreDao.select(cr.getEmail(), cr.getGameNo()); //DBController.Instance().selectScore(cr.getEmail(), cr.getGameNo());
+//					//, score.getTotal(), score.getWin(), score.getLose(), score.getDisconnect(), score.getPoint());
+//				} catch (CustomException e) {
+//					e.printStackTrace();
+//					res = new ResponseCreateRoom(e.getResCode(), e.getMessage());//new ResponseBase(e.getResCode(), e.getMessage());
+//				}				 
 			}
 			break;
 			case Common.IDENTIFIER_CONNECT_ROOM:
@@ -95,7 +104,7 @@ public class RequestController {
 				
 				try {
 					
-					Score score = DBController.Instance().selectScore(cr.getEmail(), gameNo);
+					Score score = scoreDao.select(cr.getEmail(), cr.getGameNo());//DBController.Instance().selectScore(cr.getEmail(), gameNo);
 					RoomUser user = new RoomUser(cr.getEmail(), cr.getNickName(), false, score.getTotal(), score.getWin(), score.getLose(), score.getDisconnect());
 					UserInfo info = new UserInfo(ctx, user);
 					
@@ -121,7 +130,7 @@ public class RequestController {
 					System.out.println("password : " + req.getPassword());
 					System.out.println("password dec : " + password);
 					
-					User user = DBController.Instance().login(req.getEmail(), password);
+					User user = userDao.selectUser(req.getEmail(), password);//DBController.Instance().login(req.getEmail(), password);
 					res = new ResponseLogin(ResCode.SUCCESS.getResCode(), req.isAutoLogin(), user.getEmail(), user.getPassword(), user.getNickname());
 					
 				} catch (InvalidKeyException | UnsupportedEncodingException | NoSuchAlgorithmException
@@ -145,7 +154,8 @@ public class RequestController {
 				try {
 					password = Security.Instance().deCryption(req.getPassword(), false);
 					User user = new User(req.getEmail(), password, req.getNickName(), req.getBirthday());
-					DBController.Instance().join(user);
+					userDao.insert(user);
+					//DBController.Instance().join(user);
 					
 					res = new ResponseJoin(ResCode.SUCCESS.getResCode(), ResCode.SUCCESS.getMessage());
 				} catch (ClassNotFoundException | SQLException e) {
