@@ -3,72 +3,118 @@ package com.boardgame.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.boardgame.common.GameState;
+
+import io.netty.channel.ChannelHandlerContext;
+
 public class GameRoom {
-	Integer no;
-	String title;
-	Integer maxUser;
-	Integer currentUser;
-	String state;
-	String password;
-	List<UserInfo> userList = new ArrayList<>();
+	public class RoomInfo{
+		Integer no;
+		String title;
+		String masterUserNickName = "";
+		int maxUser = 0;
+		int currentUser = 0;
+		int state = 0;
+		String password = "";
+	}
+	List<UserInfo> userList;
+	RoomInfo room;
 	
 	public GameRoom() {
 	}
 	
-	public GameRoom(Integer no, String title, Integer maxUser, String state, String masterEmail, String password) {
-		this.no = no;
-		this.title = title;
-		this.maxUser = maxUser;
-		this.state = state;
-		this.password = password;
+	public GameRoom(Integer no, String title, Integer maxUser, int state, String email, String password, String nickName, ChannelHandlerContext ctx) {
+		room = new RoomInfo();
+		
+		room.no = no;
+		room.title = title;
+		room.maxUser = maxUser;
+		room.state = state;
+		room.password = password;
+		room.masterUserNickName = nickName;
+		
+		UserInfo info = new UserInfo(ctx, email, nickName, true);
+		userList = new ArrayList<>();
+		userList.add(info);
+		
+		room.currentUser = userList.size();
 	}
 	
 	public Integer getNo() {
-		return no;
+		return room.no;
 	}
 	public void setNo(Integer no) {
-		this.no = no;
+		room.no = no;
 	}
 	public String getTitle() {
-		return title;
+		return room.title;
 	}
 	public void setTitle(String title) {
-		this.title = title;
+		room.title = title;
 	}
 	public Integer getMaxUser() {
-		return maxUser;
+		return room.maxUser;
 	}
 	public void setMaxUser(Integer maxUser) {
-		this.maxUser = maxUser;
+		room.maxUser = maxUser;
 	}
-	public String getState() {
-		return state;
+	public int getState() {
+		return room.state;
 	}
-	public void setState(String state) {
-		this.state = state;
+	public void setState(int state) {
+		room.state = state;
 	}
 	public Integer getCurrentUser() {
-		return currentUser;
+		return room.currentUser;
 	}
 
 	public void setCurrentUser(Integer currentUser) {
-		this.currentUser = currentUser;
-	}
-
-	public String getMasterNickName() {
-		return masterNickName;
-	}
-
-	public void setMasterNickName(String masterNickName) {
-		this.masterNickName = masterNickName;
+		room.currentUser = currentUser;
 	}
 
 	public String getPassword() {
-		return password;
+		return room.password;
 	}
 
 	public void setPassword(String password) {
-		this.password = password;
+		room.password = password;
+	}
+	
+	public boolean addUser(UserInfo user) {
+		for(int i=0; i<userList.size(); i++) {
+			UserInfo innerUser = userList.get(i);
+			
+			if(user.getEmail().equals(innerUser.getEmail())) {
+				userList.set(i, user);
+				return true;
+			}
+		}
+		
+		if(userList.size() >= room.maxUser)
+			return false;
+		else
+			userList.add(user);
+		return true;		
+	}
+	
+	public List<UserInfo> getUserList(){
+		return userList;
+	}
+	
+	public List<UserInfo.User> getResUserList(){
+		List<UserInfo.User> list = new ArrayList<>();
+		for(UserInfo i : userList) {
+			list.add(i.getUser());
+		}
+		return list;
+	}
+	
+	public RoomInfo getRoomInfo() {
+		return room;
+	}
+	
+	public String getMasterUserNickName() {
+		return room.masterUserNickName;
 	}
 	
 }

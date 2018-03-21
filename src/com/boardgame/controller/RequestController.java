@@ -14,7 +14,6 @@ import javax.crypto.NoSuchPaddingException;
 import com.boardgame.common.Common;
 import com.boardgame.common.GameState;
 import com.boardgame.model.GameRoom;
-import com.boardgame.model.RoomUser;
 import com.boardgame.model.UserInfo;
 import com.boardgame.request.RequestBase;
 import com.boardgame.request.RequestConnectionRoom;
@@ -71,30 +70,29 @@ public class RequestController {
 				RequestRoomList req = gson.fromJson(result, RequestRoomList.class);
 				int current = req.getCurrent();
 				int count = req.getCount();
+				int max = getController(gameNo).getRoomMaxLength();
+				List<GameRoom.RoomInfo> list = getController(gameNo).getRoomList(current, count);
 				
-				List<GameRoom> list = getController(gameNo).getRoomList(current, count);
-				res = new ResponseRoomList(ResCode.SUCCESS.getResCode(), list, current, getController(gameNo).getRoomMaxLength());
+				res = new ResponseRoomList(ResCode.SUCCESS.getResCode(), list, current, max);
 			}
 			break;
 			
 			case Common.IDENTIFIER_CREATE_ROOM:
 			{
 				RequestCreateRoom cr = gson.fromJson(result, RequestCreateRoom.class); 
-				GameRoom room = new GameRoom(null, cr.getTitle(), cr.getGameNo(), cr.getMaxUser(), GameState.WAITING.getValue(), cr.getEmail(), cr.getNickName(), cr.getPassword());
-			
-				res = new ResponseCreateRoom(ResCode.SUCCESS.getResCode(), room.getTitle());
-				getController(gameNo).addRoom(room, ctx);
 				
-//				RoomManager.Instance().addRoom(room);
-//				Score score;
-//				try {
-//					
-////					score = scoreDao.select(cr.getEmail(), cr.getGameNo()); //DBController.Instance().selectScore(cr.getEmail(), cr.getGameNo());
-//					//, score.getTotal(), score.getWin(), score.getLose(), score.getDisconnect(), score.getPoint());
-//				} catch (CustomException e) {
-//					e.printStackTrace();
-//					res = new ResponseCreateRoom(e.getResCode(), e.getMessage());//new ResponseBase(e.getResCode(), e.getMessage());
-//				}				 
+				GameRoom room = new GameRoom(null, 
+						cr.getTitle(), 
+						cr.getMaxUser(), 
+						GameState.WAITING.getValue(), 
+						cr.getEmail(),
+						cr.getPassword(),
+						cr.getNickName(),
+						ctx); 
+				getController(gameNo).addRoom(room);
+				
+				res = new ResponseCreateRoom(ResCode.SUCCESS.getResCode(), room.getTitle(), room.getResUserList());
+				 
 			}
 			break;
 			case Common.IDENTIFIER_CONNECT_ROOM:
@@ -103,13 +101,10 @@ public class RequestController {
 				Integer roomNo = cr.getRoomId();
 				
 				try {
-					
-					Score score = scoreDao.select(cr.getEmail(), cr.getGameNo());//DBController.Instance().selectScore(cr.getEmail(), gameNo);
-					RoomUser user = new RoomUser(cr.getEmail(), cr.getNickName(), false, score.getTotal(), score.getWin(), score.getLose(), score.getDisconnect());
-					UserInfo info = new UserInfo(ctx, user);
-					
-					List<RoomUser> userList = getController(gameNo).addUser(roomNo, info);
-					res = new ResponseConnectionRoom(ResCode.SUCCESS.getResCode(), userList);
+					UserInfo info = new UserInfo(ctx, cr.getEmail(), cr.getNickName(), false);
+					String title = getController(gameNo).getRoom(roomNo).getTitle();
+					List<UserInfo.User> userList = getController(gameNo).addUser(roomNo, info);
+					res = new ResponseConnectionRoom(ResCode.SUCCESS.getResCode(), title, userList);
 				}catch(CustomException e) {
 					res = new ResponseConnectionRoom(e.getResCode(), e.getMessage());
 				}
@@ -118,7 +113,7 @@ public class RequestController {
 			case Common.IDENTIFIER_GAMING_USER :
 			{
 				RequestGamingUser req = gson.fromJson(result, RequestGamingUser.class);
-				res = getController(gameNo).checkGaming(req.getEmail(), req.getGameNo());				
+				res = getController(gameNo).checkGaming(req.getEmail());				
 			}
 			break;
 			case Common.IDENTIFIER_LOGIN :

@@ -1,16 +1,17 @@
 package com.boardgame.common;
 
 public enum UserState {
-	CONNECTION("C"),
-	DISCONNECTION("D");
+	CONNECTION(0),
+	READ(1),
+	DISCONNECTION(2);
 	
-	String value;
+	int value;
 	
-	UserState(String v){
+	UserState(int v){
 		this.value = v;
 	}
 	
-	public String getValue() {
+	public int getValue() {
 		return value;
 	}
 }

@@ -1,16 +1,16 @@
 package com.boardgame.common;
 
 public enum GameState {
-	WAITING("W"),
-	FULL("F"),
-	PLAING("P");
+	WAITING(0),
+	FULL(1),
+	PLAING(2);
 	
-	String value;
-	GameState(String value){
+	int value;
+	GameState(int value){
 		this.value = value;
 	}
 	
-	public String getValue() {
+	public int getValue() {
 		return value;
 	}
 }

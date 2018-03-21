@@ -1,27 +1,22 @@
 package com.boardgame.response;
 
+import java.util.List;
+
 import com.boardgame.common.Common;
+import com.boardgame.model.UserInfo;
 
 public class ResponseCreateRoom extends ResponseBase{
-	String title;
-//	int total;
-//    int win;
-//    int lose;
-//    int disconnect;
-//    int point;
+	private String title;
+	private List<UserInfo.User> userList;
 	
     public ResponseCreateRoom(int resCode, String message) {
     	super(Common.IDENTIFIER_CREATE_ROOM, resCode, message);
     }
     
-	public ResponseCreateRoom(int resCode, String title, int total, int win, int lose, int disconnect, int point) {
+	public ResponseCreateRoom(int resCode, String title, List<UserInfo.User> userList) {
 		super(Common.IDENTIFIER_CREATE_ROOM, resCode);
+		this.userList = userList;
 		this.title = title;
-//		this.total = total;
-//		this.win = win;
-//		this.lose = lose;
-//		this.disconnect = disconnect;
-//		this.point = point;
 	}
 	
 	public String getTitle() {
@@ -32,45 +27,12 @@ public class ResponseCreateRoom extends ResponseBase{
 		this.title = title;
 	}
 
-//	public int getTotal() {
-//		return total;
-//	}
-//
-//	public void setTotal(int total) {
-//		this.total = total;
-//	}
-//
-//	public int getWin() {
-//		return win;
-//	}
-//
-//	public void setWin(int win) {
-//		this.win = win;
-//	}
-//
-//	public int getLose() {
-//		return lose;
-//	}
-//
-//	public void setLose(int lose) {
-//		this.lose = lose;
-//	}
-//
-//	public int getDisconnect() {
-//		return disconnect;
-//	}
-//
-//	public void setDisconnect(int disconnect) {
-//		this.disconnect = disconnect;
-//	}
-//
-//	public int getPoint() {
-//		return point;
-//	}
-//
-//	public void setPoint(int point) {
-//		this.point = point;
-//	}
-		
+	public List<UserInfo.User> getUserList() {
+		return userList;
+	}
+
+	public void setUserList(List<UserInfo.User> userList) {
+		this.userList = userList;
+	}	
 	
 }

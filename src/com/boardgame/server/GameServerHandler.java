@@ -21,7 +21,7 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 	}
 
 	@Override
-	public void channelRead(ChannelHandlerContext ctx, Object msg) { // (2)
+	public synchronized void channelRead(ChannelHandlerContext ctx, Object msg) { // (2)
 		// 클라이언트 메시지 왔을때
 		ByteBuf in = (ByteBuf) msg;
 		StringBuffer buffer = new StringBuffer();

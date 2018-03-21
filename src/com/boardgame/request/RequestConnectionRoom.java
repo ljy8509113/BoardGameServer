@@ -6,11 +6,13 @@ public class RequestConnectionRoom extends RequestBase {
 
 	private Integer roomId;
 	private String nickName;
+	private String password;
 	
-	public RequestConnectionRoom(Integer gameNo, String email, Integer roomId, String nickName) {
+	public RequestConnectionRoom(Integer gameNo, String email, Integer roomId, String nickName, String password) {
 		super(Common.IDENTIFIER_CONNECT_ROOM, gameNo, email);
 		this.roomId = roomId;
 		this.nickName = nickName;
+		this.password = password;
 	}
 
 	public Integer getRoomId() {
@@ -19,5 +21,9 @@ public class RequestConnectionRoom extends RequestBase {
 	
 	public String getNickName() {
 		return nickName;
+	}
+	
+	public String getPassword() {
+		return password;
 	}
 }

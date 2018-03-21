@@ -5,6 +5,9 @@ public class ResponseBase {
 	private int resCode;
 	private String message;
 	
+	public ResponseBase() {		
+	}
+	
 	public ResponseBase(String identifier, int resCode) {
 		this.identifier = identifier;
 		this.resCode = resCode;

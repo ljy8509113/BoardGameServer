@@ -1,12 +1,14 @@
 package com.boardgame.model;
 
 import com.boardgame.common.UserState;
+
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.CharsetUtil;
 
 public class UserInfo {
 	public class User{
-		UserState status;
-		
+		int state;
 		String email;
 		String nickName;
 		boolean isMaster;
@@ -17,7 +19,7 @@ public class UserInfo {
 	
 	public UserInfo(ChannelHandlerContext ctx, String email, String nickName, boolean isMaster) {
 		this.ctx = ctx;
-		user.status = UserState.CONNECTION;
+		user.state = UserState.CONNECTION.getValue();
 		user.email = email;
 		user.nickName = nickName;
 		user.isMaster = isMaster;		
@@ -31,12 +33,12 @@ public class UserInfo {
 		this.ctx = ctx;
 	}
 
-	public UserState getStatus() {
-		return user.status;
+	public int getState() {
+		return user.state;
 	}
 
-	public void setStatus(UserState status) {
-		user.status = status;
+	public void setState(int state) {
+		user.state = state;
 	}
 
 	public String getEmail() {
@@ -62,4 +64,13 @@ public class UserInfo {
 	public void setMaster(boolean isMaster) {
 		user.isMaster = isMaster;
 	}	
+	
+	public User getUser() {
+		return user;
+	}
+	
+	public void sendMessage(String res) {
+		ctx.write(Unpooled.copiedBuffer(res, CharsetUtil.UTF_8));
+		ctx.flush();
+	}
 }
