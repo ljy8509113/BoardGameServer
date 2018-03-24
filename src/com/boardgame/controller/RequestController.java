@@ -31,7 +31,6 @@ import com.boardgame.response.ResponseRoomList;
 import com.database.common.ResCode;
 import com.database.dao.ScoreDao;
 import com.database.dao.UserDao;
-import com.database.model.Score;
 import com.database.model.User;
 import com.database.util.CustomException;
 import com.google.gson.Gson;
@@ -165,9 +164,25 @@ public class RequestController {
 					
 					res = new ResponseJoin(ResCode.ERROR_DECRYPTION.getResCode(), ResCode.ERROR_DECRYPTION.getMessage());
 					e1.printStackTrace();
-				}
+				}				
 			}
-				break;			
+			break;
+			case Common.IDENTIFIER_READY :
+			{
+				
+			}
+				break;
+			case Common.IDENTIFIER_QUTY_ROOM :
+			{
+				
+			}
+				break;
+			case Common.IDENTIFIER_START :
+			{
+				
+			}
+				break;
+							
 		}
 		
 		response(gson.toJson(res), ctx);
