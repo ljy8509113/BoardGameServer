@@ -4,13 +4,14 @@ import java.util.List;
 
 import com.boardgame.common.Common;
 import com.boardgame.model.UserInfo;
+import com.database.common.ResCode;
 
 public class ResponseConnectionRoom extends ResponseBase {
 	private List<UserInfo.User> userList;
 	private String title;
 	
-	public ResponseConnectionRoom(int resCode, String title, List<UserInfo.User> userList) {
-		super(Common.IDENTIFIER_CONNECT_ROOM, resCode);		
+	public ResponseConnectionRoom(String title, List<UserInfo.User> userList) {
+		super(Common.IDENTIFIER_CONNECT_ROOM, ResCode.SUCCESS.getResCode());		
 		this.title = title;
 		this.userList = userList;
 	}

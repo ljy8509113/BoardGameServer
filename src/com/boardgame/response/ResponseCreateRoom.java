@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.boardgame.common.Common;
 import com.boardgame.model.UserInfo;
+import com.database.common.ResCode;
 
 public class ResponseCreateRoom extends ResponseBase{
 	private String title;
@@ -13,8 +14,8 @@ public class ResponseCreateRoom extends ResponseBase{
     	super(Common.IDENTIFIER_CREATE_ROOM, resCode, message);
     }
     
-	public ResponseCreateRoom(int resCode, String title, List<UserInfo.User> userList) {
-		super(Common.IDENTIFIER_CREATE_ROOM, resCode);
+	public ResponseCreateRoom(String title, List<UserInfo.User> userList) {
+		super(Common.IDENTIFIER_CREATE_ROOM, ResCode.SUCCESS.getResCode());
 		this.userList = userList;
 		this.title = title;
 	}

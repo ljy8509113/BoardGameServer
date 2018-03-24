@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.boardgame.common.Common;
 import com.boardgame.model.GameRoom;
+import com.database.common.ResCode;
 
 public class ResponseRoomList extends ResponseBase {
 	
@@ -14,8 +15,8 @@ public class ResponseRoomList extends ResponseBase {
 	public ResponseRoomList() {		
 	}
 	
-	public ResponseRoomList(int resCode, List<GameRoom.RoomInfo> list, int current, int max) {
-		super(Common.IDENTIFIER_ROOM_LIST, resCode);
+	public ResponseRoomList(List<GameRoom.RoomInfo> list, int current, int max) {
+		super(Common.IDENTIFIER_ROOM_LIST, ResCode.SUCCESS.getResCode());
 		this.list = list;
 		this.current = current;
 		this.max = max;

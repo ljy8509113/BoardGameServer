@@ -1,6 +1,7 @@
 package com.boardgame.response;
 
 import com.boardgame.common.Common;
+import com.database.common.ResCode;
 
 public class ResponseLogin extends ResponseBase{
 	private boolean isAutoLogin;
@@ -8,8 +9,8 @@ public class ResponseLogin extends ResponseBase{
 	private String password;
 	private String nickName;
 	
-	public ResponseLogin(int resCode, boolean isAutoLogin, String email, String password, String nickName) {
-		super(Common.IDENTIFIER_LOGIN, resCode);
+	public ResponseLogin(boolean isAutoLogin, String email, String password, String nickName) {
+		super(Common.IDENTIFIER_LOGIN, ResCode.SUCCESS.getResCode());
 		this.isAutoLogin = isAutoLogin;
 		this.password = password;
 		this.email = email;

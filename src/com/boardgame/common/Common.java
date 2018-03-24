@@ -11,7 +11,7 @@ public class Common {
 	public static final String IDENTIFIER_USER_INFO 		= "user_info";
 	public static final String IDENTIFIER_JOIN 				= "join";
 	public static final String IDENTIFIER_READY 			= "ready";
-	public static final String IDENTIFIER_QUTY_ROOM			= "quit_room";
+	public static final String IDENTIFIER_OUT_ROOM			= "out_room";
 	public static final String IDENTIFIER_START				= "start";
 	
 	public static final String IDENTIFIER_TEST = "test";

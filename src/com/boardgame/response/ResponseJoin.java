@@ -1,12 +1,12 @@
 package com.boardgame.response;
 
 import com.boardgame.common.Common;
+import com.database.common.ResCode;
 
 public class ResponseJoin extends ResponseBase {
 
-	public ResponseJoin(int resCode) {
-		super(Common.IDENTIFIER_JOIN, resCode);
-		
+	public ResponseJoin() {
+		super(Common.IDENTIFIER_JOIN, ResCode.SUCCESS.getResCode());
 	}
 	
 	public ResponseJoin(int resCode, String msg) {

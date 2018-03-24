@@ -117,4 +117,27 @@ public class GameRoom {
 		return room.masterUserNickName;
 	}
 	
+	public void changeUserState(String email, int state) {
+		UserInfo user = getUser(email);
+		if(user != null)
+			user.setState(state);
+	}
+	
+	public void removeUser(String email) {
+		UserInfo user = getUser(email);
+		if(user != null)
+			userList.remove(user);
+	}
+	
+	UserInfo getUser(String email) {
+		for(UserInfo info : userList) {
+			if(info.getEmail().equals(email)) {
+				return info;
+			}
+		}
+		return null;
+	}
+	
+	
+	
 }

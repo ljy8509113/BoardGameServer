@@ -21,12 +21,16 @@ import com.boardgame.request.RequestCreateRoom;
 import com.boardgame.request.RequestGamingUser;
 import com.boardgame.request.RequestJoin;
 import com.boardgame.request.RequestLogin;
+import com.boardgame.request.RequestOutRoom;
+import com.boardgame.request.RequestReady;
 import com.boardgame.request.RequestRoomList;
 import com.boardgame.response.ResponseBase;
 import com.boardgame.response.ResponseConnectionRoom;
 import com.boardgame.response.ResponseCreateRoom;
 import com.boardgame.response.ResponseJoin;
 import com.boardgame.response.ResponseLogin;
+import com.boardgame.response.ResponseOutRoom;
+import com.boardgame.response.ResponseReady;
 import com.boardgame.response.ResponseRoomList;
 import com.database.common.ResCode;
 import com.database.dao.ScoreDao;
@@ -72,7 +76,7 @@ public class RequestController {
 				int max = getController(gameNo).getRoomMaxLength();
 				List<GameRoom.RoomInfo> list = getController(gameNo).getRoomList(current, count);
 				
-				res = new ResponseRoomList(ResCode.SUCCESS.getResCode(), list, current, max);
+				res = new ResponseRoomList(list, current, max);
 			}
 			break;
 			
@@ -90,7 +94,7 @@ public class RequestController {
 						ctx); 
 				getController(gameNo).addRoom(room);
 				
-				res = new ResponseCreateRoom(ResCode.SUCCESS.getResCode(), room.getTitle(), room.getResUserList());
+				res = new ResponseCreateRoom(room.getTitle(), room.getResUserList());
 				 
 			}
 			break;
@@ -103,7 +107,7 @@ public class RequestController {
 					UserInfo info = new UserInfo(ctx, cr.getEmail(), cr.getNickName(), false);
 					String title = getController(gameNo).getRoom(roomNo).getTitle();
 					List<UserInfo.User> userList = getController(gameNo).addUser(roomNo, info);
-					res = new ResponseConnectionRoom(ResCode.SUCCESS.getResCode(), title, userList);
+					res = new ResponseConnectionRoom(title, userList);
 				}catch(CustomException e) {
 					res = new ResponseConnectionRoom(e.getResCode(), e.getMessage());
 				}
@@ -125,7 +129,7 @@ public class RequestController {
 					System.out.println("password dec : " + password);
 					
 					User user = userDao.selectUser(req.getEmail(), password);//DBController.Instance().login(req.getEmail(), password);
-					res = new ResponseLogin(ResCode.SUCCESS.getResCode(), req.isAutoLogin(), user.getEmail(), user.getPassword(), user.getNickname());
+					res = new ResponseLogin(req.isAutoLogin(), user.getEmail(), user.getPassword(), user.getNickname());
 					
 				} catch (InvalidKeyException | UnsupportedEncodingException | NoSuchAlgorithmException
 						| NoSuchPaddingException | InvalidAlgorithmParameterException | IllegalBlockSizeException
@@ -169,12 +173,25 @@ public class RequestController {
 			break;
 			case Common.IDENTIFIER_READY :
 			{
-				
+				RequestReady req = gson.fromJson(result, RequestReady.class);
+				try {
+					res = getController(gameNo).onReadyUser(req.getEmail(), req.isReady(), req.getRoomNo());
+				} catch (CustomException e) {
+					e.printStackTrace();
+					res = new ResponseReady(e.getResCode(), e.getMessage());
+				}
 			}
 				break;
-			case Common.IDENTIFIER_QUTY_ROOM :
+			case Common.IDENTIFIER_OUT_ROOM :
 			{
+				RequestOutRoom req = gson.fromJson(result, RequestOutRoom.class);
 				
+				try {
+					res = getController(gameNo).onOutRoomUser(req.getEmail(), req.getRoomNo());
+				} catch (CustomException e) {
+					e.printStackTrace();
+					res = new ResponseOutRoom(e.getResCode(), e.getMessage());
+				}
 			}
 				break;
 			case Common.IDENTIFIER_START :

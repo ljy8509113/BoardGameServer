@@ -3,9 +3,12 @@ package com.boardgame.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.boardgame.common.UserState;
 import com.boardgame.model.GameRoom;
 import com.boardgame.model.UserInfo;
 import com.boardgame.response.ResponseGamingUser;
+import com.boardgame.response.ResponseOutRoom;
+import com.boardgame.response.ResponseReady;
 import com.database.common.ResCode;
 import com.database.util.CustomException;
 
@@ -97,7 +100,25 @@ public abstract class BaseController {
 			}
 		}
 		
-		ResponseGamingUser res = new ResponseGamingUser(ResCode.SUCCESS.getResCode(), isGaming);
+		ResponseGamingUser res = new ResponseGamingUser(isGaming);
+		return res;
+	}
+	
+	public ResponseReady onReadyUser(String email, boolean isReady, int roomNo) throws CustomException {
+		GameRoom room = getRoom(roomNo);
+		if(isReady)
+			room.changeUserState(email, UserState.READ.getValue());
+		else
+			room.changeUserState(email, UserState.CONNECTION.getValue());
+		
+		ResponseReady res = new ResponseReady(email, isReady);
+		return res;
+	}
+	
+	public ResponseOutRoom onOutRoomUser(String email, int roomNo) throws CustomException {
+		GameRoom room = getRoom(roomNo);
+		room.removeUser(email);
+		ResponseOutRoom res = new ResponseOutRoom(email);
 		return res;
 	}
 	
