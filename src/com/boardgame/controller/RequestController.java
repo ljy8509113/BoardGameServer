@@ -207,7 +207,7 @@ public class RequestController {
 		}
 		
 		if(res != null)
-			response(gson.toJson(res), ctx);
+			response(getJson(res), ctx);
 	}
 
 	void response(String res, ChannelHandlerContext ctx) {
@@ -223,5 +223,9 @@ public class RequestController {
 		}
 		
 		return null;
+	}
+	
+	public String getJson(ResponseBase res) {
+		return gson.toJson(res);
 	}
 }

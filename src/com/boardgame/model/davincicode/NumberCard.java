@@ -2,15 +2,12 @@ package com.boardgame.model.davincicode;
 
 public class NumberCard {
 	private int number;
-	private boolean isJoer;
+	private boolean isJoker = false;
 	private boolean isOpen = false;
 	
-	public NumberCard() {
-	}
-	
-	public NumberCard(int number, boolean isJoer) {
+	public NumberCard(int number, boolean isJoker) {
 		this.number = number;
-		this.isJoer = isJoer;
+		this.isJoker = isJoker;
 	}
 	
 	public int getNumber() {
@@ -19,11 +16,11 @@ public class NumberCard {
 	public void setNumber(int number) {
 		this.number = number;
 	}
-	public boolean IsJoer() {
-		return isJoer;
+	public boolean IsJoker() {
+		return isJoker;
 	}
-	public void setJoer(boolean isJoer) {
-		this.isJoer = isJoer;
+	public void setJoker(boolean isJoer) {
+		this.isJoker = isJoer;
 	}
 
 	public boolean IsOpen() {
@@ -33,5 +30,4 @@ public class NumberCard {
 	public void setOpen(boolean isOpen) {
 		this.isOpen = isOpen;
 	}
-	
 }

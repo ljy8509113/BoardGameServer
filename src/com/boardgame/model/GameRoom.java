@@ -3,6 +3,9 @@ package com.boardgame.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.boardgame.controller.RequestController;
+import com.boardgame.response.ResponseBase;
+
 import io.netty.channel.ChannelHandlerContext;
 
 public class GameRoom {
@@ -136,6 +139,10 @@ public class GameRoom {
 		return null;
 	}
 	
-	
+	public void sendMessage(ResponseBase res) {
+		for(UserInfo info : userList) {
+			info.sendMessage(res);
+		}
+	}
 	
 }

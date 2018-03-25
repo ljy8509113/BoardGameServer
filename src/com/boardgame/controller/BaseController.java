@@ -7,6 +7,7 @@ import com.boardgame.common.UserState;
 import com.boardgame.model.GameRoom;
 import com.boardgame.model.UserInfo;
 import com.boardgame.request.RequestBase;
+import com.boardgame.response.ResponseBase;
 import com.boardgame.response.ResponseGamingUser;
 import com.boardgame.response.ResponseOutRoom;
 import com.boardgame.response.ResponseReady;
@@ -126,20 +127,20 @@ public abstract class BaseController {
 	}
 
 	//전체 보내기
-	public void sendMessage(String msg) {
+	public void sendMessage(ResponseBase res) {
 		for(GameRoom room : listRoom) {
 			List<UserInfo> userlist = room.getUserList();
 			for(UserInfo info : userlist) {
-				info.sendMessage(msg);
+				info.sendMessage(res);
 			}			
 		}
 	}
 
 	//룸 유저에게만
-	public void sendMessage(int roomNo, String msg) throws CustomException {
+	public void sendMessage(int roomNo, ResponseBase res) throws CustomException {
 		GameRoom room = getRoom(roomNo);
 		for(UserInfo info : room.getUserList()) {
-			info.sendMessage(msg);
+			info.sendMessage(res);
 		}
 	}	
 
