@@ -194,16 +194,20 @@ public class RequestController {
 				}
 			}
 				break;
-			case Common.IDENTIFIER_START :
-			{
-				
-			}
+			default : {
+				try {
+					getController(gameNo).reqData(header, identifier);
+				} catch (CustomException e) {
+					e.printStackTrace();
+					res = new ResponseBase(identifier, e.getResCode(), e.getMessage());
+				}
 				break;
+			}
 							
 		}
 		
-		response(gson.toJson(res), ctx);
-		
+		if(res != null)
+			response(gson.toJson(res), ctx);
 	}
 
 	void response(String res, ChannelHandlerContext ctx) {
@@ -215,7 +219,6 @@ public class RequestController {
 	BaseController getController(int gameNo) {
 		switch(gameNo) {
 		case Common.GAME_DAVINCICODE :
-			
 			return DavinciCodeController.Instance();
 		}
 		

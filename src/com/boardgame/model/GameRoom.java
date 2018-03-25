@@ -3,8 +3,6 @@ package com.boardgame.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.boardgame.common.GameState;
-
 import io.netty.channel.ChannelHandlerContext;
 
 public class GameRoom {
