@@ -1,6 +1,8 @@
 package com.boardgame.model.davincicode;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import com.boardgame.controller.game.DavinciCodeGame;
 
@@ -10,11 +12,14 @@ public class UserGameData {
 	private String nickName;
 	private ArrayList<NumberCard> cards;
 	private boolean isLose = false;
-
+	Descending descending;
+	
 	public UserGameData(int no, String email, String nickName) {
 		this.no = no;
 		this.email = email;
-		this.nickName = nickName;		
+		this.nickName = nickName;	
+		cards = new ArrayList<>();
+		descending = new Descending();
 	}
 
 	public int getNo() {
@@ -51,6 +56,8 @@ public class UserGameData {
 
 	public void addCard(NumberCard card) {
 		cards.add(card);
+		Collections.sort(cards, descending);
+		
 	}
 
 	public boolean isInit() {
@@ -88,4 +95,13 @@ public class UserGameData {
 
 		return isSuccess;
 	}
+	
+	// 내림차순
+	class Descending implements Comparator<NumberCard> {
+	    @Override
+	    public int compare(NumberCard o1, NumberCard o2) {
+	        return o2.getNumber().compareTo(o1.getNumber());
+	    }
+	}
+
 }
