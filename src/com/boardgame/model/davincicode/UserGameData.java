@@ -10,13 +10,13 @@ public class UserGameData {
 	private String nickName;
 	private ArrayList<NumberCard> cards;
 	private boolean isLose = false;
-	
+
 	public UserGameData(int no, String email, String nickName) {
 		this.no = no;
 		this.email = email;
 		this.nickName = nickName;		
 	}
-	
+
 	public int getNo() {
 		return no;
 	}
@@ -52,24 +52,25 @@ public class UserGameData {
 	public void addCard(NumberCard card) {
 		cards.add(card);
 	}
-	
+
 	public boolean isInit() {
 		return cards.size() == DavinciCodeGame.CARD_COUNT ? true : false;
 	}
-	
-	public boolean checkNumber(int index, int number, boolean isJoker) {
+
+	public boolean checkNumber(int index, int number) {
 		NumberCard card = cards.get(index);
 		boolean isSuccess = false;
-		if(isJoker) {
-			if(card.IsJoker()) {
+
+		if(number >= DavinciCodeGame.JOKER_NUMBER) {
+			if(card.getNumber() >= number) {
 				card.setOpen(true);
 				isSuccess = true;
-			}				
-		}
-		
-		if(card.getNumber() == number) {
-			card.setOpen(true);
-			isSuccess = true;
+			}
+		}else {
+			if(card.getNumber() == number) {
+				card.setOpen(true);
+				isSuccess = true;
+			}
 		}
 		
 		if(isSuccess) {
@@ -80,11 +81,11 @@ public class UserGameData {
 					break;
 				}
 			}
-			
+
 			if(isLose)
 				this.isLose = true;
 		}
-		
+
 		return isSuccess;
 	}
 }

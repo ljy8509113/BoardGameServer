@@ -22,5 +22,7 @@ public class Common {
 	public static final String IDENTIFIER_INIT_NUMBER		= "init_number";
 	public static final String IDENTIFIER_TURN				= "turn";
 	public static final String IDENTIFIER_GAME_SITUATION	= "game_situation";
+	public static final String IDENTIFIER_OPEN_CARD			= "open_card";
+	public static final String IDENTIFIER_GAME_FINISH		= "game_finish"; 
 	
 }
