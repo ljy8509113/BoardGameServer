@@ -1,9 +1,6 @@
 package com.boardgame.controller.game;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 import com.boardgame.model.GameRoom;
@@ -12,7 +9,6 @@ import com.boardgame.model.davincicode.GameCardInfo;
 import com.boardgame.model.davincicode.NumberCard;
 import com.boardgame.model.davincicode.UserGameData;
 import com.boardgame.response.davincicode.ResponseGameCardInfo;
-import com.boardgame.response.davincicode.ResponseInitNumber;
 import com.boardgame.response.davincicode.ResponseOpenCard;
 import com.boardgame.response.davincicode.ResponseTurn;
 import com.database.common.ResCode;
@@ -73,6 +69,8 @@ public class DavinciCodeGame {
 			//arrayUser.add(data);
 			cardInfo.addUserData(data);
 		}
+		
+		cardInfo.sortUser();
 
 		ResponseGameCardInfo res = new ResponseGameCardInfo(cardInfo);
 		room.sendMessage(res);

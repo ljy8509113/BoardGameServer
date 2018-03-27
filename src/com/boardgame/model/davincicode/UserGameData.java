@@ -7,7 +7,7 @@ import java.util.Comparator;
 import com.boardgame.controller.game.DavinciCodeGame;
 
 public class UserGameData {
-	private int no;
+	private Integer no;
 	private String email;
 	private String nickName;
 	private ArrayList<NumberCard> cards;
@@ -22,7 +22,7 @@ public class UserGameData {
 		descending = new Descending();
 	}
 
-	public int getNo() {
+	public Integer getNo() {
 		return no;
 	}
 	public void setNo(int no) {
