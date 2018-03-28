@@ -7,7 +7,7 @@ public class RequesetSelectNumber extends RequestBase{
 	int number;
 	public RequesetSelectNumber(String email, int number) {
 		super(Common.IDENTIFIER_SELECT_NUMBER, Common.GAME_DAVINCICODE, email);
-		this.number = number;
+		this.number = number;		
 	}
 
 }
