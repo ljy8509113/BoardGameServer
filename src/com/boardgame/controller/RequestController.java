@@ -24,6 +24,7 @@ import com.boardgame.request.RequestLogin;
 import com.boardgame.request.RequestOutRoom;
 import com.boardgame.request.RequestReady;
 import com.boardgame.request.RequestRoomList;
+import com.boardgame.request.RequestRoomUsers;
 import com.boardgame.response.ResponseBase;
 import com.boardgame.response.ResponseConnectionRoom;
 import com.boardgame.response.ResponseCreateRoom;
@@ -32,6 +33,7 @@ import com.boardgame.response.ResponseLogin;
 import com.boardgame.response.ResponseOutRoom;
 import com.boardgame.response.ResponseReady;
 import com.boardgame.response.ResponseRoomList;
+import com.boardgame.response.ResponseRoomUsers;
 import com.database.common.ResCode;
 import com.database.dao.ScoreDao;
 import com.database.dao.UserDao;
@@ -94,7 +96,7 @@ public class RequestController {
 						ctx); 
 				getController(gameNo).addRoom(room);
 				
-				res = new ResponseCreateRoom(room.getTitle(), room.getResUserList());
+				res = new ResponseCreateRoom(room.getTitle(), room.getResUserList(), room.getNo());
 				 
 			}
 			break;
@@ -106,8 +108,9 @@ public class RequestController {
 				try {
 					UserInfo info = new UserInfo(ctx, cr.getEmail(), cr.getNickName(), false);
 					String title = getController(gameNo).getRoom(roomNo).getTitle();
+					
 					List<UserInfo.User> userList = getController(gameNo).addUser(roomNo, info);
-					res = new ResponseConnectionRoom(title, userList);
+					res = new ResponseConnectionRoom(title, userList, roomNo);
 				}catch(CustomException e) {
 					res = new ResponseConnectionRoom(e.getResCode(), e.getMessage());
 				}
@@ -187,10 +190,23 @@ public class RequestController {
 				RequestOutRoom req = gson.fromJson(result, RequestOutRoom.class);
 				
 				try {
-					res = getController(gameNo).onOutRoomUser(req.getEmail(), req.getRoomNo());
+					res = getController(gameNo).onOutRoomUser(req.getOutUser(), req.getRoomNo());
 				} catch (CustomException e) {
 					e.printStackTrace();
 					res = new ResponseOutRoom(e.getResCode(), e.getMessage());
+				}
+			}
+				break;
+				
+			case Common.IDENTIFIER_ROOM_USERS :
+			{
+				RequestRoomUsers req = gson.fromJson(result, RequestRoomUsers.class);
+				
+				try {
+					res = new ResponseRoomUsers(getController(gameNo).getRoom(req.getRoomNo()).getResUserList());
+				}catch(CustomException e) {
+					e.printStackTrace();
+					res = new ResponseRoomUsers(e.getResCode(), e.getMessage());
 				}
 			}
 				break;

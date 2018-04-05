@@ -11,6 +11,7 @@ import com.boardgame.response.ResponseBase;
 import com.boardgame.response.ResponseGamingUser;
 import com.boardgame.response.ResponseOutRoom;
 import com.boardgame.response.ResponseReady;
+import com.boardgame.response.ResponseRoomUsers;
 import com.database.common.ResCode;
 import com.database.util.CustomException;
 
@@ -119,10 +120,12 @@ public abstract class BaseController {
 		return res;
 	}
 
-	public ResponseOutRoom onOutRoomUser(String email, int roomNo) throws CustomException {
+	public ResponseRoomUsers onOutRoomUser(String email, int roomNo) throws CustomException {
 		GameRoom room = getRoom(roomNo);
 		room.removeUser(email);
-		ResponseOutRoom res = new ResponseOutRoom(email);
+		//ResponseOutRoom res = new ResponseOutRoom(email);
+		ResponseRoomUsers res = new ResponseRoomUsers(room.getResUserList());
+		
 		return res;
 	}
 

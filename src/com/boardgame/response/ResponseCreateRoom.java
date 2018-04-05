@@ -9,15 +9,17 @@ import com.database.common.ResCode;
 public class ResponseCreateRoom extends ResponseBase{
 	private String title;
 	private List<UserInfo.User> userList;
+	private int roomNo;
 	
     public ResponseCreateRoom(int resCode, String message) {
     	super(Common.IDENTIFIER_CREATE_ROOM, resCode, message);
     }
     
-	public ResponseCreateRoom(String title, List<UserInfo.User> userList) {
+	public ResponseCreateRoom(String title, List<UserInfo.User> userList, int roomNo) {
 		super(Common.IDENTIFIER_CREATE_ROOM, ResCode.SUCCESS.getResCode());
 		this.userList = userList;
 		this.title = title;
+		this.roomNo = roomNo;
 	}
 	
 	public String getTitle() {
@@ -34,6 +36,14 @@ public class ResponseCreateRoom extends ResponseBase{
 
 	public void setUserList(List<UserInfo.User> userList) {
 		this.userList = userList;
+	}
+
+	public int getRoomNo() {
+		return roomNo;
+	}
+
+	public void setRoomNo(int roomNo) {
+		this.roomNo = roomNo;
 	}	
 	
 }
