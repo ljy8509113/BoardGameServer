@@ -94,18 +94,20 @@ public abstract class BaseController {
 
 	public ResponseGamingUser checkGaming(String email) {
 		boolean isGaming = false;
-
+		int roomNo = -1;
+		
 		loop1:for(GameRoom g : listRoom) {
 			List<UserInfo> users = g.getUserList();
 			for(UserInfo i : users) {
 				if(i.getEmail().equals(email)) {
 					isGaming = true;
+					roomNo = g.getNo();
 					break loop1;
 				}
 			}
 		}
 
-		ResponseGamingUser res = new ResponseGamingUser(isGaming);
+		ResponseGamingUser res = new ResponseGamingUser(isGaming, roomNo);
 		return res;
 	}
 
@@ -134,7 +136,8 @@ public abstract class BaseController {
 		for(GameRoom room : listRoom) {
 			List<UserInfo> userlist = room.getUserList();
 			for(UserInfo info : userlist) {
-				info.sendMessage(res);
+//				info.sendMessage(res);
+				RequestController.Instance().response(res, info.getCtx());
 			}			
 		}
 	}
@@ -143,7 +146,8 @@ public abstract class BaseController {
 	public void sendMessage(int roomNo, ResponseBase res) throws CustomException {
 		GameRoom room = getRoom(roomNo);
 		for(UserInfo info : room.getUserList()) {
-			info.sendMessage(res);
+			//info.sendMessage(res);
+			RequestController.Instance().response(res, info.getCtx());
 		}
 	}	
 

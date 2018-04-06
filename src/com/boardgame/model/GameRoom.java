@@ -141,7 +141,8 @@ public class GameRoom {
 	
 	public void sendMessage(ResponseBase res) {
 		for(UserInfo info : userList) {
-			info.sendMessage(res);
+//			info.sendMessage(res);
+			RequestController.Instance().response(res, info.getCtx());
 		}
 	}
 	

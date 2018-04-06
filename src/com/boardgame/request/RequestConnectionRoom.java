@@ -4,19 +4,19 @@ import com.boardgame.common.Common;
 
 public class RequestConnectionRoom extends RequestBase {
 
-	private Integer roomId;
+	private Integer roomNo;
 	private String nickName;
 	private String password;
 	
-	public RequestConnectionRoom(Integer gameNo, String email, Integer roomId, String nickName, String password) {
+	public RequestConnectionRoom(Integer gameNo, String email, Integer roomNo, String nickName, String password) {
 		super(Common.IDENTIFIER_CONNECT_ROOM, gameNo, email);
-		this.roomId = roomId;
+		this.roomNo = roomNo;
 		this.nickName = nickName;
 		this.password = password;
 	}
 
-	public Integer getRoomId() {
-		return roomId;
+	public Integer getRoomNo() {
+		return roomNo;
 	}
 	
 	public String getNickName() {

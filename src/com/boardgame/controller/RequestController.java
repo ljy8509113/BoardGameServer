@@ -103,7 +103,7 @@ public class RequestController {
 			case Common.IDENTIFIER_CONNECT_ROOM:
 			{				
 				RequestConnectionRoom cr = gson.fromJson(result, RequestConnectionRoom.class);
-				Integer roomNo = cr.getRoomId();
+				Integer roomNo = cr.getRoomNo();
 				
 				try {
 					UserInfo info = new UserInfo(ctx, cr.getEmail(), cr.getNickName(), false);
@@ -111,6 +111,10 @@ public class RequestController {
 					
 					List<UserInfo.User> userList = getController(gameNo).addUser(roomNo, info);
 					res = new ResponseConnectionRoom(title, userList, roomNo);
+					
+					getController(gameNo).getRoom(roomNo).sendMessage(res);
+					return;
+					
 				}catch(CustomException e) {
 					res = new ResponseConnectionRoom(e.getResCode(), e.getMessage());
 				}
@@ -179,6 +183,9 @@ public class RequestController {
 				RequestReady req = gson.fromJson(result, RequestReady.class);
 				try {
 					res = getController(gameNo).onReadyUser(req.getEmail(), req.isReady(), req.getRoomNo());
+					
+					getController(gameNo).getRoom(req.getRoomNo()).sendMessage(res);
+					return;
 				} catch (CustomException e) {
 					e.printStackTrace();
 					res = new ResponseReady(e.getResCode(), e.getMessage());
@@ -223,12 +230,13 @@ public class RequestController {
 		}
 		
 		if(res != null)
-			response(getJson(res), ctx);
+			response(res, ctx);
 	}
 
-	void response(String res, ChannelHandlerContext ctx) {
-		System.out.println("res : " + res);
-		ChannelFuture future = ctx.write(Unpooled.copiedBuffer(res, CharsetUtil.UTF_8));
+	public void response(ResponseBase res, ChannelHandlerContext ctx) {
+		String resStr = getJson(res);
+		System.out.println("res : " + resStr);
+		ctx.write(Unpooled.copiedBuffer(resStr, CharsetUtil.UTF_8));
 		ctx.flush();		
 	}
 	

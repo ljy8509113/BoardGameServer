@@ -71,9 +71,9 @@ public class UserInfo {
 		return user;
 	}
 	
-	public void sendMessage(ResponseBase res) {
-		String msg = RequestController.Instance().getJson(res);
-		ctx.write(Unpooled.copiedBuffer(msg, CharsetUtil.UTF_8));
-		ctx.flush();
-	}
+//	public void sendMessage(ResponseBase res) {
+//		String msg = RequestController.Instance().getJson(res);
+//		ctx.write(Unpooled.copiedBuffer(msg, CharsetUtil.UTF_8));
+//		ctx.flush();
+//	}
 }
