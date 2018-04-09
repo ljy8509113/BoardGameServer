@@ -1,5 +1,6 @@
 package com.boardgame.response;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.boardgame.common.Common;
@@ -15,7 +16,10 @@ public class ResponseRoomUsers extends ResponseBase {
 	
 	public ResponseRoomUsers(List<UserInfo.User> userList) {
 		super(Common.IDENTIFIER_ROOM_USERS, ResCode.SUCCESS.getResCode());
-		this.userList = userList;
+		if(userList == null)
+			this.userList = new ArrayList<UserInfo.User>();
+		else
+			this.userList = userList;
 	}
 	
 	public ResponseRoomUsers(int resCode, String message) {

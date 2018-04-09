@@ -197,7 +197,8 @@ public class RequestController {
 				RequestOutRoom req = gson.fromJson(result, RequestOutRoom.class);
 				
 				try {
-					res = getController(gameNo).onOutRoomUser(req.getOutUser(), req.getRoomNo());
+					getController(gameNo).onOutRoomUser(req.getOutUser(), req.getRoomNo());
+					return;
 				} catch (CustomException e) {
 					e.printStackTrace();
 					res = new ResponseOutRoom(e.getResCode(), e.getMessage());
@@ -225,8 +226,7 @@ public class RequestController {
 					res = new ResponseBase(identifier, e.getResCode(), e.getMessage());
 				}
 				break;
-			}
-							
+			}				
 		}
 		
 		if(res != null)

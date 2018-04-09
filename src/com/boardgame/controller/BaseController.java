@@ -39,6 +39,10 @@ public abstract class BaseController {
 			}
 		}
 	}
+	
+	public void removeRoom(GameRoom room) {
+		listRoom.remove(room);
+	}
 
 	public List<UserInfo.User> addUser(int roomNo, UserInfo info) throws CustomException {
 		boolean isAdd = false;
@@ -122,13 +126,28 @@ public abstract class BaseController {
 		return res;
 	}
 
-	public ResponseRoomUsers onOutRoomUser(String email, int roomNo) throws CustomException {
+	public void onOutRoomUser(String email, int roomNo) throws CustomException {
 		GameRoom room = getRoom(roomNo);
-		room.removeUser(email);
-		//ResponseOutRoom res = new ResponseOutRoom(email);
-		ResponseRoomUsers res = new ResponseRoomUsers(room.getResUserList());
 		
-		return res;
+		ResponseOutRoom res = new ResponseOutRoom();
+		UserInfo info = room.getUser(email);
+		RequestController.Instance().response(res, info.getCtx());
+		
+		if( room.getUser(email).isMaster() && room.getUserList().size() > 1) {
+			room.removeUser(email);
+			room.changeMaster(0);			
+		}else {
+			room.removeUser(email);
+		}
+		
+		if(room.getUserList().size() == 0)
+			removeRoom(room);
+		else {
+			ResponseRoomUsers resRoomUsers = new ResponseRoomUsers(room.getResUserList());
+			for(UserInfo i : room.getUserList()) {
+				RequestController.Instance().response(resRoomUsers, i.getCtx());
+			}
+		}		
 	}
 
 	//전체 보내기

@@ -130,7 +130,7 @@ public class GameRoom {
 			userList.remove(user);
 	}
 	
-	UserInfo getUser(String email) {
+	public UserInfo getUser(String email) {
 		for(UserInfo info : userList) {
 			if(info.getEmail().equals(email)) {
 				return info;
@@ -144,6 +144,11 @@ public class GameRoom {
 //			info.sendMessage(res);
 			RequestController.Instance().response(res, info.getCtx());
 		}
+	}
+	
+	public void changeMaster(int index) {
+		UserInfo user = userList.get(index);
+		user.setMaster(true);
 	}
 	
 }
