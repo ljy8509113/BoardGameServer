@@ -61,7 +61,7 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		//클라 접속 종료
-		System.out.println("in active");
+		System.out.println("active finish");
 	}
 
 
