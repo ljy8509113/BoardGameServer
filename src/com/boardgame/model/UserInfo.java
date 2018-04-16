@@ -1,32 +1,20 @@
 package com.boardgame.model;
 
 import com.boardgame.common.UserState;
-import com.boardgame.controller.RequestController;
-import com.boardgame.response.ResponseBase;
 
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.util.CharsetUtil;
 
-public class UserInfo {
-	public class User{
-		int state;
-		String email;
-		String nickName;
-		boolean isMaster;
-	}
+public class UserInfo extends UserData{
+	ChannelHandlerContext ctx;
 	
-	private ChannelHandlerContext ctx;
-	private User user = new User();
-	
-	public UserInfo(ChannelHandlerContext ctx, String email, String nickName, boolean isMaster) {
+	public UserInfo(ChannelHandlerContext ctx, String email, String nickName, boolean isMaster, UserState state) {
+		super(state, email, nickName, isMaster, true);
 		this.ctx = ctx;
-		user.state = UserState.CONNECTION.getValue();
-		user.email = email;
-		user.nickName = nickName;
-		user.isMaster = isMaster;		
 	}
-
+	
+	public UserInfo() {		
+	}
+	
 	public ChannelHandlerContext getCtx() {
 		return ctx;
 	}
@@ -35,45 +23,8 @@ public class UserInfo {
 		this.ctx = ctx;
 	}
 
-	public int getState() {
-		return user.state;
-	}
-
-	public void setState(int state) {
-		user.state = state;
-	}
-
-	public String getEmail() {
-		return user.email;
-	}
-
-	public void setEmail(String email) {
-		user.email = email;
-	}
-
-	public String getNickName() {
-		return user.nickName;
-	}
-
-	public void setNickName(String nickName) {
-		user.nickName = nickName;
-	}
-
-	public boolean isMaster() {
-		return user.isMaster;
-	}
-
-	public void setMaster(boolean isMaster) {
-		user.isMaster = isMaster;
-	}	
-	
-	public User getUser() {
-		return user;
+	public UserData getUser() {
+		return this;
 	}
 	
-//	public void sendMessage(ResponseBase res) {
-//		String msg = RequestController.Instance().getJson(res);
-//		ctx.write(Unpooled.copiedBuffer(msg, CharsetUtil.UTF_8));
-//		ctx.flush();
-//	}
 }

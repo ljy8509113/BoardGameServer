@@ -2,13 +2,14 @@ package com.boardgame.common;
 
 public enum UserState {
 	CONNECTION(0),
-	READ(1),
-	DISCONNECTION(2);
+	GAME_WAITING(1),
+	GAME_READY(2),
+	PLAING(3),
+	DISCONNECTION(4);
 	
 	int value;
-	
-	UserState(int v){
-		this.value = v;
+	UserState(int value){
+		this.value = value;
 	}
 	
 	public int getValue() {

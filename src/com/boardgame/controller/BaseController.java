@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.boardgame.common.UserState;
 import com.boardgame.model.GameRoom;
+import com.boardgame.model.Room;
+import com.boardgame.model.UserData;
 import com.boardgame.model.UserInfo;
 import com.boardgame.request.RequestBase;
 import com.boardgame.response.ResponseBase;
@@ -44,13 +46,16 @@ public abstract class BaseController {
 		listRoom.remove(room);
 	}
 
-	public List<UserInfo.User> addUser(int roomNo, UserInfo info) throws CustomException {
+	public List<UserData> addUser(int roomNo, UserInfo info) throws CustomException {
 		boolean isAdd = false;
 		GameRoom room = getRoom(roomNo);
 
 		isAdd = room.addUser(info);
 
 		if(isAdd) {
+			if(!UserController.Instance().updateState(UserState.GAME_WAITING, info.getEmail())) {
+				throw new CustomException(ResCode.ERROR_EMAIL_NOT_FOUND.getResCode(), ResCode.ERROR_EMAIL_NOT_FOUND.getMessage());
+			}
 			return room.getResUserList();
 		}else {
 			throw new CustomException(ResCode.ERROR_CONNECTION_ROOM.getResCode(), ResCode.ERROR_CONNECTION_ROOM.getMessage());
@@ -65,14 +70,14 @@ public abstract class BaseController {
 	}
 
 
-	public List<GameRoom.RoomInfo> getRoomList(int current, int count){
+	public List<Room> getRoomList(int current, int count){
 		int endCount = current * count;
 
 		if( endCount > listRoom.size()) {
 			endCount = listRoom.size();
 		}
 
-		List<GameRoom.RoomInfo> resultList = new ArrayList<GameRoom.RoomInfo>();
+		List<Room> resultList = new ArrayList<Room>();
 
 		int startIndex = count * (current-1); 
 
@@ -81,7 +86,7 @@ public abstract class BaseController {
 			GameRoom room = listRoom.get(i);
 
 
-			resultList.add(room.getRoomInfo());
+			resultList.add(room.getRoom());
 		}
 
 		return resultList;
@@ -91,37 +96,38 @@ public abstract class BaseController {
 		return listRoom.size();
 	}
 
-	public void setState(int roomNo, int state) throws CustomException {
-		GameRoom room = getRoom(roomNo);
-		room.setState(state);
-	}
-
 	public ResponseGamingUser checkGaming(String email) {
-		boolean isGaming = false;
-		int roomNo = -1;
+		UserInfo info = UserController.Instance().getUserInfo(email);
 		
-		loop1:for(GameRoom g : listRoom) {
-			List<UserInfo> users = g.getUserList();
-			for(UserInfo i : users) {
-				if(i.getEmail().equals(email)) {
+		int roomNo = -1;
+		boolean isGaming = false;
+		
+		if(info != null) {
+			if(info.getState() == UserState.PLAING) {
+				Integer no = findRoomNo(email);
+				
+				if(no == null) {
+					UserController.Instance().updateState(UserState.CONNECTION, email);
+				}else {
 					isGaming = true;
-					roomNo = g.getNo();
-					break loop1;
+					roomNo = no;
 				}
 			}
 		}
-
+		
 		ResponseGamingUser res = new ResponseGamingUser(isGaming, roomNo);
 		return res;
 	}
 
 	public ResponseReady onReadyUser(String email, boolean isReady, int roomNo) throws CustomException {
 		GameRoom room = getRoom(roomNo);
-		if(isReady)
-			room.changeUserState(email, UserState.READ.getValue());
-		else
-			room.changeUserState(email, UserState.CONNECTION.getValue());
 
+		if(isReady) {
+			room.updateUserState(email, UserState.GAME_READY);
+		}else {
+			room.updateUserState(email, UserState.GAME_WAITING);
+		}
+		
 		ResponseReady res = new ResponseReady(email, isReady);
 		return res;
 	}
@@ -177,5 +183,17 @@ public abstract class BaseController {
 			}				
 		}		
 		throw new CustomException(ResCode.ERROR_NOT_FOUND_ROOM.getResCode(), ResCode.ERROR_NOT_FOUND_ROOM.getMessage());
+	}
+	
+	public Integer findRoomNo(String email) {
+		for(GameRoom g : listRoom) {
+			List<UserInfo> users = g.getUserList();
+			for(UserInfo i : users) {
+				if(i.getEmail().equals(email)) {
+					return g.getNo();		
+				}
+			}
+		}		
+		return null;
 	}
 }

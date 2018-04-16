@@ -3,19 +3,19 @@ package com.boardgame.response;
 import java.util.List;
 
 import com.boardgame.common.Common;
-import com.boardgame.model.GameRoom;
+import com.boardgame.model.Room;
 import com.database.common.ResCode;
 
 public class ResponseRoomList extends ResponseBase {
 	
-	private List<GameRoom.RoomInfo> list;
+	private List<Room> list;
 	private int current;
 	private int max;
 	
 	public ResponseRoomList() {		
 	}
 	
-	public ResponseRoomList(List<GameRoom.RoomInfo> list, int current, int max) {
+	public ResponseRoomList(List<Room> list, int current, int max) {
 		super(Common.IDENTIFIER_ROOM_LIST, ResCode.SUCCESS.getResCode());
 		this.list = list;
 		this.current = current;
@@ -26,11 +26,11 @@ public class ResponseRoomList extends ResponseBase {
 		super(Common.IDENTIFIER_ROOM_LIST, resCode, message);
 	}
 
-	public List<GameRoom.RoomInfo> getList() {
+	public List<Room> getList() {
 		return list;
 	}
 
-	public void setList(List<GameRoom.RoomInfo> list) {
+	public void setList(List<Room> list) {
 		this.list = list;
 	}
 

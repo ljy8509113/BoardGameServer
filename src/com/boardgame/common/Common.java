@@ -17,6 +17,7 @@ public class Common {
 	public static final String IDENTIFIER_TEST = "test";
 	public static final String IDENTIFIER_ROOM_USERS 		= "room_users";
 
+	public static final String IDENTIFIER_OTHER_ACCEPT		= "other_accept";
 
 	//다빈치코드 
 	public static final String IDENTIFIER_SELECT_NUMBER		= "select_number";
