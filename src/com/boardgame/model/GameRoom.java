@@ -52,7 +52,8 @@ public class GameRoom extends Room{
 	public List<UserData> getResUserList(){
 		List<UserData> list = new ArrayList<>();
 		for(UserInfo i : userList) {
-			list.add(i.getUser());
+			UserData data = new UserData(i.state, i.getEmail(), i.getNickName(), i.isMaster, i.isConnection);
+			list.add(data);
 		}
 		return list;
 	}

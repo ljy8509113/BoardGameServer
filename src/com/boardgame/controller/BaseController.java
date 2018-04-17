@@ -103,7 +103,7 @@ public abstract class BaseController {
 		boolean isGaming = false;
 		
 		if(info != null) {
-			if(info.getState() == UserState.PLAING) {
+			if(info.getState() == UserState.PLAING.getValue()) {
 				Integer no = findRoomNo(email);
 				
 				if(no == null) {
@@ -195,5 +195,11 @@ public abstract class BaseController {
 			}
 		}		
 		return null;
+	}
+	
+	public boolean checkRoomPassword(int roomNo, String password) throws CustomException {
+		GameRoom room = getRoom(roomNo);
+		
+		return room.getPassword().equals(password);
 	}
 }

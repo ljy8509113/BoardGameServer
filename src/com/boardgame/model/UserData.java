@@ -1,18 +1,16 @@
 package com.boardgame.model;
 
-import com.boardgame.common.UserState;
-
 public class UserData {
-	UserState state;
+	int state;
 	String email;
 	String nickName;
 	boolean isMaster = false;
-	boolean isConnection;
+	boolean isConnection = true;
 	
 	public UserData() {		
 	}
 	
-	public UserData(UserState state, String email, String nickName, boolean isMaster, boolean isConnection) {
+	public UserData(int state, String email, String nickName, boolean isMaster, boolean isConnection) {
 		this.state = state;
 		this.email = email;
 		this.nickName = nickName;
@@ -20,11 +18,11 @@ public class UserData {
 		this.isConnection = isConnection;
 	}
 
-	public UserState getState() {
+	public int getState() {
 		return state;
 	}
 
-	public void setState(UserState state) {
+	public void setState(int state) {
 		this.state = state;
 	}
 

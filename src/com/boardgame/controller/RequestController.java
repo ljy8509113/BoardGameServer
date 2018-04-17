@@ -26,6 +26,7 @@ import com.boardgame.request.RequestLogin;
 import com.boardgame.request.RequestOutRoom;
 import com.boardgame.request.RequestReady;
 import com.boardgame.request.RequestRoomList;
+import com.boardgame.request.RequestRoomPassword;
 import com.boardgame.request.RequestRoomUsers;
 import com.boardgame.response.ResponseBase;
 import com.boardgame.response.ResponseConnectionRoom;
@@ -35,10 +36,12 @@ import com.boardgame.response.ResponseLogin;
 import com.boardgame.response.ResponseOutRoom;
 import com.boardgame.response.ResponseReady;
 import com.boardgame.response.ResponseRoomList;
+import com.boardgame.response.ResponseRoomPassword;
 import com.boardgame.response.ResponseRoomUsers;
 import com.database.common.ResCode;
 import com.database.dao.ScoreDao;
 import com.database.dao.UserDao;
+import com.database.model.User;
 import com.database.util.CustomException;
 import com.google.gson.Gson;
 import com.security.Security;
@@ -130,12 +133,12 @@ public class RequestController {
 		{
 			RequestLogin req = gson.fromJson(result, RequestLogin.class);
 			try {
-				String password = Security.Instance().deCryption(req.getPassword(), false);
+				String password = req.getPassword();//Security.Instance().deCryption(req.getPassword(), false);
 
 				System.out.println("password : " + req.getPassword());
 				System.out.println("password dec : " + password);
 
-				com.database.model.User user = userDao.selectUser(req.getEmail(), password);//DBController.Instance().login(req.getEmail(), password);
+				User user = userDao.selectUser(req.getEmail(), password);//DBController.Instance().login(req.getEmail(), password);
 
 				UserInfo info = new UserInfo(ctx, user.getEmail(), user.getNickname(), false, UserState.CONNECTION);
 				UserController.Instance().addUser(info);
@@ -162,7 +165,7 @@ public class RequestController {
 
 			try {
 				password = Security.Instance().deCryption(req.getPassword(), false);
-				com.database.model.User user = new com.database.model.User(req.getEmail(), password, req.getNickName(), req.getBirthday());
+				User user = new User(req.getEmail(), password, req.getNickName(), req.getBirthday());
 				userDao.insert(user);
 				//DBController.Instance().join(user);
 
@@ -222,6 +225,22 @@ public class RequestController {
 			}
 		}
 		break;
+		case Common.IDENTIFIER_ROOM_PASSWORD :
+		{
+			RequestRoomPassword req = gson.fromJson(result, RequestRoomPassword.class);
+			try {
+				boolean isCheck = getController(gameNo).checkRoomPassword(req.getRoomNo(), req.getPassword());
+				if(isCheck) {
+					res = new ResponseRoomPassword(req.getRoomNo());
+				}else {
+					res = new ResponseRoomPassword(req.getRoomNo(), ResCode.ERROR_ROOM_PASSWORD.getMessage());
+				}
+			} catch (CustomException e) {
+				e.printStackTrace();
+				res = new ResponseRoomPassword(e.getResCode(), e.getMessage());
+			}
+		}
+			break;
 		default : {
 			try {
 				getController(gameNo).reqData(header, identifier);

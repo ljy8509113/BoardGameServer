@@ -8,7 +8,7 @@ public class UserInfo extends UserData{
 	ChannelHandlerContext ctx;
 	
 	public UserInfo(ChannelHandlerContext ctx, String email, String nickName, boolean isMaster, UserState state) {
-		super(state, email, nickName, isMaster, true);
+		super(state.getValue(), email, nickName, isMaster, true);
 		this.ctx = ctx;
 	}
 	
@@ -25,6 +25,10 @@ public class UserInfo extends UserData{
 
 	public UserData getUser() {
 		return this;
+	}
+	
+	public void setState(UserState state) {
+		super.setState(state.getValue());
 	}
 	
 }
