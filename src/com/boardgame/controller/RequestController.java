@@ -133,7 +133,7 @@ public class RequestController {
 		{
 			RequestLogin req = gson.fromJson(result, RequestLogin.class);
 			try {
-				String password = req.getPassword();//Security.Instance().deCryption(req.getPassword(), false);
+				String password = Security.Instance().deCryption(req.getPassword(), false);
 
 				System.out.println("password : " + req.getPassword());
 				System.out.println("password dec : " + password);
