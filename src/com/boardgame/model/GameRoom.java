@@ -21,6 +21,7 @@ public class GameRoom extends Room{
 
 		UserInfo info = UserController.Instance().getUserInfo(email);//new UserInfo(ctx, email, nickName, true, UserState.GAME_WAITING);// UserController.Instance().getUser(email);
 		info.setState(UserState.GAME_WAITING);
+		info.setMaster(true);
 		
 		userList = new ArrayList<>();
 		userList.add(info);
