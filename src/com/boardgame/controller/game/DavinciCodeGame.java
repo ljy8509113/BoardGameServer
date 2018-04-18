@@ -23,8 +23,11 @@ public class DavinciCodeGame {
 	int currentTurn = 0; 
 
 	public DavinciCodeGame(GameRoom room) {
-		this.room = room;
-		//		arrayUser = new ArrayList<>();
+		this.room = room;		
+	}
+	
+	public GameCardInfo setInitCard() {
+//		arrayUser = new ArrayList<>();
 		//		mapCard = new HashMap<>();
 
 		int jokerNumber = JOKER_NUMBER;
@@ -72,8 +75,7 @@ public class DavinciCodeGame {
 		
 		cardInfo.sortUser();
 
-		ResponseGameCardInfo res = new ResponseGameCardInfo(cardInfo);
-		room.sendMessage(res);
+		return cardInfo;
 	}
 
 	public void initSelect(String email, int number) throws CustomException {

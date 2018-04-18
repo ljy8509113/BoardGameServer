@@ -17,8 +17,10 @@ import com.boardgame.response.ResponseRoomUsers;
 import com.database.common.ResCode;
 import com.database.util.CustomException;
 
+import io.netty.channel.ChannelHandlerContext;
+
 public abstract class BaseController {
-	public abstract void reqData(RequestBase request, String identifier) throws CustomException;
+	public abstract void reqData(RequestBase request, String identifier, ChannelHandlerContext ctx) throws CustomException;
 
 	private List<GameRoom> listRoom;
 
@@ -153,7 +155,7 @@ public abstract class BaseController {
 			}
 		}		
 	}
-
+	
 	//전체 보내기
 	public void sendMessage(ResponseBase res) {
 		for(GameRoom room : listRoom) {

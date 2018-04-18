@@ -7,6 +7,8 @@ import com.boardgame.common.UserState;
 import com.boardgame.controller.RequestController;
 import com.boardgame.controller.UserController;
 import com.boardgame.response.ResponseBase;
+import com.database.common.ResCode;
+import com.database.util.CustomException;
 
 import io.netty.channel.ChannelHandlerContext;
 
@@ -20,7 +22,7 @@ public class GameRoom extends Room{
 		super(no, title, nickName, maxUser, 1, false, password);
 
 		UserInfo info = UserController.Instance().getUserInfo(email);//new UserInfo(ctx, email, nickName, true, UserState.GAME_WAITING);// UserController.Instance().getUser(email);
-		info.setState(UserState.GAME_WAITING);
+		info.setState(UserState.GAME_READY);
 		info.setMaster(true);
 		
 		userList = new ArrayList<>();
@@ -102,6 +104,16 @@ public class GameRoom extends Room{
 	public void changeMaster(int index) {
 		UserInfo user = userList.get(index);
 		user.setMaster(true);
+		user.setState(UserState.GAME_READY);
+	}
+	
+	public void checkStart() throws CustomException{
+		for(UserInfo info : userList) {
+			if(info.isConnection == false) 
+				throw new CustomException(ResCode.ERROR_DISCONNECT_USER.getResCode(), ResCode.ERROR_DISCONNECT_USER.getMessage());
+			else if(info.state != UserState.GAME_READY.getValue())
+				throw new CustomException(ResCode.ERROR_NOT_READY.getResCode(), ResCode.ERROR_NOT_READY.getMessage());
+		}
 	}
 
 }
