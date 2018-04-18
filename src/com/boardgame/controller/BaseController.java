@@ -84,8 +84,6 @@ public abstract class BaseController {
 		for(int i=startIndex; i<endCount; i++)
 		{
 			GameRoom room = listRoom.get(i);
-
-
 			resultList.add(room.getRoom());
 		}
 
@@ -107,7 +105,7 @@ public abstract class BaseController {
 				Integer no = findRoomNo(email);
 				
 				if(no == null) {
-					UserController.Instance().updateState(UserState.CONNECTION, email);
+					UserController.Instance().updateState(UserState.NONE, email);
 				}else {
 					isGaming = true;
 					roomNo = no;

@@ -140,7 +140,7 @@ public class RequestController {
 
 				User user = userDao.selectUser(req.getEmail(), password);//DBController.Instance().login(req.getEmail(), password);
 
-				UserInfo info = new UserInfo(ctx, user.getEmail(), user.getNickname(), false, UserState.CONNECTION);
+				UserInfo info = new UserInfo(ctx, user.getEmail(), user.getNickname(), false, UserState.NONE);
 				UserController.Instance().addUser(info);
 
 				res = new ResponseLogin(req.isAutoLogin(), user.getEmail(), user.getPassword(), user.getNickname());
