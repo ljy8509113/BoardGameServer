@@ -243,7 +243,7 @@ public class RequestController {
 			break;
 		default : {
 			try {
-				getController(gameNo).reqData(header, identifier, ctx);
+				getController(gameNo).reqData(result, identifier, ctx);
 			} catch (CustomException e) {
 				e.printStackTrace();
 				res = new ResponseBase(identifier, e.getResCode(), e.getMessage());

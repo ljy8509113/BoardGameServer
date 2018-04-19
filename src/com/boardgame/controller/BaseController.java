@@ -8,7 +8,6 @@ import com.boardgame.model.GameRoom;
 import com.boardgame.model.Room;
 import com.boardgame.model.UserData;
 import com.boardgame.model.UserInfo;
-import com.boardgame.request.RequestBase;
 import com.boardgame.response.ResponseBase;
 import com.boardgame.response.ResponseGamingUser;
 import com.boardgame.response.ResponseOutRoom;
@@ -20,7 +19,7 @@ import com.database.util.CustomException;
 import io.netty.channel.ChannelHandlerContext;
 
 public abstract class BaseController {
-	public abstract void reqData(RequestBase request, String identifier, ChannelHandlerContext ctx) throws CustomException;
+	public abstract void reqData(String reqStr, String identifier, ChannelHandlerContext ctx) throws CustomException;
 
 	private List<GameRoom> listRoom;
 

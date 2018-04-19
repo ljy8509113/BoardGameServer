@@ -15,8 +15,10 @@ import com.boardgame.request.davincicode.RequestInitGame;
 import com.boardgame.response.ResponseRoomUsers;
 import com.boardgame.response.ResponseStart;
 import com.boardgame.response.davincicode.ResponseGameCardInfo;
+import com.boardgame.response.davincicode.ResponseInitGame;
 import com.database.common.ResCode;
 import com.database.util.CustomException;
+import com.google.gson.Gson;
 
 import io.netty.channel.ChannelHandlerContext;
 
@@ -25,7 +27,7 @@ public class DavinciCodeController extends BaseController {
 	//private GameService gameService;
 	
 	Map<Integer, DavinciCodeGame> map;
-	
+	Gson gson = new Gson();
 	private static DavinciCodeController instance = null;
 	public static DavinciCodeController Instance() {
 		if(instance == null) {
@@ -40,11 +42,11 @@ public class DavinciCodeController extends BaseController {
 	}
 	
 	@Override 
-	public void reqData(RequestBase request, String identifier, ChannelHandlerContext ctx) throws CustomException {
+	public void reqData(String reqStr, String identifier, ChannelHandlerContext ctx) throws CustomException {
 		switch(identifier) {
 		case Common.IDENTIFIER_START:
 		{
-			RequestStart req = (RequestStart)request;
+			RequestStart req = gson.fromJson(reqStr, RequestStart.class);//(RequestStart)request;
 			GameRoom room = null;
 			try {
 				room = getRoom(req.getRoomNo());
@@ -77,14 +79,15 @@ public class DavinciCodeController extends BaseController {
 			
 		case Common.IDENTIFIER_INIT_GAME :
 		{
-			RequestInitGame req = (RequestInitGame)request;
+			RequestInitGame req = gson.fromJson(reqStr, RequestInitGame.class); //(RequestInitGame)request;
 			
 			GameRoom room = getRoom(req.getRoomNo());
 			
 			DavinciCodeGame game = new DavinciCodeGame(room);
 			map.put(room.getNo(), game);
 			
-			ResponseGameCardInfo res = new ResponseGameCardInfo(game.setInitCard());
+			//ResponseGameCardInfo res = new ResponseGameCardInfo(game.setInitCard());
+			ResponseInitGame res = new ResponseInitGame(game.setInitCard());
 			room.sendMessage(res);			
 		}
 			break;
