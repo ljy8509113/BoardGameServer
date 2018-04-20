@@ -29,7 +29,7 @@ public class DavinciCodeGame {
 	public GameCardInfo setInitCard() {
 //		arrayUser = new ArrayList<>();
 		//		mapCard = new HashMap<>();
-
+		cardInfo = new GameCardInfo();
 		int jokerNumber = JOKER_NUMBER;
 		for(int i=0; i<CARD_MAX_INDEX; i++) {
 			NumberCard n;

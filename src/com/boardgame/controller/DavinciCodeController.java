@@ -1,20 +1,17 @@
 package com.boardgame.controller;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.boardgame.common.Common;
 import com.boardgame.controller.game.DavinciCodeGame;
 import com.boardgame.model.GameRoom;
 import com.boardgame.model.UserInfo;
-import com.boardgame.request.RequestBase;
+import com.boardgame.model.davincicode.GameCardInfo;
 import com.boardgame.request.RequestStart;
 import com.boardgame.request.davincicode.RequestInitGame;
 import com.boardgame.response.ResponseRoomUsers;
 import com.boardgame.response.ResponseStart;
-import com.boardgame.response.davincicode.ResponseGameCardInfo;
 import com.boardgame.response.davincicode.ResponseInitGame;
 import com.database.common.ResCode;
 import com.database.util.CustomException;
@@ -44,52 +41,20 @@ public class DavinciCodeController extends BaseController {
 	@Override 
 	public void reqData(String reqStr, String identifier, ChannelHandlerContext ctx) throws CustomException {
 		switch(identifier) {
-		case Common.IDENTIFIER_START:
-		{
-			RequestStart req = gson.fromJson(reqStr, RequestStart.class);//(RequestStart)request;
-			GameRoom room = null;
-			try {
-				room = getRoom(req.getRoomNo());
-				room.checkStart();
+			case Common.IDENTIFIER_INIT_GAME :
+			{
+				RequestInitGame req = gson.fromJson(reqStr, RequestInitGame.class); //(RequestInitGame)request;
 				
-				ResponseStart res = new ResponseStart();
-				room.sendMessage(res);
+				GameRoom room = getRoom(req.getRoomNo());
 				
-			} catch (CustomException e) {
-				e.printStackTrace();
-				if(e.getResCode() == ResCode.ERROR_NOT_FOUND_ROOM.getResCode()) {
-					ResponseStart res = new ResponseStart(e.getResCode(), e.getMessage());
-					RequestController.Instance().response(res, ctx);
-				}else {
-					ResponseRoomUsers resRoomUsers = new ResponseRoomUsers(room.getResUserList());
-					for(UserInfo info : room.getUserList()) {
-						if(info.isMaster()) {
-							ResponseStart res = new ResponseStart(room.getResUserList(), e.getResCode(), e.getMessage());
-							RequestController.Instance().response(res, info.getCtx());
-						}else {
-							RequestController.Instance().response(resRoomUsers, info.getCtx());
-						}
-					}
-				}
+				DavinciCodeGame game = new DavinciCodeGame(room);
+				map.put(room.getNo(), game);
 				
-			} 
-			
-		}
-			break;
-			
-		case Common.IDENTIFIER_INIT_GAME :
-		{
-			RequestInitGame req = gson.fromJson(reqStr, RequestInitGame.class); //(RequestInitGame)request;
-			
-			GameRoom room = getRoom(req.getRoomNo());
-			
-			DavinciCodeGame game = new DavinciCodeGame(room);
-			map.put(room.getNo(), game);
-			
-			//ResponseGameCardInfo res = new ResponseGameCardInfo(game.setInitCard());
-			ResponseInitGame res = new ResponseInitGame(game.setInitCard());
-			room.sendMessage(res);			
-		}
+				//ResponseGameCardInfo res = new ResponseGameCardInfo(game.setInitCard());
+				GameCardInfo cardInfo = game.setInitCard();
+				ResponseInitGame res = new ResponseInitGame(cardInfo);
+				room.sendMessage(res);			
+			}
 			break;
 		}
 	}
