@@ -6,13 +6,11 @@ import com.database.common.ResCode;
 public class ResponseLogin extends ResponseBase{
 	private boolean isAutoLogin;
 	private String email;
-	private String password;
 	private String nickName;
 	
-	public ResponseLogin(boolean isAutoLogin, String email, String password, String nickName) {
+	public ResponseLogin(boolean isAutoLogin, String email, String nickName) {
 		super(Common.IDENTIFIER_LOGIN, ResCode.SUCCESS.getResCode());
 		this.isAutoLogin = isAutoLogin;
-		this.password = password;
 		this.email = email;
 		this.nickName = nickName;
 	}
@@ -36,15 +34,7 @@ public class ResponseLogin extends ResponseBase{
 	public void setEmail(String email) {
 		this.email = email;
 	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
+	
 	public String getNickName() {
 		return nickName;
 	}

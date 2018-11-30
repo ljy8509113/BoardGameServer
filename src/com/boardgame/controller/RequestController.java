@@ -138,17 +138,17 @@ public class RequestController {
 			{
 				RequestLogin req = gson.fromJson(result, RequestLogin.class);
 				try {
-					String password = Security.Instance().deCryption(req.getPassword(), false);
+//					String password = Security.Instance().deCryption(req.getPassword(), false);
 	
-					System.out.println("password : " + req.getPassword());
-					System.out.println("password dec : " + password);
-	
-					User user = userDao.selectUser(req.getEmail(), password);//DBController.Instance().login(req.getEmail(), password);
+//					System.out.println("password : " + req.getPassword());
+//					System.out.println("password dec : " + password);
+//	
+					User user = userDao.selectUser(req.getEmail());//DBController.Instance().login(req.getEmail(), password);
 	
 					UserInfo info = new UserInfo(ctx, user.getEmail(), user.getNickname(), false, UserState.NONE);
 					UserController.Instance().addUser(info);
 	
-					res = new ResponseLogin(req.isAutoLogin(), user.getEmail(), user.getPassword(), user.getNickname());
+					res = new ResponseLogin(req.isAutoLogin(), user.getEmail(), user.getNickname());
 					response(res, ctx);
 					
 				} catch (InvalidKeyException | UnsupportedEncodingException | NoSuchAlgorithmException
