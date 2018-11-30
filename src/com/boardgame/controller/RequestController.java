@@ -173,7 +173,7 @@ public class RequestController {
 				String password;
 	
 				try {
-					password = Security.Instance().deCryption(req.getPassword(), false);
+//					password = Security.Instance().deCryption(req.getPassword(), false);
 					User user = new User(req.getEmail(), password, req.getNickName(), req.getBirthday());
 					userDao.insert(user);
 					//DBController.Instance().join(user);

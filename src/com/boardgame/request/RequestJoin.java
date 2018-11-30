@@ -5,8 +5,6 @@ import java.util.Date;
 import com.boardgame.common.Common;
 
 public class RequestJoin extends RequestBase{
-	private String password;
-	private Date birthday;
 	private String nickName;
 	
 	public RequestJoin(Integer gameNo, String email, String password, String nickName, Date birthday) {
