@@ -46,7 +46,6 @@ import com.database.dao.UserDao;
 import com.database.model.User;
 import com.database.util.CustomException;
 import com.google.gson.Gson;
-import com.security.Security;
 
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
@@ -148,16 +147,9 @@ public class RequestController {
 					UserInfo info = new UserInfo(ctx, user.getEmail(), user.getNickname(), false, UserState.NONE);
 					UserController.Instance().addUser(info);
 	
-					res = new ResponseLogin(req.isAutoLogin(), user.getEmail(), user.getNickname());
+					res = new ResponseLogin(user.getEmail(), user.getNickname());
 					response(res, ctx);
 					
-				} catch (InvalidKeyException | UnsupportedEncodingException | NoSuchAlgorithmException
-						| NoSuchPaddingException | InvalidAlgorithmParameterException | IllegalBlockSizeException
-						| BadPaddingException e) {
-	
-					e.printStackTrace();
-					res = new ResponseLogin(ResCode.ERROR_DECRYPTION.getResCode(), ResCode.ERROR_DECRYPTION.getMessage());
-					response(res, ctx);
 				}catch (ClassNotFoundException | SQLException e) {
 					res = new ResponseLogin(ResCode.ERROR_DB.getResCode(), ResCode.ERROR_DB.getMessage());
 					response(res, ctx);
@@ -170,11 +162,10 @@ public class RequestController {
 			case Common.IDENTIFIER_JOIN:
 			{
 				RequestJoin req = gson.fromJson(result, RequestJoin.class);
-				String password;
-	
+				
 				try {
 //					password = Security.Instance().deCryption(req.getPassword(), false);
-					User user = new User(req.getEmail(), password, req.getNickName(), req.getBirthday());
+					User user = new User(req.getEmail(), req.getNickName());
 					userDao.insert(user);
 					//DBController.Instance().join(user);
 	
