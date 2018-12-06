@@ -10,7 +10,7 @@ import com.boardgame.model.UserInfo;
 import com.boardgame.model.davincicode.GameCardInfo;
 import com.boardgame.request.RequestStart;
 import com.boardgame.request.davincicode.RequestInitGame;
-import com.boardgame.response.ResponseRoomUsers;
+import com.boardgame.response.ResponseRoomInfo;
 import com.boardgame.response.ResponseStart;
 import com.boardgame.response.davincicode.ResponseInitGame;
 import com.database.common.ResCode;

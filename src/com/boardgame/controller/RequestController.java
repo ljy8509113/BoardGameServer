@@ -27,7 +27,7 @@ import com.boardgame.request.RequestOutRoom;
 import com.boardgame.request.RequestReady;
 import com.boardgame.request.RequestRoomList;
 import com.boardgame.request.RequestRoomPassword;
-import com.boardgame.request.RequestRoomUsers;
+import com.boardgame.request.RequestRoomInfo;
 import com.boardgame.request.RequestStart;
 import com.boardgame.response.ResponseBase;
 import com.boardgame.response.ResponseConnectionRoom;
@@ -38,7 +38,7 @@ import com.boardgame.response.ResponseOutRoom;
 import com.boardgame.response.ResponseReady;
 import com.boardgame.response.ResponseRoomList;
 import com.boardgame.response.ResponseRoomPassword;
-import com.boardgame.response.ResponseRoomUsers;
+import com.boardgame.response.ResponseRoomInfo;
 import com.boardgame.response.ResponseStart;
 import com.database.common.ResCode;
 import com.database.dao.ScoreDao;
@@ -198,7 +198,8 @@ public class RequestController {
 					
 				} catch (CustomException e) {
 					e.printStackTrace();
-					res = new ResponseReady(e.getResCode(), e.getMessage());
+//					res = new ResponseReady(e.getResCode(), e.getMessage());
+					res = new ResponseRoomInfo(e.getResCode(), e.getMessage());
 					response(res, ctx);
 				}
 			}
@@ -217,16 +218,17 @@ public class RequestController {
 			}
 			break;
 	
-			case Common.IDENTIFIER_ROOM_USERS :
+			case Common.IDENTIFIER_ROOM_INFO:
 			{
-				RequestRoomUsers req = gson.fromJson(result, RequestRoomUsers.class);
+				RequestRoomInfo req = gson.fromJson(result, RequestRoomInfo.class);
 	
 				try {
-					res = new ResponseRoomUsers(getController(gameNo).getRoom(req.getRoomNo()).getResUserList());
+					GameRoom room = getController(gameNo).getRoom(req.getRoomNo());
+					res = new ResponseRoomInfo(room.getResUserList(), room.getTitle());
 					response(res, ctx);
 				}catch(CustomException e) {
 					e.printStackTrace();
-					res = new ResponseRoomUsers(e.getResCode(), e.getMessage());
+					res = new ResponseRoomInfo(e.getResCode(), e.getMessage());
 					response(res, ctx);
 				}
 			}
@@ -266,7 +268,7 @@ public class RequestController {
 						res = new ResponseStart(e.getResCode(), e.getMessage());
 						response(res, ctx);
 					}else {
-						ResponseRoomUsers resRoomUsers = new ResponseRoomUsers(room.getResUserList());
+						ResponseRoomInfo resRoomUsers = new ResponseRoomInfo(room.getResUserList(), room.getTitle());
 						for(UserInfo info : room.getUserList()) {
 							if(info.isMaster()) {
 								res = new ResponseStart(room.getResUserList(), e.getResCode(), e.getMessage());

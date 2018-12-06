@@ -12,7 +12,7 @@ import com.boardgame.response.ResponseBase;
 import com.boardgame.response.ResponseGamingUser;
 import com.boardgame.response.ResponseOutRoom;
 import com.boardgame.response.ResponseReady;
-import com.boardgame.response.ResponseRoomUsers;
+import com.boardgame.response.ResponseRoomInfo;
 import com.database.common.ResCode;
 import com.database.util.CustomException;
 
@@ -118,7 +118,7 @@ public abstract class BaseController {
 		return res;
 	}
 
-	public ResponseReady onReadyUser(String email, boolean isReady, int roomNo) throws CustomException {
+	public ResponseRoomInfo onReadyUser(String email, boolean isReady, int roomNo) throws CustomException {
 		GameRoom room = getRoom(roomNo);
 
 		if(isReady) {
@@ -127,7 +127,8 @@ public abstract class BaseController {
 			room.updateUserState(email, UserState.GAME_WAITING);
 		}
 		
-		ResponseReady res = new ResponseReady(email, isReady);
+//		ResponseReady res = new ResponseReady(email, isReady);
+		ResponseRoomInfo res = new ResponseRoomInfo(room.getResUserList(), room.getTitle());
 		return res;
 	}
 
@@ -148,7 +149,7 @@ public abstract class BaseController {
 		if(room.getUserList().size() == 0)
 			removeRoom(room);
 		else {
-			ResponseRoomUsers resRoomUsers = new ResponseRoomUsers(room.getResUserList());
+			ResponseRoomInfo resRoomUsers = new ResponseRoomInfo(room.getResUserList(), room.getTitle());
 			for(UserInfo i : room.getUserList()) {
 				RequestController.Instance().response(resRoomUsers, i.getCtx());
 			}
