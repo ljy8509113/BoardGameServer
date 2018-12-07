@@ -1,6 +1,7 @@
 package com.boardgame.controller;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -47,6 +48,8 @@ import com.database.model.User;
 import com.database.util.CustomException;
 import com.google.gson.Gson;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.CharsetUtil;
@@ -298,14 +301,34 @@ public class RequestController {
 
 	public void response(ResponseBase res, ChannelHandlerContext ctx) {
 		String resStr = getJson(res);
-		System.out.println("res : " + resStr);
-		ctx.write(Unpooled.copiedBuffer(resStr, CharsetUtil.UTF_8));
+		byte [] mesBytes = resStr.getBytes();
+		
+		short size = (short)mesBytes.length;
+		
+//		ByteBuf buf = Unpooled.copiedBuffer(resStr, CharsetUtil.UTF_8); 
+//		ByteBuf buf = new ByteBuf();
+		
+		byte[] sizeBytes = new byte[2];
+		
+		for(int i=0; i<sizeBytes.length && i<Short.SIZE; i++) {
+			sizeBytes[i] = (byte)((size >> (8*i)) & 0xff);
+		}
+		
+		int resSize = sizeBytes.length + mesBytes.length;
+		byte [] resBytes = new byte[resSize];
+		
+		System.arraycopy(sizeBytes, 0, resBytes, 0, sizeBytes.length);
+		System.arraycopy(mesBytes, 0, resBytes, sizeBytes.length, mesBytes.length);
+		ByteBuf buf = Unpooled.wrappedBuffer(resBytes);
+		
+		System.out.println( "res : " + new String(resBytes, 0, resBytes.length) );
+		ctx.write(buf);
 		ctx.flush();		
 	}
 
 	BaseController getController(int gameNo) {
 		switch(gameNo) {
-		case Common.GAME_DAVINCICODE :
+		case Common.GAME_DAVINCICODE:
 			return DavinciCodeController.Instance();
 		}
 
