@@ -1,5 +1,7 @@
 package com.boardgame.common;
 
+import com.google.gson.Gson;
+
 public class Common {
 	public static final int GAME_DAVINCICODE = 1;
 
@@ -28,4 +30,6 @@ public class Common {
 	public static final String IDENTIFIER_GAME_CARD_INFO	= "game_card_info";
 	public static final String IDENTIFIER_OPEN_CARD			= "open_card";
 	public static final String IDENTIFIER_GAME_FINISH		= "game_finish";
+	
+	public static Gson gson = new Gson();
 }

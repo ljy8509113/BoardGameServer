@@ -16,8 +16,8 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		//접속
-		System.out.println("active");		
-
+		System.out.println("active : " + ctx.hashCode());		
+		System.out.println("active : " + ctx.name());
 	}
 
 	@Override
