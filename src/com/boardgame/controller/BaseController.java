@@ -1,5 +1,6 @@
 package com.boardgame.controller;
 
+import java.io.Console;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -233,42 +234,13 @@ public class BaseController {
 				}
 			}
 			break;
-			case Common.IDENTIFIER_START:
-			{
-				RequestStart req = Common.gson.fromJson(reqStr, RequestStart.class);//(RequestStart)request;
-				GameRoom room = null;
-				try {
-					room = getRoom(req.getRoomNo());
-					room.checkStart();
-	
-					res = new ResponseStart();
-					room.sendMessage(res);
-					
-				} catch (CustomException e) {
-					e.printStackTrace();
-					if(e.getResCode() == ResCode.ERROR_NOT_FOUND_ROOM.getResCode()) {
-						res = new ResponseStart(e.getResCode(), e.getMessage());
-						response(res, ctx);
-					}else {
-						ResponseRoomInfo resRoomUsers = new ResponseRoomInfo(room.getResUserList(), room.getTitle());
-						for(UserInfo info : room.getUserList()) {
-							if(info.isMaster()) {
-								res = new ResponseStart(room.getResUserList(), e.getResCode(), e.getMessage());
-								response(res, info.getCtx());
-							}else {
-								response(resRoomUsers, info.getCtx());
-							}
-						}
-					}
-	
-				} 
-	
-			}
-			break;
+			
+			
 		}	
 	}
 
 	public void response(ResponseBase res, ChannelHandlerContext ctx) {
+		
 		RequestController.Instance().response(res, ctx);
 	}
 	

@@ -5,10 +5,14 @@ import com.boardgame.response.ResponseBase;
 import com.database.common.ResCode;
 
 public class ResponseSelectNumber extends ResponseBase {
-	int number;
-	public ResponseSelectNumber(int number) {
+	int index;
+	String email;
+	boolean isSuccess;
+	public ResponseSelectNumber(int index, String email, boolean isSuccess) {
 		super(Common.IDENTIFIER_SELECT_NUMBER, ResCode.SUCCESS.getResCode());
-		this.number = number;
+		this.index = index;
+		this.email = email;
+		this.isSuccess = isSuccess;
 	}
 	
 	public ResponseSelectNumber(int resCode, String message) {

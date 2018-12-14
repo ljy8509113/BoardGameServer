@@ -1,24 +1,20 @@
 package com.boardgame.response.davincicode;
 
+import java.util.ArrayList;
+
 import com.boardgame.common.Common;
+import com.boardgame.model.davincicode.UserGameData;
 import com.boardgame.response.ResponseBase;
 import com.database.common.ResCode;
 
 public class ResponseOpenCard extends ResponseBase{
 	boolean isSuccess;
-	int number;
-	int index;
-	String targetUser;
-	String email;
-	boolean isLose;
+	ArrayList<UserGameData> userList;
 	
-	public ResponseOpenCard(String targetUser, int number, int index, boolean isSuccess, String email, boolean isLose) {
+	public ResponseOpenCard(boolean isSuccess, ArrayList<UserGameData> userList) {
 		super(Common.IDENTIFIER_OPEN_CARD, ResCode.SUCCESS.getResCode());
-		this.targetUser = targetUser;
-		this.number = number;
-		this.index = index;
+		this.userList = userList;
 		this.isSuccess = isSuccess;
-		this.email = email;
-		this.isLose = isLose;
+		
 	}
 }

@@ -32,4 +32,6 @@ public class Common {
 	public static final String IDENTIFIER_GAME_FINISH		= "game_finish";
 	
 	public static Gson gson = new Gson();
+	
+	public static final int MAX_CARD_COUNT = 24; 
 }

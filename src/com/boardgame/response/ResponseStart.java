@@ -1,16 +1,18 @@
 package com.boardgame.response;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import com.boardgame.common.Common;
-import com.boardgame.model.UserData;
+import com.boardgame.model.davincicode.UserGameData;
 import com.database.common.ResCode;
 
 public class ResponseStart extends ResponseBase {
-	private List<UserData> userList;
-	public ResponseStart() {
+	ArrayList<UserGameData> userList;
+	int maxCount;
+	public ResponseStart(ArrayList<UserGameData> list, int maxCount) {
 		super(Common.IDENTIFIER_START, ResCode.SUCCESS.getResCode());
-		userList = null;
+		userList = list;
+		this.maxCount = maxCount;
 	}
 	
 	public ResponseStart(int resCode, String message) {
@@ -18,8 +20,4 @@ public class ResponseStart extends ResponseBase {
 		userList = null;
 	}
 	
-	public ResponseStart(List<UserData> list, int resCode, String message) {
-		super(Common.IDENTIFIER_START, resCode, message);
-		userList = list;
-	}
 }

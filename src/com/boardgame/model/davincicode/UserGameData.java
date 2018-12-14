@@ -1,10 +1,6 @@
 package com.boardgame.model.davincicode;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-
-import com.boardgame.controller.game.DavinciCodeGame;
 
 public class UserGameData {
 	private Integer no;
@@ -12,14 +8,14 @@ public class UserGameData {
 	private String nickName;
 	private ArrayList<NumberCard> cards;
 	private boolean isLose = false;
-	Descending descending;
+//	Descending descending;
 	
 	public UserGameData(int no, String email, String nickName) {
 		this.no = no;
 		this.email = email;
 		this.nickName = nickName;	
 		cards = new ArrayList<>();
-		descending = new Descending();
+//		descending = new Descending();
 	}
 
 	public Integer getNo() {
@@ -56,52 +52,55 @@ public class UserGameData {
 
 	public void addCard(NumberCard card) {
 		cards.add(card);
-		Collections.sort(cards, descending);
+//		Collections.sort(cards, descending);
 		
 	}
 
-	public boolean isInit() {
-		return cards.size() == DavinciCodeGame.CARD_COUNT ? true : false;
-	}
+//	public boolean isInit() {
+//		return cards.size() == DavinciCodeGame.CARD_COUNT ? true : false;
+//	}
 
-	public boolean checkNumber(int index, int number) {
-		NumberCard card = cards.get(index);
-		boolean isSuccess = false;
-
-		if(number >= DavinciCodeGame.JOKER_NUMBER) {
-			if(card.getNumber() >= number) {
-				card.setOpen(true);
-				isSuccess = true;
-			}
-		}else {
-			if(card.getNumber() == number) {
-				card.setOpen(true);
-				isSuccess = true;
+	public boolean openCard(int index, boolean isJoker) {
+		NumberCard card = null;
+		for(NumberCard c : cards) {
+			if(c.index == index) {
+				card = c;
+				break;
 			}
 		}
 		
+		boolean isSuccess = false;
+		
+		if(isJoker) {
+			isSuccess = card.isJoker;
+		}else {
+			if(card == null)
+				isSuccess = false;
+			else
+				isSuccess = true;
+		}
+		
 		if(isSuccess) {
+			card.isOpen = true;
 			boolean isLose = true;
 			for(NumberCard c : cards) {
-				if(c.IsOpen() == false) {
+				if(c.isOpen == false) {
 					isLose = false;
 					break;
 				}
 			}
-
-			if(isLose)
-				this.isLose = true;
+			this.isLose = isLose;
 		}
-
+		
 		return isSuccess;
 	}
 	
-	// 내림차순
-	class Descending implements Comparator<NumberCard> {
-	    @Override
-	    public int compare(NumberCard o1, NumberCard o2) {
-	        return o2.getNumber().compareTo(o1.getNumber());
-	    }
-	}
+//	// 내림차순
+//	class Descending implements Comparator<NumberCard> {
+//	    @Override
+//	    public int compare(NumberCard o1, NumberCard o2) {
+//	        return o2.getNumber().compareTo(o1.getNumber());
+//	    }
+//	}
 
 }

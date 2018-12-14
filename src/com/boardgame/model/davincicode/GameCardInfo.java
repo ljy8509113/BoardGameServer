@@ -3,48 +3,58 @@ package com.boardgame.model.davincicode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import com.boardgame.common.Common;
 
 public class GameCardInfo {
-	private List<UserGameData> arrayUser;
-	private Map<Integer,NumberCard> mapFieldCards;
-
+	private ArrayList<UserGameData> userList;
+//	private Map<Integer,NumberCard> mapFieldCards;
+	public ArrayList<NumberCard> fieldCardList;
+	
 	public GameCardInfo() {		
-		arrayUser = new ArrayList<UserGameData>();
-		mapFieldCards = new HashMap<Integer, NumberCard>();
+		userList = new ArrayList<UserGameData>();
+//		mapFieldCards = new HashMap<Integer, NumberCard>();
+		fieldCardList = new ArrayList<NumberCard>();
+		
+		for(int i=0; i<Common.MAX_CARD_COUNT; i++) {
+			NumberCard card = new NumberCard(i);
+			card.isJoker = false;
+			card.isOpen = false;
+		}
 	}
 
 	public void addUserData(UserGameData user) {
-		arrayUser.add(user);
+		userList.add(user);
 	}
 
-	public List<UserGameData> getUserData(){
-		return arrayUser;
+	public ArrayList<UserGameData> getUserData(){
+		return userList;
 	}
 
-	public void addCard(int key, NumberCard card) {
-		mapFieldCards.put(key, card);
-	}
+//	public Map<Integer,NumberCard> getFieldCards(){
+//		return mapFieldCards;
+//	}
+//
+//	public NumberCard getCard(int key) {
+//		return mapFieldCards.get(key);
+//	}
 
-	public Map<Integer,NumberCard> getFieldCards(){
-		return mapFieldCards;
-	}
-
-	public NumberCard getCard(int key) {
-		return mapFieldCards.get(key);
-	}
-
-	public void moveCard(String email, int number) {
-		NumberCard card = new NumberCard(number);
-		UserGameData user = getUser(email);
-		user.addCard(card);
-		mapFieldCards.remove(number);
+	public boolean moveCard(String email, int index) {
+		for(NumberCard c : fieldCardList) {
+			if(c.index == index) {
+				NumberCard card = new NumberCard(index);
+				fieldCardList.remove(c);
+				UserGameData user = getUser(email);
+				user.addCard(card);
+				return true;
+			}
+		}
+		
+		return false;
 	}
 
 	public UserGameData getUser(String email) {
-		for(UserGameData data : arrayUser) {
+		for(UserGameData data : userList) {
 			if(data.getEmail().equals(email)) {
 				return data;				
 			}
@@ -52,18 +62,18 @@ public class GameCardInfo {
 		return null;
 	}
 
-	public boolean initCheck() {
-		for(UserGameData data : arrayUser) {
-			if( data.isInit() == false) {
-				return false;
-			}
-		}
-		return true;
-	}
+//	public boolean initCheck() {
+//		for(UserGameData data : userList) {
+//			if( data.isInit() == false) {
+//				return false;
+//			}
+//		}
+//		return true;
+//	}
 
 	public void sortUser() {
 		Descending des = new Descending();
-		Collections.sort(arrayUser, des);
+		Collections.sort(userList, des);
 	}
 
 	// 내림차순

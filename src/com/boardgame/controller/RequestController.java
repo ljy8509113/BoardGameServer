@@ -50,7 +50,7 @@ public class RequestController {
 //		System.arraycopy(mesBytes, 0, resBytes, sizeBytes.length, mesBytes.length);
 //		ByteBuf buf = Unpooled.wrappedBuffer(resBytes);
 //		
-//		System.out.println( "res : " + new String(resBytes, 0, resBytes.length) );
+		System.out.println( "res : " + resStr );
 		ByteBuf buf = Unpooled.copiedBuffer(resStr, CharsetUtil.UTF_8);
 		ctx.write(buf);
 		ctx.flush();		
