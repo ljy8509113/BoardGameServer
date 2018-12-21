@@ -1,6 +1,5 @@
 package com.boardgame.controller;
 
-import java.io.Console;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -18,7 +17,7 @@ import com.boardgame.common.UserState;
 import com.boardgame.model.GameRoom;
 import com.boardgame.model.Room;
 import com.boardgame.model.UserData;
-import com.boardgame.model.UserInfo;
+import com.boardgame.model.UserDataBase;
 import com.boardgame.request.RequestConnectionRoom;
 import com.boardgame.request.RequestCreateRoom;
 import com.boardgame.request.RequestGamingUser;
@@ -29,7 +28,6 @@ import com.boardgame.request.RequestReady;
 import com.boardgame.request.RequestRoomInfo;
 import com.boardgame.request.RequestRoomList;
 import com.boardgame.request.RequestRoomPassword;
-import com.boardgame.request.RequestStart;
 import com.boardgame.response.ResponseBase;
 import com.boardgame.response.ResponseConnectionRoom;
 import com.boardgame.response.ResponseCreateRoom;
@@ -40,12 +38,12 @@ import com.boardgame.response.ResponseOutRoom;
 import com.boardgame.response.ResponseRoomInfo;
 import com.boardgame.response.ResponseRoomList;
 import com.boardgame.response.ResponseRoomPassword;
-import com.boardgame.response.ResponseStart;
 import com.database.common.ResCode;
 import com.database.dao.ScoreDao;
 import com.database.dao.UserDao;
 import com.database.model.User;
 import com.database.util.CustomException;
+import com.security.Security;
 
 import io.netty.channel.ChannelHandlerContext;
 
@@ -95,10 +93,10 @@ public class BaseController {
 	
 				try {
 					//UserInfo info = new UserInfo(ctx, cr.getEmail(), cr.getNickName(), false, UserState.GAME_WAITING);
-					UserInfo info = UserController.Instance().getUserInfo(cr.getEmail());
+					UserData info = SocketController.Instance().getUser(cr.getEmail());//UserController.Instance().getUserInfo(cr.getEmail());
 					String title = getRoom(roomNo).getTitle();
 	
-					List<UserData> userList = addUser(roomNo, info);
+					List<UserDataBase> userList = addUser(roomNo, info);
 					res = new ResponseConnectionRoom(title, userList, roomNo);
 	
 					getRoom(roomNo).sendMessage(res);
@@ -120,15 +118,16 @@ public class BaseController {
 			{
 				RequestLogin req = Common.gson.fromJson(reqStr, RequestLogin.class);
 				try {
-	//				String password = Security.Instance().deCryption(req.getPassword(), false);
-	
-	//				System.out.println("password : " + req.getPassword());
-	//				System.out.println("password dec : " + password);
+//					String password = Security.Instance().deCryption(req.password, false);
+					String password = Security.Instance().decrypt(req.password, false);
+					System.out.println("password : " + req.password);
+					System.out.println("password dec : " + password);
 	//
-					User user = userDao.selectUser(req.getEmail());//DBController.Instance().login(req.getEmail(), password);
+					User user = userDao.loginUser(req.getEmail(), password);//DBController.Instance().login(req.getEmail(), password);
 					
-					UserInfo info = new UserInfo(ctx, user.getEmail(), user.getNickname(), false, UserState.NONE);
-					UserController.Instance().addUser(info);
+					UserData info = new UserData(ctx, user.getEmail(), user.getNickname(), false, UserState.NONE);
+//					UserController.Instance().addUser(info);
+					SocketController.Instance().connection(info);
 	
 					res = new ResponseLogin(user.getEmail(), user.getNickname());
 					response(res, ctx);
@@ -139,19 +138,34 @@ public class BaseController {
 				}catch (CustomException e) {
 					res = new ResponseLogin(e.getResCode(), e.getMessage());
 					response(res, ctx);
-				}
+				}catch (InvalidKeyException | UnsupportedEncodingException | NoSuchAlgorithmException
+						| NoSuchPaddingException | InvalidAlgorithmParameterException | IllegalBlockSizeException
+						| BadPaddingException e1) {
+	
+					e1.printStackTrace();
+					res = new ResponseJoin(ResCode.ERROR_DECRYPTION.getResCode(), ResCode.ERROR_DECRYPTION.getMessage());
+					response(res, ctx);					
+				}	
 			}
 			break;
 			case Common.IDENTIFIER_JOIN:
 			{
 				RequestJoin req = Common.gson.fromJson(reqStr, RequestJoin.class);
-				
 				try {
-	//				password = Security.Instance().deCryption(req.getPassword(), false);
-					User user = new User(req.getEmail(), req.getNickName());
-					userDao.insert(user);
-					//DBController.Instance().join(user);
-	
+					String password = Security.Instance().decrypt(req.getPassword(), false);
+//					String password = Security.Instance().deCryption(req.getPassword(), false);
+					if(req.getEmail().equals("auto")) {
+						//오토 
+						int count = userDao.getAutoIdCount()+1;
+						String email = com.database.common.Common.AUTO_ID + count;
+						
+						User user = new User(email, req.getNickName(), password, true);
+						userDao.insert(user, password);
+					}else {
+						User user = new User(req.getEmail(), req.getNickName(), password, false);
+						userDao.insert(user, password);
+					}
+					
 					res = new ResponseJoin(ResCode.SUCCESS.getResCode(), ResCode.SUCCESS.getMessage());
 					response(res, ctx);
 				} catch (ClassNotFoundException | SQLException e) {
@@ -248,7 +262,7 @@ public class BaseController {
 		listRoom = new ArrayList<>();
 	}
 
-	public List<UserInfo> addRoom(GameRoom room) {
+	public List<UserData> addRoom(GameRoom room) {
 		room.setNo(makeRoomNo());
 		listRoom.add(room);	
 
@@ -268,16 +282,14 @@ public class BaseController {
 		listRoom.remove(room);
 	}
 
-	public List<UserData> addUser(int roomNo, UserInfo info) throws CustomException {
+	public List<UserDataBase> addUser(int roomNo, UserData info) throws CustomException {
 		boolean isAdd = false;
 		GameRoom room = getRoom(roomNo);
 
 		isAdd = room.addUser(info);
 
 		if(isAdd) {
-			if(!UserController.Instance().updateState(UserState.GAME_WAITING, info.getEmail())) {
-				throw new CustomException(ResCode.ERROR_EMAIL_NOT_FOUND.getResCode(), ResCode.ERROR_EMAIL_NOT_FOUND.getMessage());
-			}
+			info.state = UserState.GAME_WAITING;
 			return room.getResUserList();
 		}else {
 			throw new CustomException(ResCode.ERROR_CONNECTION_ROOM.getResCode(), ResCode.ERROR_CONNECTION_ROOM.getMessage());
@@ -317,20 +329,21 @@ public class BaseController {
 	}
 
 	public ResponseGamingUser checkGaming(String email) {
-		UserInfo info = UserController.Instance().getUserInfo(email);
+		UserData info = SocketController.Instance().getUser(email);//UserController.Instance().getUserInfo(email);
 		
 		int roomNo = -1;
 		boolean isGaming = false;
 		
 		if(info != null) {
-			if(info.getState() == UserState.PLAING.getValue()) {
-				Integer no = findRoomNo(email);
+			if(info.getState() == UserState.PLAING) {
+				GameRoom room = findRoom(email);
 				
-				if(no == null) {
-					UserController.Instance().updateState(UserState.NONE, email);
+				if(room == null) {
+					//UserController.Instance().updateState(UserState.NONE, email);
+					info.state = UserState.NONE;
 				}else {
 					isGaming = true;
-					roomNo = no;
+					roomNo = room.getNo();
 				}
 			}
 		}
@@ -357,12 +370,12 @@ public class BaseController {
 		GameRoom room = getRoom(roomNo);
 		
 		ResponseOutRoom res = new ResponseOutRoom();
-		UserInfo info = room.getUser(email);
+		UserData info = room.getUser(email);
 		RequestController.Instance().response(res, info.getCtx());
 		
 		if( room.getUser(email).isMaster() && room.getUserList().size() > 1) {
 			room.removeUser(email);
-			room.changeMaster(0);			
+			room.changeMaster(room.getUserList().get(0).email); //changeMaster(0);			
 		}else {
 			room.removeUser(email);
 		}
@@ -371,7 +384,7 @@ public class BaseController {
 			removeRoom(room);
 		else {
 			ResponseRoomInfo resRoomUsers = new ResponseRoomInfo(room.getResUserList(), room.getTitle());
-			for(UserInfo i : room.getUserList()) {
+			for(UserData i : room.getUserList()) {
 				RequestController.Instance().response(resRoomUsers, i.getCtx());
 			}
 		}		
@@ -380,8 +393,8 @@ public class BaseController {
 	//전체 보내기
 	public void sendMessage(ResponseBase res) {
 		for(GameRoom room : listRoom) {
-			List<UserInfo> userlist = room.getUserList();
-			for(UserInfo info : userlist) {
+			List<UserData> userlist = room.getUserList();
+			for(UserData info : userlist) {
 //				info.sendMessage(res);
 				RequestController.Instance().response(res, info.getCtx());
 			}			
@@ -391,7 +404,7 @@ public class BaseController {
 	//룸 유저에게만
 	public void sendMessage(int roomNo, ResponseBase res) throws CustomException {
 		GameRoom room = getRoom(roomNo);
-		for(UserInfo info : room.getUserList()) {
+		for(UserData info : room.getUserList()) {
 			//info.sendMessage(res);
 			RequestController.Instance().response(res, info.getCtx());
 		}
@@ -406,12 +419,12 @@ public class BaseController {
 		throw new CustomException(ResCode.ERROR_NOT_FOUND_ROOM.getResCode(), ResCode.ERROR_NOT_FOUND_ROOM.getMessage());
 	}
 	
-	public Integer findRoomNo(String email) {
+	public GameRoom findRoom(String email) {
 		for(GameRoom g : listRoom) {
-			List<UserInfo> users = g.getUserList();
-			for(UserInfo i : users) {
+			List<UserData> users = g.getUserList();
+			for(UserData i : users) {
 				if(i.getEmail().equals(email)) {
-					return g.getNo();		
+					return g;		
 				}
 			}
 		}		

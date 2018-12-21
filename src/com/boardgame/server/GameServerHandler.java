@@ -3,6 +3,7 @@ package com.boardgame.server;
 import org.apache.commons.codec.binary.Base64;
 
 import com.boardgame.controller.RequestController;
+import com.boardgame.controller.SocketController;
 import com.google.gson.Gson;
 
 import io.netty.buffer.ByteBuf;
@@ -17,7 +18,6 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		//접속
 		System.out.println("active : " + ctx.hashCode());		
-		System.out.println("active : " + ctx.name());
 	}
 
 	@Override
@@ -62,6 +62,7 @@ public class GameServerHandler extends ChannelInboundHandlerAdapter {
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		//클라 접속 종료
 		System.out.println("active finish");
+		SocketController.Instance().disConnection(ctx);
 	}
 
 

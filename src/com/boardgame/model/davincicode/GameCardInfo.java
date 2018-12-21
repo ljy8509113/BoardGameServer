@@ -20,7 +20,9 @@ public class GameCardInfo {
 			NumberCard card = new NumberCard(i);
 			card.isJoker = false;
 			card.isOpen = false;
+			fieldCardList.add(card);
 		}
+		Collections.shuffle(fieldCardList);
 	}
 
 	public void addUserData(UserGameData user) {

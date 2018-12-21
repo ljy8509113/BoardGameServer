@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import com.boardgame.model.GameRoom;
-import com.boardgame.model.UserInfo;
+import com.boardgame.model.UserData;
 import com.boardgame.model.davincicode.GameCardInfo;
+import com.boardgame.model.davincicode.NumberCard;
 import com.boardgame.model.davincicode.UserGameData;
 import com.boardgame.response.ResponseBase;
 import com.boardgame.response.davincicode.ResponseOpenCard;
@@ -23,8 +24,8 @@ public class DavinciCodeGame {
 		this.room = room;	
 		cardInfo = new GameCardInfo();
 		
-		for(UserInfo user : room.getUserList()) {
-			UserGameData data = new UserGameData(0, user.getEmail(), user.getNickName());
+		for(UserData user : room.getUserList()) {
+			UserGameData data = new UserGameData(0, user.email, user.nickName);
 			cardInfo.addUserData(data);
 		}
 		
@@ -43,6 +44,7 @@ public class DavinciCodeGame {
 				count++;
 			}
 		}
+		
 		
 	}
 	
@@ -138,6 +140,10 @@ public class DavinciCodeGame {
 		ResponseTurn res = new ResponseTurn(nextNo);
 		room.sendMessage(res);
 
+	}
+	
+	public void disConnection(String email) {
+		room.getUser(email);
 	}
 	
 	public void sendMessage(ResponseBase res) {

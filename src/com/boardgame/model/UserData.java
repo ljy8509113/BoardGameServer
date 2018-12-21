@@ -1,61 +1,27 @@
 package com.boardgame.model;
 
-public class UserData {
-	int state;
-	String email;
-	String nickName;
-	boolean isMaster = false;
-	boolean isConnection = true;
+import com.boardgame.common.UserState;
+
+import io.netty.channel.ChannelHandlerContext;
+
+public class UserData extends UserDataBase{
+	public ChannelHandlerContext ctx;
 	
-	public UserData() {		
+	public UserData(ChannelHandlerContext ctx, String email, String nickName, boolean isMaster, UserState state) {
+		super(state, email, nickName, isMaster);
+		this.ctx = ctx;
+	}
+
+	public ChannelHandlerContext getCtx() {
+		return ctx;
+	}
+
+	public void setCtx(ChannelHandlerContext ctx) {
+		this.ctx = ctx;
 	}
 	
-	public UserData(int state, String email, String nickName, boolean isMaster, boolean isConnection) {
-		this.state = state;
-		this.email = email;
-		this.nickName = nickName;
-		this.isMaster = isMaster;
-		this.isConnection = isConnection;
+	public boolean isSameCtx(ChannelHandlerContext ctx) {
+		return this.ctx == ctx;
 	}
-
-	public int getState() {
-		return state;
-	}
-
-	public void setState(int state) {
-		this.state = state;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getNickName() {
-		return nickName;
-	}
-
-	public void setNickName(String nickName) {
-		this.nickName = nickName;
-	}
-
-	public boolean isMaster() {
-		return isMaster;
-	}
-
-	public void setMaster(boolean isMaster) {
-		this.isMaster = isMaster;
-	}
-
-	public boolean isConnection() {
-		return isConnection;
-	}
-
-	public void setConnection(boolean isConnection) {
-		this.isConnection = isConnection;
-	}
-		
+	
 }

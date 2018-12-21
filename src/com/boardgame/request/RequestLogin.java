@@ -3,9 +3,11 @@ package com.boardgame.request;
 import com.boardgame.common.Common;
 
 public class RequestLogin extends RequestBase {
-	public boolean isAutoId;
-	public RequestLogin(Integer gameNo, String email, boolean isAutoId) {
+	public String password;
+	
+	public RequestLogin(Integer gameNo, String email, String password) {
 		super(Common.IDENTIFIER_LOGIN, gameNo, email);
-		this.isAutoId = isAutoId;
+		this.password = password;
+		
 	}
 }

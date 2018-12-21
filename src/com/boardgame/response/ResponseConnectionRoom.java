@@ -3,15 +3,15 @@ package com.boardgame.response;
 import java.util.List;
 
 import com.boardgame.common.Common;
-import com.boardgame.model.UserData;
+import com.boardgame.model.UserDataBase;
 import com.database.common.ResCode;
 
 public class ResponseConnectionRoom extends ResponseBase {
-	private List<UserData> userList;
+	private List<UserDataBase> userList;
 	private String title;
 	private int roomNo;
 	
-	public ResponseConnectionRoom(String title, List<UserData> userList, int roomNo) {
+	public ResponseConnectionRoom(String title, List<UserDataBase> userList, int roomNo) {
 		super(Common.IDENTIFIER_CONNECT_ROOM, ResCode.SUCCESS.getResCode());		
 		this.title = title;
 		this.userList = userList;
@@ -22,11 +22,11 @@ public class ResponseConnectionRoom extends ResponseBase {
 		super(Common.IDENTIFIER_CONNECT_ROOM, resCode, message);
 	}
 	
-	public List<UserData> getUserList() {
+	public List<UserDataBase> getUserList() {
 		return userList;
 	}
 
-	public void setUserList(List<UserData> userList) {
+	public void setUserList(List<UserDataBase> userList) {
 		this.userList = userList;
 	}
 

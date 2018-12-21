@@ -3,17 +3,17 @@ package com.boardgame.response;
 import java.util.List;
 
 import com.boardgame.common.Common;
-import com.boardgame.model.UserData;
+import com.boardgame.model.UserDataBase;
 import com.database.common.ResCode;
 
 public class ResponseRoomInfo extends ResponseBase {
-	private List<UserData> userList;
+	private List<UserDataBase> userList;
 	private String title;
 	
 	public ResponseRoomInfo() {		
 	}
 	
-	public ResponseRoomInfo(List<UserData> userList, String title) {
+	public ResponseRoomInfo(List<UserDataBase> userList, String title) {
 		super(Common.IDENTIFIER_ROOM_INFO, ResCode.SUCCESS.getResCode());
 		this.userList = userList;
 		this.title = title;
@@ -23,11 +23,11 @@ public class ResponseRoomInfo extends ResponseBase {
 		super(Common.IDENTIFIER_ROOM_INFO, resCode, message);
 	}
 
-	public List<UserData> getUserList() {
+	public List<UserDataBase> getUserList() {
 		return userList;
 	}
 
-	public void setUserList(List<UserData> userList) {
+	public void setUserList(List<UserDataBase> userList) {
 		this.userList = userList;
 	}
 

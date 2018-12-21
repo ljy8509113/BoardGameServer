@@ -1,17 +1,20 @@
 package com.boardgame.controller;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import com.boardgame.common.Common;
+import com.boardgame.common.UserState;
 import com.boardgame.controller.game.DavinciCodeGame;
 import com.boardgame.model.GameRoom;
-import com.boardgame.model.UserInfo;
+import com.boardgame.model.UserData;
 import com.boardgame.request.RequestStart;
 import com.boardgame.request.davincicode.RequesetSelectNumber;
 import com.boardgame.response.ResponseBase;
 import com.boardgame.response.ResponseRoomInfo;
 import com.boardgame.response.ResponseStart;
+import com.boardgame.response.davincicode.ResponseBaseDavinci;
 import com.boardgame.response.davincicode.ResponseSelectNumber;
 import com.database.common.ResCode;
 import com.database.util.CustomException;
@@ -38,6 +41,29 @@ public class DavinciCodeController extends BaseController {
 		map = new HashMap<Integer, DavinciCodeGame>();
 	}
 	
+	public void disConnectionUser(ChannelHandlerContext ctx) {
+		Iterator<Integer> keys = map.keySet().iterator();
+		while( keys.hasNext() ){
+			DavinciCodeGame game = map.get(keys.next());
+			UserData data = game.room.getUser(ctx); 
+			
+			if(data != null) {
+				if(game.room.isPlaing) {
+					data.state = UserState.DISCONNECT;
+					ResponseBaseDavinci res = new ResponseBaseDavinci(Common.IDENTIFIER_GAME_CARD_INFO, game.cardInfo);
+					game.room.sendMessage(res);
+				}else {
+					game.room.removeUser(data.email);
+					SocketController.Instance().mapUsers.remove(data.email);
+					ResponseRoomInfo res = new ResponseRoomInfo(game.room.getResUserList(), game.room.getTitle());
+					game.room.sendMessage(res);
+				}
+				
+				return;
+			}
+		}
+	}
+	
 	@Override 
 	public void reqData(String reqStr, String identifier, ChannelHandlerContext ctx){
 		ResponseBase res;
@@ -52,8 +78,8 @@ public class DavinciCodeController extends BaseController {
 					
 					DavinciCodeGame game = new DavinciCodeGame(room);
 					map.put(room.getNo(), game);
-					
-					res = new ResponseStart(game.cardInfo.getUserData(), Common.MAX_CARD_COUNT);
+					room.isPlaing = true;
+					res = new ResponseStart(game.cardInfo);
 					room.sendMessage(res);
 					
 				} catch (CustomException e) {
@@ -63,12 +89,12 @@ public class DavinciCodeController extends BaseController {
 						response(res, ctx);
 					}else {
 						ResponseRoomInfo resRoomUsers = new ResponseRoomInfo(room.getResUserList(), room.getTitle());
-						for(UserInfo info : room.getUserList()) {
-							if(info.isMaster()) {
+						for(UserData info : room.getUserList()) {
+							if(info.isMaster) {
 								res = new ResponseStart(e.getResCode(), e.getMessage());
-								response(res, info.getCtx());
+								response(res, info.ctx);
 							}else {
-								response(resRoomUsers, info.getCtx());
+								response(resRoomUsers, info.ctx);
 							}
 						}
 					}
@@ -82,12 +108,10 @@ public class DavinciCodeController extends BaseController {
 					DavinciCodeGame game = map.get(req.roomNo);
 					
 					boolean isSuccess = game.selectCard(req.getEmail(), req.index);
-					
+					res = new ResponseSelectNumber(req.index, req.getEmail(), isSuccess, game.cardInfo);
 					if(isSuccess) {
-						res = new ResponseSelectNumber(req.index, req.getEmail(), isSuccess);
 						game.sendMessage(res);
 					}else {
-						res = new ResponseSelectNumber(req.index, req.getEmail(), isSuccess);
 						response(res, ctx);
 					}
 				}catch(Exception e) {
