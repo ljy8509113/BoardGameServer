@@ -49,7 +49,7 @@ public class DavinciCodeController extends BaseController {
 			
 			if(data != null) {
 				if(game.room.isPlaing) {
-					data.state = UserState.DISCONNECT;
+					data.setState(UserState.DISCONNECT);
 					ResponseBaseDavinci res = new ResponseBaseDavinci(Common.IDENTIFIER_GAME_CARD_INFO, game.cardInfo);
 					game.room.sendMessage(res);
 				}else {

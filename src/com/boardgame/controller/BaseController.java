@@ -161,12 +161,12 @@ public class BaseController {
 						
 						User user = new User(email, req.getNickName(), password, true);
 						userDao.insert(user, password);
+						res = new ResponseJoin(true, email, req.getPassword(), req.getNickName());
 					}else {
 						User user = new User(req.getEmail(), req.getNickName(), password, false);
 						userDao.insert(user, password);
+						res = new ResponseJoin(false, req.getEmail(), req.getPassword(), req.getNickName());
 					}
-					
-					res = new ResponseJoin(ResCode.SUCCESS.getResCode(), ResCode.SUCCESS.getMessage());
 					response(res, ctx);
 				} catch (ClassNotFoundException | SQLException e) {
 					e.printStackTrace();
@@ -289,7 +289,7 @@ public class BaseController {
 		isAdd = room.addUser(info);
 
 		if(isAdd) {
-			info.state = UserState.GAME_WAITING;
+			info.setState(UserState.GAME_WAITING);
 			return room.getResUserList();
 		}else {
 			throw new CustomException(ResCode.ERROR_CONNECTION_ROOM.getResCode(), ResCode.ERROR_CONNECTION_ROOM.getMessage());
@@ -340,7 +340,7 @@ public class BaseController {
 				
 				if(room == null) {
 					//UserController.Instance().updateState(UserState.NONE, email);
-					info.state = UserState.NONE;
+					info.setState(UserState.NONE);
 				}else {
 					isGaming = true;
 					roomNo = room.getNo();

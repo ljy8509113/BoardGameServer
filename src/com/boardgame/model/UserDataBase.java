@@ -3,24 +3,24 @@ package com.boardgame.model;
 import com.boardgame.common.UserState;
 
 public class UserDataBase {
-	public UserState state;
+	public int state;
 	public String email;
 	public String nickName;
 	public boolean isMaster = false;
 	
 	public UserDataBase(UserState state, String email, String nickName, boolean isMaster) {
-		this.state = state;
+		this.state = state.getValue();
 		this.email = email;
 		this.nickName = nickName;
 		this.isMaster = isMaster;
 	}
 
 	public UserState getState() {
-		return state;
+		return UserState.getState(state);
 	}
 
 	public void setState(UserState state) {
-		this.state = state;
+		this.state = state.getValue();
 	}
 
 	public String getEmail() {

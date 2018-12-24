@@ -39,7 +39,7 @@ public class SocketController {
 			UserData data = mapUsers.get(key);
 			
 			if(data.ctx == ctx) {
-				if(data.state == UserState.NONE) {
+				if(data.getState() == UserState.NONE) {
 					mapUsers.remove(key);
 					return;
 				}else {

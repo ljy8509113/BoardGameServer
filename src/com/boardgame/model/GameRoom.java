@@ -19,7 +19,7 @@ public class GameRoom extends Room{
 		super(no, title, nickName, maxUser, false, password);
 
 		UserData info = SocketController.Instance().getUser(email);//UserController.Instance().getUserInfo(email);//new UserInfo(ctx, email, nickName, true, UserState.GAME_WAITING);// UserController.Instance().getUser(email);
-		info.state = UserState.GAME_READY;
+		info.setState(UserState.GAME_READY);
 		info.isMaster = true;
 		
 		userList = new ArrayList<>();
@@ -50,7 +50,7 @@ public class GameRoom extends Room{
 	public List<UserDataBase> getResUserList(){
 		List<UserDataBase> list = new ArrayList<>();
 		for(UserData i : userList) {
-			UserDataBase data = new UserDataBase(i.state, i.email, i.nickName, i.isMaster); 
+			UserDataBase data = new UserDataBase(i.getState(), i.email, i.nickName, i.isMaster); 
 			list.add(data);
 		}
 		return list;
@@ -58,13 +58,14 @@ public class GameRoom extends Room{
 
 	public Room getRoom() {
 //		Room room = new Room(no, title, masterUserNickName, maxUser, currentUser, isPlaing, password);
-		return (Room)this;
+		Room room = new Room(no, title, masterUserNickName, maxUser, isPlaing, password);
+		return room;
 	}
 
 	public void updateUserState(String email, UserState state) {
 		UserData user = getUser(email);
 		if(user != null)
-			user.state = state;		
+			user.setState(state);		
 	}
 
 //	public void updateConnectionState(String email, boolean isConnection) {
@@ -113,8 +114,8 @@ public class GameRoom extends Room{
 		for(UserData d : this.userList) {
 			if(d.email.equals(email)) {
 				d.isMaster = true;
-				if(d.state == UserState.GAME_WAITING)
-					d.state = UserState.GAME_READY;
+				if(d.getState() == UserState.GAME_WAITING)
+					d.setState(UserState.GAME_READY);
 			}else {
 				d.isMaster = false;
 			}
@@ -126,7 +127,7 @@ public class GameRoom extends Room{
 			throw new CustomException(ResCode.ERROR_NOT_ENOUGH.getResCode(), ResCode.ERROR_NOT_ENOUGH.getMessage());
 		}else {
 			for(UserData info : userList) {
-				if(info.state != UserState.GAME_READY)
+				if(info.getState() != UserState.GAME_READY)
 					throw new CustomException(ResCode.ERROR_NOT_READY.getResCode(), ResCode.ERROR_NOT_READY.getMessage());
 			}
 		}
