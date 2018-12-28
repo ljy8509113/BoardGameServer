@@ -43,7 +43,7 @@ public class SocketController {
 					mapUsers.remove(key);
 					return;
 				}else {
-					DavinciCodeController.Instance().disConnectionUser(ctx);
+//					DavinciCodeController.Instance().disConnectionUser(ctx);
 					return;
 				}
 			}

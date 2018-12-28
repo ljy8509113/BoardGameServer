@@ -12,8 +12,10 @@ import com.boardgame.response.ResponseBase;
 import com.boardgame.response.davincicode.ResponseOpenCard;
 import com.boardgame.response.davincicode.ResponseTurn;
 
-public class DavinciCodeGame {
-	public GameRoom room;
+import io.netty.channel.ChannelHandlerContext;
+
+public class DavinciCodeGame extends BaseGame{
+//	public GameRoom room;
 	public GameCardInfo cardInfo;
 //	public static final int CARD_MAX_INDEX = 26;
 //	public static final int CARD_COUNT = 4;
@@ -21,31 +23,7 @@ public class DavinciCodeGame {
 	int currentTurn = 0; 
 
 	public DavinciCodeGame(GameRoom room) {
-		this.room = room;	
-		cardInfo = new GameCardInfo();
-		
-		for(UserData user : room.getUserList()) {
-			UserGameData data = new UserGameData(0, user.email, user.nickName);
-			cardInfo.addUserData(data);
-		}
-		
-		Random r = new Random();
-		int count = 0;
-		ArrayList<UserGameData> users = cardInfo.getUserData();
-		while(count >= users.size()) {
-			int no = r.nextInt(users.size()) + 1;
-			boolean isAdd = true;
-			for(int i=0; i<users.size(); i++) {
-				if(users.get(i).getNo() == no)
-					isAdd = false;
-			}
-			if(isAdd) {
-				users.get(count).setNo(no);
-				count++;
-			}
-		}
-		
-		
+		super.room = room;	
 	}
 	
 //	public GameCardInfo setInitCard() {
@@ -148,5 +126,40 @@ public class DavinciCodeGame {
 	
 	public void sendMessage(ResponseBase res) {
 		room.sendMessage(res);
+	}
+	
+
+	@Override
+	public void setData(String identifier, String json, ChannelHandlerContext ctx) {
+		// TODO Auto-generated method stub
+		
+		
+	}
+
+	@Override
+	public void startGame() {
+		cardInfo = new GameCardInfo();
+		for(UserData user : room.getUserList()) {
+			UserGameData data = new UserGameData(0, user.email, user.nickName);
+			cardInfo.addUserData(data);
+		}
+		
+		Random r = new Random();
+		int count = 0;
+		ArrayList<UserGameData> users = cardInfo.getUserData();
+		while(count >= users.size()) {
+			int no = r.nextInt(users.size()) + 1;
+			boolean isAdd = true;
+			for(int i=0; i<users.size(); i++) {
+				if(users.get(i).getNo() == no)
+					isAdd = false;
+			}
+			if(isAdd) {
+				users.get(count).setNo(no);
+				count++;
+			}
+		}
+		
+		
 	}
 }

@@ -3,9 +3,12 @@ package com.boardgame.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.boardgame.common.Common;
 import com.boardgame.common.UserState;
 import com.boardgame.controller.RequestController;
 import com.boardgame.controller.SocketController;
+import com.boardgame.controller.game.BaseGame;
+import com.boardgame.controller.game.DavinciCodeGame;
 import com.boardgame.response.ResponseBase;
 import com.database.common.ResCode;
 import com.database.util.CustomException;
@@ -14,9 +17,9 @@ import io.netty.channel.ChannelHandlerContext;
 
 public class GameRoom extends Room{
 	List<UserData> userList;
-
-	public GameRoom(Integer no, String title, Integer maxUser, String email, String password, String nickName, ChannelHandlerContext ctx){
-		super(no, title, nickName, maxUser, false, password);
+	BaseGame game;
+	public GameRoom(Integer no, String title, String email, String password, String nickName, ChannelHandlerContext ctx, int gameNo){
+		super(no, title, nickName, false, password, gameNo);
 
 		UserData info = SocketController.Instance().getUser(email);//UserController.Instance().getUserInfo(email);//new UserInfo(ctx, email, nickName, true, UserState.GAME_WAITING);// UserController.Instance().getUser(email);
 		info.setState(UserState.GAME_READY);
@@ -24,6 +27,13 @@ public class GameRoom extends Room{
 		
 		userList = new ArrayList<>();
 		userList.add(info);		
+		
+		switch(gameNo) {
+		case Common.GAME_DAVINCICODE:
+			game = new DavinciCodeGame(this);
+			break;
+		}
+		
 	}
 
 	public boolean addUser(UserData user) {
@@ -58,7 +68,7 @@ public class GameRoom extends Room{
 
 	public Room getRoom() {
 //		Room room = new Room(no, title, masterUserNickName, maxUser, currentUser, isPlaing, password);
-		Room room = new Room(no, title, masterUserNickName, maxUser, isPlaing, password);
+		Room room = new Room(no, title, masterUserNickName, isPlaing, password, gameNo);
 		return room;
 	}
 
@@ -131,6 +141,10 @@ public class GameRoom extends Room{
 					throw new CustomException(ResCode.ERROR_NOT_READY.getResCode(), ResCode.ERROR_NOT_READY.getMessage());
 			}
 		}
+	}
+	
+	public void updateData(String identifier, String json, ChannelHandlerContext ctx) {
+		game.setData(identifier, json, ctx);
 	}
 
 }

@@ -4,13 +4,22 @@ public class RequestBase {
 	private String identifier;
 	private Integer gameNo;
 	private String email;
+	private int roomNo;
 	
 	public RequestBase(String identifier, Integer gameNo, String email) {
 		this.identifier = identifier;
 		this.gameNo = gameNo;
-		this.email = email;		
+		this.email = email;
+		roomNo = -1;
 	}
 
+	public RequestBase(String identifier, Integer gameNo, String email, int roomNo) {
+		this.identifier = identifier;
+		this.gameNo = gameNo;
+		this.email = email;
+		this.roomNo = roomNo;
+	}
+	
 	public String getIdentifier() {
 		return identifier;
 	}
@@ -21,5 +30,9 @@ public class RequestBase {
 
 	public String getEmail() {
 		return email;
+	}
+	
+	public int getRoomNo() {
+		return roomNo;
 	}
 }

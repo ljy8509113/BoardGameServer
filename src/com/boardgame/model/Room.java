@@ -1,6 +1,9 @@
 package com.boardgame.model;
 
+import com.boardgame.common.Common;
+
 public class Room {
+	int gameNo;
 	Integer no = null;
 	String title;
 	String masterUserNickName = "";
@@ -8,14 +11,21 @@ public class Room {
 	public boolean isPlaing = false;
 	String password = "";
 	
-	public Room(Integer no, String title, String masterUserNickName, int maxUser, boolean isPlaing,
-			String password) {
+	public Room(Integer no, String title, String masterUserNickName, boolean isPlaing,
+			String password, int gameNo) {
 		this.no = no;
 		this.title = title;
 		this.masterUserNickName = masterUserNickName;
-		this.maxUser = maxUser;
 		this.isPlaing = isPlaing;
 		this.password = password;
+		this.gameNo = gameNo;
+		
+		switch(gameNo) {
+		case Common.GAME_DAVINCICODE :
+			maxUser = 4;
+			break;
+		}
+		
 	}
 
 	public Integer getNo() {
