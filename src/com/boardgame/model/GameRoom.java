@@ -140,6 +140,8 @@ public class GameRoom extends Room{
 				if(info.getState() != UserState.GAME_READY)
 					throw new CustomException(ResCode.ERROR_NOT_READY.getResCode(), ResCode.ERROR_NOT_READY.getMessage());
 			}
+			
+			game.startGame();
 		}
 	}
 	

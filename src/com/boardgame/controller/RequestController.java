@@ -15,6 +15,7 @@ import javax.crypto.NoSuchPaddingException;
 import com.boardgame.common.Common;
 import com.boardgame.common.UserState;
 import com.boardgame.model.GameRoom;
+import com.boardgame.model.ResGameData;
 import com.boardgame.model.Room;
 import com.boardgame.model.UserData;
 import com.boardgame.model.UserDataBase;
@@ -33,6 +34,7 @@ import com.boardgame.request.RequestStart;
 import com.boardgame.response.ResponseBase;
 import com.boardgame.response.ResponseConnectionRoom;
 import com.boardgame.response.ResponseCreateRoom;
+import com.boardgame.response.ResponseGameList;
 import com.boardgame.response.ResponseGamingUser;
 import com.boardgame.response.ResponseJoin;
 import com.boardgame.response.ResponseLogin;
@@ -44,6 +46,7 @@ import com.boardgame.response.ResponseStart;
 import com.database.common.ResCode;
 import com.database.dao.ScoreDao;
 import com.database.dao.UserDao;
+import com.database.model.Game;
 import com.database.model.User;
 import com.database.util.CustomException;
 import com.security.Security;
@@ -56,9 +59,8 @@ import io.netty.util.CharsetUtil;
 public class RequestController {
 	private List<GameRoom> listRoom;
 	
-	ScoreDao scoreDao = new ScoreDao();
-	UserDao userDao = new UserDao();
-	
+//	ScoreDao scoreDao = new ScoreDao();
+//	UserDao userDao = new UserDao();
 	
 	private static RequestController instance= null;
 
@@ -84,6 +86,35 @@ public class RequestController {
 		
 		ResponseBase res;
 		switch(identifier) {
+			case Common.IDENTIFIER_LOGIN :
+			{
+				RequestLogin req = Common.gson.fromJson(result, RequestLogin.class);
+				res = DBController.Instance().selectUser(req.getEmail(), req.password, ctx);
+				response(res, ctx);
+			}
+			break;
+			case Common.IDENTIFIER_JOIN:
+			{
+				RequestJoin req = Common.gson.fromJson(result, RequestJoin.class);
+				res = DBController.Instance().addUser(req.getEmail(), req.getNickName(), req.getPassword(), ctx);
+				response(res, ctx);
+								
+			}
+			break;
+			case Common.IDENTIFIER_GANE_LIST :
+			{
+//				ResponseGameList req = Common.gson.fromJson(result, ResponseGameList.class);
+				List<Game> list = DBController.Instance().selectOnGames();
+				ArrayList<ResGameData> listData = new ArrayList<>();
+				for(Game g : list) {
+					ResGameData data = new ResGameData(g.getTitle(), g.getGameNo());
+					listData.add(data);
+				}
+				
+				res = new ResponseGameList(listData);
+				response(res, ctx);
+			}
+				break;
 			case Common.IDENTIFIER_ROOM_LIST:{
 				RequestRoomList req = Common.gson.fromJson(result, RequestRoomList.class);
 				int current = req.getCurrent();
@@ -142,78 +173,7 @@ public class RequestController {
 				response(res, ctx);
 			}
 			break;
-			case Common.IDENTIFIER_LOGIN :
-			{
-				RequestLogin req = Common.gson.fromJson(result, RequestLogin.class);
-				try {
-//					String password = Security.Instance().deCryption(req.password, false);
-					String password = Security.Instance().decrypt(req.password, false);
-					System.out.println("password : " + req.password);
-					System.out.println("password dec : " + password);
-	//
-					User user = userDao.loginUser(req.getEmail(), password);//DBController.Instance().login(req.getEmail(), password);
-					
-					UserData info = new UserData(ctx, user.getEmail(), user.getNickname(), false, UserState.NONE);
-//					UserController.Instance().addUser(info);
-					SocketController.Instance().connection(info);
-	
-					res = new ResponseLogin(user.getEmail(), user.getNickname());
-					response(res, ctx);
-					
-				}catch (ClassNotFoundException | SQLException e) {
-					res = new ResponseLogin(ResCode.ERROR_DB.getResCode(), ResCode.ERROR_DB.getMessage());
-					response(res, ctx);
-				}catch (CustomException e) {
-					res = new ResponseLogin(e.getResCode(), e.getMessage());
-					response(res, ctx);
-				}catch (InvalidKeyException | UnsupportedEncodingException | NoSuchAlgorithmException
-						| NoSuchPaddingException | InvalidAlgorithmParameterException | IllegalBlockSizeException
-						| BadPaddingException e1) {
-	
-					e1.printStackTrace();
-					res = new ResponseJoin(ResCode.ERROR_DECRYPTION.getResCode(), ResCode.ERROR_DECRYPTION.getMessage());
-					response(res, ctx);					
-				}	
-			}
-			break;
-			case Common.IDENTIFIER_JOIN:
-			{
-				RequestJoin req = Common.gson.fromJson(result, RequestJoin.class);
-				try {
-					String password = Security.Instance().decrypt(req.getPassword(), false);
-//					String password = Security.Instance().deCryption(req.getPassword(), false);
-					if(req.getEmail().equals("auto")) {
-						//오토 
-						int count = userDao.getAutoIdCount()+1;
-						String email = com.database.common.Common.AUTO_ID + count;
-						
-						User user = new User(email, req.getNickName(), password, true);
-						userDao.insert(user, password);
-						res = new ResponseJoin(true, email, req.getPassword(), req.getNickName());
-					}else {
-						User user = new User(req.getEmail(), req.getNickName(), password, false);
-						userDao.insert(user, password);
-						res = new ResponseJoin(false, req.getEmail(), req.getPassword(), req.getNickName());
-					}
-					response(res, ctx);
-				} catch (ClassNotFoundException | SQLException e) {
-					e.printStackTrace();
-					res = new ResponseJoin(ResCode.ERROR_DB.getResCode(), ResCode.ERROR_DB.getMessage());
-					response(res, ctx);
-				} catch (CustomException e) {
-					e.printStackTrace();
-					res = new ResponseJoin(e.getResCode(), e.getMessage());
-					response(res, ctx);
-				}catch (InvalidKeyException | UnsupportedEncodingException | NoSuchAlgorithmException
-						| NoSuchPaddingException | InvalidAlgorithmParameterException | IllegalBlockSizeException
-						| BadPaddingException e1) {
-	
-					e1.printStackTrace();
-					res = new ResponseJoin(ResCode.ERROR_DECRYPTION.getResCode(), ResCode.ERROR_DECRYPTION.getMessage());
-					response(res, ctx);					
-				}				
-			}
-			break;
+			
 			case Common.IDENTIFIER_READY :
 			{
 				RequestReady req = Common.gson.fromJson(result, RequestReady.class);
@@ -290,12 +250,10 @@ public class RequestController {
 				try {
 					room = getRoom(req.getRoomNo());
 					room.checkStart();
-					room.isPlaing = true;
+//					room.isPlaing = true;
 					
 //					res = new ResponseStart(game.cardInfo);
 //					room.sendMessage(res);
-					
-					room.checkStart();
 				} catch (CustomException e) {
 					e.printStackTrace();
 					if(e.getResCode() == ResCode.ERROR_NOT_FOUND_ROOM.getResCode()) {

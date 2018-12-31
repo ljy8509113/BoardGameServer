@@ -3,99 +3,26 @@ package com.boardgame.controller.game;
 import java.util.ArrayList;
 import java.util.Random;
 
+import com.boardgame.common.Common;
 import com.boardgame.model.GameRoom;
 import com.boardgame.model.UserData;
 import com.boardgame.model.davincicode.GameCardInfo;
-import com.boardgame.model.davincicode.NumberCard;
 import com.boardgame.model.davincicode.UserGameData;
+import com.boardgame.request.RequestStart;
 import com.boardgame.response.ResponseBase;
+import com.boardgame.response.davincicode.ResponseInit;
 import com.boardgame.response.davincicode.ResponseOpenCard;
 import com.boardgame.response.davincicode.ResponseTurn;
 
 import io.netty.channel.ChannelHandlerContext;
 
 public class DavinciCodeGame extends BaseGame{
-//	public GameRoom room;
 	public GameCardInfo cardInfo;
-//	public static final int CARD_MAX_INDEX = 26;
-//	public static final int CARD_COUNT = 4;
-//	public static final int JOKER_NUMBER = 99;
 	int currentTurn = 0; 
 
 	public DavinciCodeGame(GameRoom room) {
 		super.room = room;	
 	}
-	
-//	public GameCardInfo setInitCard() {
-//		arrayUser = new ArrayList<>();
-		//		mapCard = new HashMap<>();
-		
-//		cardInfo = new GameCardInfo();
-//		int jokerNumber = JOKER_NUMBER;
-//		for(int i=0; i<CARD_MAX_INDEX; i++) {
-//			NumberCard n;
-//			if(i >= 24) {
-//				n = new NumberCard(jokerNumber);
-//				jokerNumber++;
-//			}else {
-//				n = new NumberCard(i+1);
-//			}
-//			//mapCard.put(n.getNumber(), n);
-//			cardInfo.addCard(n.getNumber(), n);
-//		}
-//
-//		//순서 정하기
-//		ArrayList<Integer> noArray = new ArrayList<>();
-//		int maxCount = room.getUserList().size();
-//
-//		Random r = new Random();
-//		while(noArray.size() < maxCount) {
-//			int number = r.nextInt(maxCount) + 1;
-//			if(noArray.size() == 0) {
-//				noArray.add(number);
-//			}else {
-//				boolean isAdd = true;
-//				for(int n : noArray) {
-//					if(number == n) {
-//						isAdd = false;
-//						break;
-//					}
-//				}
-//				if(isAdd) {
-//					noArray.add(number);
-//				}
-//			}
-//		}
-//
-//		for(int i=0; i<room.getUserList().size(); i++) {
-//			UserInfo user = room.getUserList().get(i);
-//			UserGameData data = new UserGameData(noArray.get(i), user.getEmail(), user.getNickName());
-//			//arrayUser.add(data);
-//			cardInfo.addUserData(data);
-//		}
-//		
-//		cardInfo.sortUser();
-//
-//		return cardInfo;
-//	}
-
-//	public void initSelect(String email, int index) throws CustomException {
-		
-//		if(selectNumber(email, number)) {
-//			if(cardInfo.initCheck()) {
-//				ResponseTurn res = new ResponseTurn(1);
-//				room.sendMessage(res);
-//			}else {
-//				//				ResponseInitNumber res = new ResponseInitNumber(email, number);
-//				ResponseGameCardInfo res = new ResponseGameCardInfo(cardInfo);
-//				room.sendMessage(res);				
-//			}	
-//		}else {
-//			//throw new CustomException(ResCode.ERROR_NUMBER_NOT_SELECT.getResCode(), ResCode.ERROR_NUMBER_NOT_SELECT.getMessage());
-//			ResponseGameCardInfo res = new ResponseGameCardInfo(ResCode.ERROR_NUMBER_NOT_SELECT.getResCode(), ResCode.ERROR_NUMBER_NOT_SELECT.getMessage(), cardInfo);
-//			room.sendMessage(res);
-//		}
-//	}
 
 	public boolean selectCard(String email, int index) {
 		return cardInfo.moveCard(email, index);
@@ -132,7 +59,33 @@ public class DavinciCodeGame extends BaseGame{
 	@Override
 	public void setData(String identifier, String json, ChannelHandlerContext ctx) {
 		// TODO Auto-generated method stub
+		ResponseBase res;
+		switch(identifier) {
 		
+		case Common.IDENTIFIER_SELECT_NUMBER :
+		{
+//			try {
+//				RequesetSelectNumber req = Common.gson.fromJson(reqStr, RequesetSelectNumber.class);
+//				DavinciCodeGame game = map.get(req.roomNo);
+//
+//				boolean isSuccess = game.selectCard(req.getEmail(), req.index);
+//				res = new ResponseSelectNumber(req.index, req.getEmail(), isSuccess, game.cardInfo);
+//				if(isSuccess) {
+//					game.sendMessage(res);
+//				}else {
+//					response(res, ctx);
+//				}
+//			}catch(Exception e) {
+//				e.printStackTrace();
+//				res = new ResponseSelectNumber(ResCode.ERROR_NOT_FOUND_ROOM.getResCode(), ResCode.ERROR_NOT_FOUND_ROOM.getMessage());
+//				response(res, ctx);
+//			}
+
+		}
+		break;
+		default :
+			break;
+		}
 		
 	}
 
@@ -160,6 +113,7 @@ public class DavinciCodeGame extends BaseGame{
 			}
 		}
 		
-		
+		ResponseInit res = new ResponseInit(cardInfo);
+		room.sendMessage(res);
 	}
 }
