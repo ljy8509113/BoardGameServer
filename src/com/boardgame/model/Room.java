@@ -1,7 +1,5 @@
 package com.boardgame.model;
 
-import com.boardgame.common.Common;
-
 public class Room {
 	int gameNo;
 	Integer no = null;
@@ -19,12 +17,6 @@ public class Room {
 		this.isPlaing = isPlaing;
 		this.password = password;
 		this.gameNo = gameNo;
-		
-		switch(gameNo) {
-		case Common.GAME_DAVINCICODE :
-			maxUser = 4;
-			break;
-		}
 		
 	}
 

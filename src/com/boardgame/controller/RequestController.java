@@ -140,7 +140,7 @@ public class RequestController {
 						cr.getGameNo());
 	
 				addRoom(room);
-				res = new ResponseCreateRoom(room.getTitle(), room.getResUserList(), room.getNo());
+				res = new ResponseCreateRoom(room.getTitle(), room.getResUserList(), room.getNo(), cr.getGameNo());
 				response(res, ctx);
 			}
 			break;
@@ -156,7 +156,7 @@ public class RequestController {
 					String title = getRoom(roomNo).getTitle();
 	
 					List<UserDataBase> userList = addUser(roomNo, info);
-					res = new ResponseConnectionRoom(title, userList, roomNo);
+					res = new ResponseConnectionRoom(title, userList, roomNo, cr.getGameNo());
 	
 					getRoom(roomNo).sendMessage(res);
 					
@@ -229,7 +229,7 @@ public class RequestController {
 						String title = getRoom(roomNo).getTitle();
 		
 						List<UserDataBase> userList = addUser(roomNo, info);
-						res = new ResponseConnectionRoom(title, userList, roomNo);
+						res = new ResponseConnectionRoom(title, userList, roomNo, req.getGameNo());
 						getRoom(roomNo).sendMessage(res);
 //						res = new ResponseRoomPassword(req.getRoomNo(), title, userList);
 					}else {
@@ -250,10 +250,10 @@ public class RequestController {
 				try {
 					room = getRoom(req.getRoomNo());
 					room.checkStart();
-//					room.isPlaing = true;
+					room.isPlaing = true;
 					
-//					res = new ResponseStart(game.cardInfo);
-//					room.sendMessage(res);
+					res = new ResponseStart();
+					room.sendMessage(res);
 				} catch (CustomException e) {
 					e.printStackTrace();
 					if(e.getResCode() == ResCode.ERROR_NOT_FOUND_ROOM.getResCode()) {

@@ -3,13 +3,14 @@ package com.boardgame.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.boardgame.common.Common;
+import com.boardgame.common.RoomInMax;
 import com.boardgame.common.UserState;
 import com.boardgame.controller.RequestController;
 import com.boardgame.controller.SocketController;
 import com.boardgame.controller.game.BaseGame;
 import com.boardgame.controller.game.DavinciCodeGame;
 import com.boardgame.response.ResponseBase;
+import com.database.common.Common;
 import com.database.common.ResCode;
 import com.database.util.CustomException;
 
@@ -28,12 +29,13 @@ public class GameRoom extends Room{
 		userList = new ArrayList<>();
 		userList.add(info);		
 		
+		maxUser = RoomInMax.MAX.getValue(gameNo);
+		
 		switch(gameNo) {
-		case Common.GAME_DAVINCICODE:
+		case Common.DIVINCHICODE_GAME_CODE :
 			game = new DavinciCodeGame(this);
 			break;
 		}
-		
 	}
 
 	public boolean addUser(UserData user) {
@@ -141,7 +143,7 @@ public class GameRoom extends Room{
 					throw new CustomException(ResCode.ERROR_NOT_READY.getResCode(), ResCode.ERROR_NOT_READY.getMessage());
 			}
 			
-			game.startGame();
+//			game.startGame();
 		}
 	}
 	
