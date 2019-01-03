@@ -62,7 +62,7 @@ public class DavinciCodeGame extends BaseGame{
 		ResponseBase res;
 		switch(identifier) {
 		
-		case Common.IDENTIFIER_SELECT_NUMBER :
+		case Common.IDENTIFIER_SELECT_FIELD_CARD :
 		{
 //			try {
 //				RequesetSelectNumber req = Common.gson.fromJson(reqStr, RequesetSelectNumber.class);
@@ -80,9 +80,15 @@ public class DavinciCodeGame extends BaseGame{
 //				res = new ResponseSelectNumber(ResCode.ERROR_NOT_FOUND_ROOM.getResCode(), ResCode.ERROR_NOT_FOUND_ROOM.getMessage());
 //				response(res, ctx);
 //			}
-
+			
+			
 		}
 		break;
+		case Common.IDENTIFIER_SELECT_USER_CARD :
+		{
+			
+		}
+			break;
 		default :
 			break;
 		}
