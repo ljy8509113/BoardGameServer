@@ -1,16 +1,7 @@
 package com.boardgame.controller;
 
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 
 import com.boardgame.common.Common;
 import com.boardgame.common.UserState;
@@ -36,20 +27,14 @@ import com.boardgame.response.ResponseConnectionRoom;
 import com.boardgame.response.ResponseCreateRoom;
 import com.boardgame.response.ResponseGameList;
 import com.boardgame.response.ResponseGamingUser;
-import com.boardgame.response.ResponseJoin;
-import com.boardgame.response.ResponseLogin;
 import com.boardgame.response.ResponseOutRoom;
 import com.boardgame.response.ResponseRoomInfo;
 import com.boardgame.response.ResponseRoomList;
 import com.boardgame.response.ResponseRoomPassword;
 import com.boardgame.response.ResponseStart;
 import com.database.common.ResCode;
-import com.database.dao.ScoreDao;
-import com.database.dao.UserDao;
 import com.database.model.Game;
-import com.database.model.User;
 import com.database.util.CustomException;
-import com.security.Security;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;

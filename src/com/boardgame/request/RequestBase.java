@@ -2,18 +2,18 @@ package com.boardgame.request;
 
 public class RequestBase {
 	private String identifier;
-	private Integer gameNo;
+	private int gameNo;
 	private String email;
 	private int roomNo;
 	
-	public RequestBase(String identifier, Integer gameNo, String email) {
+	public RequestBase(String identifier, int gameNo, String email) {
 		this.identifier = identifier;
 		this.gameNo = gameNo;
 		this.email = email;
 		roomNo = -1;
 	}
 
-	public RequestBase(String identifier, Integer gameNo, String email, int roomNo) {
+	public RequestBase(String identifier, int gameNo, String email, int roomNo) {
 		this.identifier = identifier;
 		this.gameNo = gameNo;
 		this.email = email;

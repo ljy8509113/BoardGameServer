@@ -71,7 +71,7 @@ public class DBController {
 				| BadPaddingException e1) {
 
 			e1.printStackTrace();
-			res = new ResponseJoin(ResCode.ERROR_DECRYPTION.getResCode(), ResCode.ERROR_DECRYPTION.getMessage());
+			res = new ResponseLogin(ResCode.ERROR_DECRYPTION.getResCode(), ResCode.ERROR_DECRYPTION.getMessage());
 			return res;					
 		}
 	}
@@ -91,7 +91,7 @@ public class DBController {
 				res = new ResponseJoin(true, email, decPassword, nickName);
 			}else {
 				User user = new User(email, nickName, decPassword, false);
-				userDao.insert(user, password);
+				userDao.insert(user, decPassword);
 				res = new ResponseJoin(false, email, password, nickName);
 			}
 			return res;
