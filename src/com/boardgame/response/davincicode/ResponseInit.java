@@ -5,7 +5,7 @@ import com.boardgame.model.davincicode.GameCardInfo;
 
 public class ResponseInit extends ResponseBaseDavinci{
 	public ResponseInit(GameCardInfo info) {
-		super(Common.IDENTIFIER_INIT_GAME, info);
+		super(Common.IDENTIFIER_INIT_GAME, info, null);
 	}
 	
 	public ResponseInit(int resCode, String message) {
