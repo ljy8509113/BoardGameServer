@@ -9,9 +9,11 @@ import com.boardgame.model.UserData;
 import com.boardgame.model.davincicode.GameCardInfo;
 import com.boardgame.model.davincicode.UserGameData;
 import com.boardgame.request.RequestStart;
+import com.boardgame.request.davincicode.RequestSelectFieldCard;
 import com.boardgame.response.ResponseBase;
 import com.boardgame.response.davincicode.ResponseInit;
 import com.boardgame.response.davincicode.ResponseOpenCard;
+import com.boardgame.response.davincicode.ResponseSelectFieldCard;
 import com.boardgame.response.davincicode.ResponseTurn;
 
 import io.netty.channel.ChannelHandlerContext;
@@ -24,9 +26,9 @@ public class DavinciCodeGame extends BaseGame{
 		super.room = room;	
 	}
 
-	public boolean selectCard(String email, int index) {
-		return cardInfo.moveCard(email, index);
-	}
+//	public boolean selectCard(String email, int index) {
+//		return cardInfo.moveCard(email, index);
+//	}
 
 	public void openCard(String reqEmail, String targetEmail, int index, boolean isJoker) {
 		UserGameData user = cardInfo.getUser(targetEmail);
@@ -81,6 +83,11 @@ public class DavinciCodeGame extends BaseGame{
 //				response(res, ctx);
 //			}
 			
+			RequestSelectFieldCard req = Common.gson.fromJson(json, RequestSelectFieldCard.class);
+			boolean isSuccess = cardInfo.selectFieldCard(req.getEmail(), req.index);
+			
+			
+				res = new ResponseSelectFieldCard(cardInfo, req.getEmail(), isSuccess, req.getEmail(), true);
 			
 		}
 		break;

@@ -41,7 +41,7 @@ public class GameCardInfo {
 //		return mapFieldCards.get(key);
 //	}
 
-	public boolean moveCard(String email, int index) {
+	public boolean selectFieldCard(String email, int index) {
 		for(NumberCard c : fieldCardList) {
 			if(c.index == index) {
 				NumberCard card = new NumberCard(index);

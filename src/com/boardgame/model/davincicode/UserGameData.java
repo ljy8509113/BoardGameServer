@@ -8,6 +8,7 @@ public class UserGameData {
 	private String nickName;
 	private ArrayList<NumberCard> cards;
 	private boolean isLose = false;
+	boolean isInit = true;
 //	Descending descending;
 	
 	public UserGameData(int no, String email, String nickName) {
@@ -48,6 +49,14 @@ public class UserGameData {
 
 	public void setLose(boolean isLose) {
 		this.isLose = isLose;
+	}
+	
+	public boolean isInit() {
+		return isInit;
+	}
+
+	public void setInit(boolean isInit) {
+		this.isInit = isInit;
 	}
 
 	public void addCard(NumberCard card) {
