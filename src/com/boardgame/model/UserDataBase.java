@@ -1,18 +1,19 @@
 package com.boardgame.model;
 
+import com.boardgame.common.UserType;
 import com.boardgame.common.UserState;
 
 public class UserDataBase {
 	public int state;
 	public String email;
 	public String nickName;
-	public boolean isMaster = false;
+	public int type;
 	
-	public UserDataBase(UserState state, String email, String nickName, boolean isMaster) {
+	public UserDataBase(UserState state, String email, String nickName, int type) {
 		this.state = state.getValue();
 		this.email = email;
 		this.nickName = nickName;
-		this.isMaster = isMaster;
+		this.type = type;
 	}
 
 	public UserState getState() {
@@ -39,13 +40,18 @@ public class UserDataBase {
 		this.nickName = nickName;
 	}
 
-	public boolean isMaster() {
-		return isMaster;
+	public UserType getType() {
+		return UserType.getType(type);
 	}
 
-	public void setMaster(boolean isMaster) {
-		this.isMaster = isMaster;
-	}	
+	public void setMode(UserType type) {
+		this.type = type.getValue();
+	}
 	
-	
+	public boolean isMaster() {
+		if(UserType.getType(type) == UserType.MASTER)
+			return true;
+		else
+			return false;
+	}
 }

@@ -4,20 +4,20 @@ import com.boardgame.common.Common;
 
 public class RequestConnectionRoom extends RequestBase {
 	
-	private String password;
 	private String nickName;
+	boolean isComputer;
 	
-	public RequestConnectionRoom(Integer gameNo, String email, Integer roomNo, String nickName, String password) {
+	public RequestConnectionRoom(Integer gameNo, String email, Integer roomNo, String nickName, boolean isComputer) {
 		super(Common.IDENTIFIER_CONNECT_ROOM, gameNo, email, roomNo);
-		this.password = password;
 		this.nickName = nickName;
-	}
-	
-	public String getPassword() {
-		return password;
+		this.isComputer = isComputer;
 	}
 	
 	public String getNickName() {
 		return nickName;
+	}
+	
+	public boolean isComputer() {
+		return this.isComputer;
 	}
 }

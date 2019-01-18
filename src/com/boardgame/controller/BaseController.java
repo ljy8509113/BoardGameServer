@@ -13,6 +13,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 import com.boardgame.common.Common;
+import com.boardgame.common.UserType;
 import com.boardgame.common.UserState;
 import com.boardgame.model.GameRoom;
 import com.boardgame.model.Room;
@@ -379,9 +380,14 @@ public class BaseController {
 		UserData info = room.getUser(email);
 		RequestController.Instance().response(res, info.getCtx());
 		
-		if( room.getUser(email).isMaster() && room.getUserList().size() > 1) {
+		if( room.getUser(email).type == UserType.MASTER.getValue() && room.getUserList().size() > 1) {
 			room.removeUser(email);
-			room.changeMaster(room.getUserList().get(0).email); //changeMaster(0);			
+			for(UserData data : room.getUserList()) {
+				if(data.type == UserType.USER.getValue()) {
+					room.changeMaster(room.getUserList().get(0).email);
+					break;
+				}
+			}			
 		}else {
 			room.removeUser(email);
 		}

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import com.boardgame.common.Common;
+import com.boardgame.common.DavincicodeError;
 import com.boardgame.model.GameRoom;
 import com.boardgame.model.UserData;
 import com.boardgame.model.davincicode.GameCardInfo;
@@ -15,6 +16,7 @@ import com.boardgame.response.davincicode.ResponseInit;
 import com.boardgame.response.davincicode.ResponseOpenCard;
 import com.boardgame.response.davincicode.ResponseSelectFieldCard;
 import com.boardgame.response.davincicode.ResponseTurn;
+import com.database.common.ResCode;
 
 import io.netty.channel.ChannelHandlerContext;
 
@@ -66,29 +68,16 @@ public class DavinciCodeGame extends BaseGame{
 		
 		case Common.IDENTIFIER_SELECT_FIELD_CARD :
 		{
-//			try {
-//				RequesetSelectNumber req = Common.gson.fromJson(reqStr, RequesetSelectNumber.class);
-//				DavinciCodeGame game = map.get(req.roomNo);
-//
-//				boolean isSuccess = game.selectCard(req.getEmail(), req.index);
-//				res = new ResponseSelectNumber(req.index, req.getEmail(), isSuccess, game.cardInfo);
-//				if(isSuccess) {
-//					game.sendMessage(res);
-//				}else {
-//					response(res, ctx);
-//				}
-//			}catch(Exception e) {
-//				e.printStackTrace();
-//				res = new ResponseSelectNumber(ResCode.ERROR_NOT_FOUND_ROOM.getResCode(), ResCode.ERROR_NOT_FOUND_ROOM.getMessage());
-//				response(res, ctx);
-//			}
-			
 			RequestSelectFieldCard req = Common.gson.fromJson(json, RequestSelectFieldCard.class);
 			boolean isSuccess = cardInfo.selectFieldCard(req.getEmail(), req.index);
 			
-			
-				res = new ResponseSelectFieldCard(cardInfo, req.getEmail(), isSuccess, req.getEmail(), true);
-			
+			if(isSuccess) {
+				res = new ResponseSelectFieldCard(cardInfo, req.getEmail(), isSuccess);
+				room.sendMessage(res);
+			}else {
+				res = new ResponseSelectFieldCard(DavincicodeError.ALREAD_SELECTED.getCode(), DavincicodeError.ALREAD_SELECTED.getMessage());
+				room.sendMessage(res, ctx);
+			}
 		}
 		break;
 		case Common.IDENTIFIER_SELECT_USER_CARD :

@@ -1,7 +1,8 @@
 package com.boardgame.common;
 
 public enum DavincicodeError {
-	ALREAD_SELECTED(Common.ALREAD_SELECTED_CODE);
+	ALREAD_SELECTED(1000),
+	ERROR_ADD_COMPUTER(1001);
 	
 	int code;
 	String message;
@@ -10,8 +11,11 @@ public enum DavincicodeError {
 		this.code = code;
 
 		switch(code) {
-		case Common.ALREAD_SELECTED_CODE :
+		case 1000 :
 			message = "이미 선택된 카드 입니다.";
+			break;
+		case 1001 :
+			message = "Computer 추가를 실패하였습니다.";
 			break;
 		}
 	}

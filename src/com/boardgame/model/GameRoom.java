@@ -3,14 +3,15 @@ package com.boardgame.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.boardgame.common.Common;
 import com.boardgame.common.RoomInMax;
+import com.boardgame.common.UserType;
 import com.boardgame.common.UserState;
 import com.boardgame.controller.RequestController;
 import com.boardgame.controller.SocketController;
 import com.boardgame.controller.game.BaseGame;
 import com.boardgame.controller.game.DavinciCodeGame;
 import com.boardgame.response.ResponseBase;
-import com.database.common.Common;
 import com.database.common.ResCode;
 import com.database.util.CustomException;
 
@@ -24,7 +25,7 @@ public class GameRoom extends Room{
 
 		UserData info = SocketController.Instance().getUser(email);//UserController.Instance().getUserInfo(email);//new UserInfo(ctx, email, nickName, true, UserState.GAME_WAITING);// UserController.Instance().getUser(email);
 		info.setState(UserState.GAME_READY);
-		info.isMaster = true;
+		info.type = UserType.MASTER.getValue();
 		
 		userList = new ArrayList<>();
 		userList.add(info);		
@@ -32,7 +33,7 @@ public class GameRoom extends Room{
 		maxUser = RoomInMax.MAX.getValue(gameNo);
 		
 		switch(gameNo) {
-		case Common.DIVINCHICODE_GAME_CODE :
+		case Common.GAME_DAVINCICODE :
 			game = new DavinciCodeGame(this);
 			break;
 		}
@@ -54,6 +55,33 @@ public class GameRoom extends Room{
 			userList.add(user);
 		return true;		
 	}
+	
+	public boolean addComputer() {
+		boolean isAdd = false;
+		if(userList.size() == 1) {
+			isAdd = true;
+		}else {
+			isAdd = userList.size() == maxUser ? false : true;
+		}
+		
+		if(isAdd) {
+			int count = 1;
+			for(UserData user : userList) {
+				if( user.getEmail().contains(Common.AI_EMAIL) ) {
+					count ++;
+				}
+			}
+			
+			String nickName = "Computer" + count; 
+			String email = nickName + Common.AI_EMAIL;
+			
+			UserData com = new UserData(null, email, nickName, UserType.COMPUTER, UserState.GAME_READY );
+			userList.add(com);
+			return true;
+		}else {
+			return false;
+		}
+	}
 
 	public List<UserData> getUserList(){
 		return userList;
@@ -62,7 +90,7 @@ public class GameRoom extends Room{
 	public List<UserDataBase> getResUserList(){
 		List<UserDataBase> list = new ArrayList<>();
 		for(UserData i : userList) {
-			UserDataBase data = new UserDataBase(i.getState(), i.email, i.nickName, i.isMaster); 
+			UserDataBase data = new UserDataBase(i.getState(), i.email, i.nickName, i.type); 
 			list.add(data);
 		}
 		return list;
@@ -117,19 +145,19 @@ public class GameRoom extends Room{
 			RequestController.Instance().response(res, info.ctx);
 		}
 	}
+	
+	public void sendMessage(ResponseBase res, ChannelHandlerContext ctx) {
+		RequestController.Instance().response(res, ctx);
+	}
 
 	public void changeMaster(String email) {
-//		UserData user = userList.get(index);
-//		user.setMaster(true);
-//		user.setState(UserState.GAME_READY);
-		
 		for(UserData d : this.userList) {
 			if(d.email.equals(email)) {
-				d.isMaster = true;
+				d.type = UserType.MASTER.getValue();
 				if(d.getState() == UserState.GAME_WAITING)
 					d.setState(UserState.GAME_READY);
 			}else {
-				d.isMaster = false;
+				d.type = UserType.USER.getValue();
 			}
 		}
 	}

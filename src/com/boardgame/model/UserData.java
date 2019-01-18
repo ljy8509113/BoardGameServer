@@ -1,5 +1,6 @@
 package com.boardgame.model;
 
+import com.boardgame.common.UserType;
 import com.boardgame.common.UserState;
 
 import io.netty.channel.ChannelHandlerContext;
@@ -7,8 +8,8 @@ import io.netty.channel.ChannelHandlerContext;
 public class UserData extends UserDataBase{
 	public ChannelHandlerContext ctx;
 	
-	public UserData(ChannelHandlerContext ctx, String email, String nickName, boolean isMaster, UserState state) {
-		super(state, email, nickName, isMaster);
+	public UserData(ChannelHandlerContext ctx, String email, String nickName, UserType type, UserState state) {
+		super(state, email, nickName, type.getValue());
 		this.ctx = ctx;
 	}
 

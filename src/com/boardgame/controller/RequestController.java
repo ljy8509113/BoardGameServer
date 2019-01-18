@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.boardgame.common.Common;
+import com.boardgame.common.DavincicodeError;
 import com.boardgame.common.UserState;
 import com.boardgame.model.GameRoom;
 import com.boardgame.model.ResGameData;
@@ -137,13 +138,19 @@ public class RequestController {
 	
 				try {
 					//UserInfo info = new UserInfo(ctx, cr.getEmail(), cr.getNickName(), false, UserState.GAME_WAITING);
-					UserData info = SocketController.Instance().getUser(cr.getEmail());//UserController.Instance().getUserInfo(cr.getEmail());
-					String title = getRoom(roomNo).getTitle();
-	
-					List<UserDataBase> userList = addUser(roomNo, info);
+					GameRoom room = getRoom(roomNo);
+					List<UserDataBase> userList;
+					if( cr.isComputer() ) {
+						userList = addComputer(room);
+					}else {
+						UserData info = SocketController.Instance().getUser(cr.getEmail());//UserController.Instance().getUserInfo(cr.getEmail());
+						userList  = addUser(room, info);
+					}
+					
+					String title = room.getTitle();
 					res = new ResponseConnectionRoom(title, userList, roomNo, cr.getGameNo());
 	
-					getRoom(roomNo).sendMessage(res);
+					room.sendMessage(res);
 					
 				}catch(CustomException e) {
 					res = new ResponseConnectionRoom(e.getResCode(), e.getMessage());
@@ -210,12 +217,13 @@ public class RequestController {
 					boolean isCheck = checkRoomPassword(req.getRoomNo(), req.getPassword());
 					if(isCheck) {
 						int roomNo = req.getRoomNo();
+						GameRoom room = getRoom(roomNo);
 						UserData info = SocketController.Instance().getUser(req.getEmail());//UserController.Instance().getUserInfo(cr.getEmail());
 						String title = getRoom(roomNo).getTitle();
 		
-						List<UserDataBase> userList = addUser(roomNo, info);
+						List<UserDataBase> userList = addUser(room, info);
 						res = new ResponseConnectionRoom(title, userList, roomNo, req.getGameNo());
-						getRoom(roomNo).sendMessage(res);
+						room.sendMessage(res);
 //						res = new ResponseRoomPassword(req.getRoomNo(), title, userList);
 					}else {
 						res = new ResponseRoomPassword(req.getRoomNo(), ResCode.ERROR_ROOM_PASSWORD.getMessage());
@@ -247,7 +255,7 @@ public class RequestController {
 					}else {
 						ResponseRoomInfo resRoomUsers = new ResponseRoomInfo(room.getResUserList(), room.getTitle());
 						for(UserData info : room.getUserList()) {
-							if(info.isMaster) {
+							if(info.isMaster()) {
 								res = new ResponseStart(e.getResCode(), e.getMessage());
 								response(res, info.ctx);
 							}else {
@@ -300,10 +308,15 @@ public class RequestController {
 //		System.arraycopy(mesBytes, 0, resBytes, sizeBytes.length, mesBytes.length);
 //		ByteBuf buf = Unpooled.wrappedBuffer(resBytes);
 //		
-		System.out.println( "res : " + resStr );
-		ByteBuf buf = Unpooled.copiedBuffer(resStr, CharsetUtil.UTF_8);
-		ctx.write(buf);
-		ctx.flush();		
+		if(ctx != null) {
+			System.out.println( "res : " + resStr );
+			ByteBuf buf = Unpooled.copiedBuffer(resStr, CharsetUtil.UTF_8);
+			ctx.write(buf);
+			ctx.flush();
+		}else {
+			System.out.println("ctx null");
+		}
+				
 	}
 	
 	
@@ -327,10 +340,8 @@ public class RequestController {
 		listRoom.remove(room);
 	}
 
-	public List<UserDataBase> addUser(int roomNo, UserData info) throws CustomException {
+	public List<UserDataBase> addUser(GameRoom room, UserData info) throws CustomException {
 		boolean isAdd = false;
-		GameRoom room = getRoom(roomNo);
-
 		isAdd = room.addUser(info);
 
 		if(isAdd) {
@@ -341,6 +352,13 @@ public class RequestController {
 		}		
 	}
 
+	public List<UserDataBase> addComputer(GameRoom room) throws CustomException{
+		if(room.addComputer()) {
+			return room.getResUserList();
+		}else {
+			throw new CustomException(DavincicodeError.ERROR_ADD_COMPUTER.getCode(), DavincicodeError.ERROR_ADD_COMPUTER.getMessage());
+		}
+	}
 
 	public List<Room> getRoomList(int current, int count){
 		int endCount = current * count;

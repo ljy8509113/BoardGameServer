@@ -37,6 +37,6 @@ public class Common {
 	
 	public static final int MAX_CARD_COUNT = 24; 
 	
-	//에러 코드
-	public static final int ALREAD_SELECTED_CODE = 1000;
+	public static final String AI_EMAIL = "@autoAI.boardGame";
+	
 }

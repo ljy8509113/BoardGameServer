@@ -12,6 +12,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
+import com.boardgame.common.UserType;
 import com.boardgame.common.UserState;
 import com.boardgame.model.UserData;
 import com.boardgame.response.ResponseBase;
@@ -53,7 +54,7 @@ public class DBController {
 			//
 			User user = userDao.loginUser(email, decPassword);
 
-			UserData info = new UserData(ctx, user.getEmail(), user.getNickname(), false, UserState.NONE);
+			UserData info = new UserData(ctx, user.getEmail(), user.getNickname(), UserType.USER, UserState.NONE);
 			//				UserController.Instance().addUser(info);
 			SocketController.Instance().connection(info);
 
