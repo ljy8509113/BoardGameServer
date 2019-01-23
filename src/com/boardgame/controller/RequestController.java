@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.boardgame.common.Common;
-import com.boardgame.common.DavincicodeError;
 import com.boardgame.common.UserState;
+import com.boardgame.davincicode.common.DavinciCommon;
+import com.boardgame.davincicode.common.DavincicodeError;
+import com.boardgame.davincicode.response.ResponseStartDavincicode;
 import com.boardgame.model.GameRoom;
 import com.boardgame.model.ResGameData;
 import com.boardgame.model.Room;
@@ -32,7 +34,6 @@ import com.boardgame.response.ResponseOutRoom;
 import com.boardgame.response.ResponseRoomInfo;
 import com.boardgame.response.ResponseRoomList;
 import com.boardgame.response.ResponseRoomPassword;
-import com.boardgame.response.ResponseStart;
 import com.database.common.ResCode;
 import com.database.model.Game;
 import com.database.util.CustomException;
@@ -243,20 +244,18 @@ public class RequestController {
 				try {
 					room = getRoom(req.getRoomNo());
 					room.checkStart();
-					room.isPlaing = true;
+					room.startGame();
 					
-					res = new ResponseStart();
-					room.sendMessage(res);
 				} catch (CustomException e) {
 					e.printStackTrace();
 					if(e.getResCode() == ResCode.ERROR_NOT_FOUND_ROOM.getResCode()) {
-						res = new ResponseStart(e.getResCode(), e.getMessage());
+						res = new ResponseStartDavincicode(e.getResCode(), e.getMessage());
 						response(res, ctx);
 					}else {
 						ResponseRoomInfo resRoomUsers = new ResponseRoomInfo(room.getResUserList(), room.getTitle());
 						for(UserData info : room.getUserList()) {
 							if(info.isMaster()) {
-								res = new ResponseStart(e.getResCode(), e.getMessage());
+								res = new ResponseStartDavincicode(e.getResCode(), e.getMessage());
 								response(res, info.ctx);
 							}else {
 								response(resRoomUsers, info.ctx);
@@ -272,7 +271,7 @@ public class RequestController {
 				int roomNo = header.getRoomNo();
 				try {
 					switch(gameNo) {
-					case Common.GAME_DAVINCICODE :
+					case DavinciCommon.GAME_DAVINCICODE :
 					{
 						GameRoom room = getRoom(roomNo);
 						room.updateData(identifier, result, ctx);

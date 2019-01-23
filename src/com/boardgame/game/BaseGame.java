@@ -1,4 +1,4 @@
-package com.boardgame.controller.game;
+package com.boardgame.game;
 
 import com.boardgame.model.GameRoom;
 

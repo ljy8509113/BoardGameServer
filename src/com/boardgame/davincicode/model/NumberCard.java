@@ -1,4 +1,4 @@
-package com.boardgame.model.davincicode;
+package com.boardgame.davincicode.model;
 
 public class NumberCard{
 	int index = -1;

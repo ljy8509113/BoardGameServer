@@ -1,4 +1,4 @@
-package com.boardgame.common;
+package com.boardgame.davincicode.common;
 
 public enum DavincicodeError {
 	ALREAD_SELECTED(1000),
@@ -15,7 +15,7 @@ public enum DavincicodeError {
 			message = "이미 선택된 카드 입니다.";
 			break;
 		case 1001 :
-			message = "Computer 추가를 실패하였습니다.";
+			message = "Computer 추가에 실패하였습니다.";
 			break;
 		}
 	}

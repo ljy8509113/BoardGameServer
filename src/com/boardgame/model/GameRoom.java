@@ -5,12 +5,13 @@ import java.util.List;
 
 import com.boardgame.common.Common;
 import com.boardgame.common.RoomInMax;
-import com.boardgame.common.UserType;
 import com.boardgame.common.UserState;
+import com.boardgame.common.UserType;
 import com.boardgame.controller.RequestController;
 import com.boardgame.controller.SocketController;
-import com.boardgame.controller.game.BaseGame;
-import com.boardgame.controller.game.DavinciCodeGame;
+import com.boardgame.davincicode.common.DavinciCommon;
+import com.boardgame.davincicode.game.DavinciCodeGame;
+import com.boardgame.game.BaseGame;
 import com.boardgame.response.ResponseBase;
 import com.database.common.ResCode;
 import com.database.util.CustomException;
@@ -33,7 +34,7 @@ public class GameRoom extends Room{
 		maxUser = RoomInMax.MAX.getValue(gameNo);
 		
 		switch(gameNo) {
-		case Common.GAME_DAVINCICODE :
+		case DavinciCommon.GAME_DAVINCICODE :
 			game = new DavinciCodeGame(this);
 			break;
 		}
@@ -170,9 +171,12 @@ public class GameRoom extends Room{
 				if(info.getState() != UserState.GAME_READY)
 					throw new CustomException(ResCode.ERROR_NOT_READY.getResCode(), ResCode.ERROR_NOT_READY.getMessage());
 			}
-			
-//			game.startGame();
 		}
+	}
+	
+	public void startGame() {
+		isPlaing = true;
+		game.startGame();
 	}
 	
 	public void updateData(String identifier, String json, ChannelHandlerContext ctx) {
