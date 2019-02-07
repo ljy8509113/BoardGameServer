@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.boardgame.common.Common;
-import com.boardgame.common.UserState;
 import com.boardgame.davincicode.common.DavinciCommon;
-import com.boardgame.davincicode.common.DavincicodeError;
 import com.boardgame.davincicode.response.ResponseStartDavincicode;
 import com.boardgame.model.GameRoom;
 import com.boardgame.model.ResGameData;
@@ -29,7 +27,8 @@ import com.boardgame.response.ResponseBase;
 import com.boardgame.response.ResponseConnectionRoom;
 import com.boardgame.response.ResponseCreateRoom;
 import com.boardgame.response.ResponseGameList;
-import com.boardgame.response.ResponseGamingUser;
+import com.boardgame.response.ResponseJoin;
+import com.boardgame.response.ResponseLogin;
 import com.boardgame.response.ResponseOutRoom;
 import com.boardgame.response.ResponseRoomInfo;
 import com.boardgame.response.ResponseRoomList;
@@ -44,7 +43,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.CharsetUtil;
 
 public class RequestController {
-	private List<GameRoom> listRoom;
+//	private List<GameRoom> listRoom;
 	
 //	ScoreDao scoreDao = new ScoreDao();
 //	UserDao userDao = new UserDao();
@@ -54,7 +53,7 @@ public class RequestController {
 	public static RequestController Instance() {
 		if(instance == null) {
 			instance = new RequestController();
-			instance.listRoom = new ArrayList<GameRoom>();
+//			instance.listRoom = new ArrayList<GameRoom>();
 		}
 		return instance;
 	}	
@@ -62,30 +61,31 @@ public class RequestController {
 	public synchronized void reqData(String result, ChannelHandlerContext ctx) {
 		RequestBase header = Common.gson.fromJson(result, RequestBase.class);
 		String identifier = header.getIdentifier();
-//		int gameNo = header.getGameNo();
-//
-//		switch(gameNo) {
-//		case Common.GAME_DAVINCICODE:
-//			DavinciCodeController.Instance().reqData(result, identifier, ctx);
-//			break;
-//		}
-		
 		
 		ResponseBase res;
 		switch(identifier) {
 			case Common.IDENTIFIER_LOGIN :
 			{
 				RequestLogin req = Common.gson.fromJson(result, RequestLogin.class);
-				res = DBController.Instance().selectUser(req.getEmail(), req.password, ctx);
-				response(res, ctx);
+//				res = DBController.Instance().selectUser(req.getEmail(), req.password, ctx);
+//				response(res, ctx);
+				
+				UserData info = DBController.Instance().selectUser(req.getEmail(), req.password, ctx);
+				if(info != null) {
+					SocketController.Instance().connection(info);
+					res = new ResponseLogin(info.getEmail(), info.getNickName());
+					response(res, ctx);
+				}				
 			}
 			break;
 			case Common.IDENTIFIER_JOIN:
 			{
 				RequestJoin req = Common.gson.fromJson(result, RequestJoin.class);
-				res = DBController.Instance().addUser(req.getEmail(), req.getNickName(), req.getPassword(), ctx);
-				response(res, ctx);
-								
+				boolean isAdd = DBController.Instance().addUser(req.getEmail(), req.getNickName(), req.getPassword(), ctx);
+				if(isAdd) {
+					res = new ResponseJoin(false, req.getEmail(), req.getPassword(), req.getNickName());
+					response(res, ctx);
+				}
 			}
 			break;
 			case Common.IDENTIFIER_GANE_LIST :
@@ -106,8 +106,8 @@ public class RequestController {
 				RequestRoomList req = Common.gson.fromJson(result, RequestRoomList.class);
 				int current = req.getCurrent();
 				int count = req.getCount();
-				int max = listRoom.size();//getRoomMaxLength();
-				List<Room> list = getRoomList(current, count);
+				int max = RoomController.Instance().getRoomSize();//getRoomMaxLength();
+				List<Room> list = RoomController.Instance().getRoomList(current, count);
 	
 				res = new ResponseRoomList(list, current, max);
 				response(res, ctx);
@@ -126,7 +126,7 @@ public class RequestController {
 						ctx,
 						cr.getGameNo());
 	
-				addRoom(room);
+				RoomController.Instance().addRoom(room);
 				res = new ResponseCreateRoom(room.getTitle(), room.getResUserList(), room.getNo(), cr.getGameNo());
 				response(res, ctx);
 			}
@@ -139,17 +139,17 @@ public class RequestController {
 	
 				try {
 					//UserInfo info = new UserInfo(ctx, cr.getEmail(), cr.getNickName(), false, UserState.GAME_WAITING);
-					GameRoom room = getRoom(roomNo);
+					GameRoom room = RoomController.Instance().getRoom(roomNo);
 					List<UserDataBase> userList;
 					if( cr.isComputer() ) {
-						userList = addComputer(room);
+						userList = RoomController.Instance().addComputer(room);
 					}else {
 						UserData info = SocketController.Instance().getUser(cr.getEmail());//UserController.Instance().getUserInfo(cr.getEmail());
-						userList  = addUser(room, info);
+						userList  = RoomController.Instance().addUser(room, info);
 					}
 					
 					String title = room.getTitle();
-					res = new ResponseConnectionRoom(title, userList, roomNo, cr.getGameNo());
+					res = new ResponseConnectionRoom(title, userList, roomNo, room.getGameNo());
 	
 					room.sendMessage(res);
 					
@@ -162,7 +162,7 @@ public class RequestController {
 			case Common.IDENTIFIER_GAMING_USER :
 			{
 				RequestGamingUser req = Common.gson.fromJson(result, RequestGamingUser.class);
-				res = checkGaming(req.getEmail());	
+				res = RoomController.Instance().checkGaming(req.getEmail());	
 				response(res, ctx);
 			}
 			break;
@@ -171,8 +171,8 @@ public class RequestController {
 			{
 				RequestReady req = Common.gson.fromJson(result, RequestReady.class);
 				try {
-					res = onReadyUser(req.getEmail(), req.isReady(), req.getRoomNo());
-					getRoom(req.getRoomNo()).sendMessage(res);
+					res = RoomController.Instance().onReadyUser(req.getEmail(), req.isReady(), req.getRoomNo());
+					RoomController.Instance().getRoom(req.getRoomNo()).sendMessage(res);
 					
 				} catch (CustomException e) {
 					e.printStackTrace();
@@ -187,7 +187,7 @@ public class RequestController {
 				RequestOutRoom req = Common.gson.fromJson(result, RequestOutRoom.class);
 	
 				try {
-					onOutRoomUser(req.getOutUser(), req.getRoomNo());					
+					RoomController.Instance().onOutRoomUser(req.getOutUser(), req.getRoomNo());					
 				} catch (CustomException e) {
 					e.printStackTrace();
 					res = new ResponseOutRoom(e.getResCode(), e.getMessage());
@@ -201,7 +201,7 @@ public class RequestController {
 				RequestRoomInfo req = Common.gson.fromJson(result, RequestRoomInfo.class);
 	
 				try {
-					GameRoom room = getRoom(req.getRoomNo());
+					GameRoom room = RoomController.Instance().getRoom(req.getRoomNo());
 					res = new ResponseRoomInfo(room.getResUserList(), room.getTitle());
 					response(res, ctx);
 				}catch(CustomException e) {
@@ -215,14 +215,14 @@ public class RequestController {
 			{
 				RequestRoomPassword req = Common.gson.fromJson(result, RequestRoomPassword.class);
 				try {
-					boolean isCheck = checkRoomPassword(req.getRoomNo(), req.getPassword());
+					boolean isCheck = RoomController.Instance().checkRoomPassword(req.getRoomNo(), req.getPassword());
 					if(isCheck) {
 						int roomNo = req.getRoomNo();
-						GameRoom room = getRoom(roomNo);
+						GameRoom room = RoomController.Instance().getRoom(roomNo);
 						UserData info = SocketController.Instance().getUser(req.getEmail());//UserController.Instance().getUserInfo(cr.getEmail());
-						String title = getRoom(roomNo).getTitle();
+						String title = RoomController.Instance().getRoom(roomNo).getTitle();
 		
-						List<UserDataBase> userList = addUser(room, info);
+						List<UserDataBase> userList = RoomController.Instance().addUser(room, info);
 						res = new ResponseConnectionRoom(title, userList, roomNo, req.getGameNo());
 						room.sendMessage(res);
 //						res = new ResponseRoomPassword(req.getRoomNo(), title, userList);
@@ -242,7 +242,7 @@ public class RequestController {
 				RequestStart req = Common.gson.fromJson(result, RequestStart.class);//(RequestStart)request;
 				GameRoom room = null;
 				try {
-					room = getRoom(req.getRoomNo());
+					room = RoomController.Instance().getRoom(req.getRoomNo());//getRoom(req.getRoomNo());
 					room.checkStart();
 					room.startGame();
 					
@@ -273,7 +273,7 @@ public class RequestController {
 					switch(gameNo) {
 					case DavinciCommon.GAME_DAVINCICODE :
 					{
-						GameRoom room = getRoom(roomNo);
+						GameRoom room = RoomController.Instance().getRoom(roomNo);//getRoom(roomNo);
 						room.updateData(identifier, result, ctx);
 					}
 						break;
@@ -318,179 +318,4 @@ public class RequestController {
 				
 	}
 	
-	
-	public List<UserData> addRoom(GameRoom room) {
-		room.setNo( listRoom.size()+1 );
-		listRoom.add(room);	
-
-		return room.getUserList();		
-	}
-
-	public void removeRoom(int roomNo) {
-		for(GameRoom room : listRoom) {
-			if(room.getNo() == roomNo) {
-				listRoom.remove(room);
-				break;
-			}
-		}
-	}
-	
-	public void removeRoom(GameRoom room) {
-		listRoom.remove(room);
-	}
-
-	public List<UserDataBase> addUser(GameRoom room, UserData info) throws CustomException {
-		boolean isAdd = false;
-		isAdd = room.addUser(info);
-
-		if(isAdd) {
-			info.setState(UserState.GAME_WAITING);
-			return room.getResUserList();
-		}else {
-			throw new CustomException(ResCode.ERROR_CONNECTION_ROOM.getResCode(), ResCode.ERROR_CONNECTION_ROOM.getMessage());
-		}		
-	}
-
-	public List<UserDataBase> addComputer(GameRoom room) throws CustomException{
-		if(room.addComputer()) {
-			return room.getResUserList();
-		}else {
-			throw new CustomException(DavincicodeError.ERROR_ADD_COMPUTER.getCode(), DavincicodeError.ERROR_ADD_COMPUTER.getMessage());
-		}
-	}
-
-	public List<Room> getRoomList(int current, int count){
-		int endCount = current * count;
-
-		if( endCount > listRoom.size()) {
-			endCount = listRoom.size();
-		}
-
-		List<Room> resultList = new ArrayList<Room>();
-
-		int startIndex = count * (current-1); 
-
-		for(int i=startIndex; i<endCount; i++)
-		{
-			GameRoom room = listRoom.get(i);
-			resultList.add(room.getRoom());
-		}
-
-		return resultList;
-	}
-
-	public int getRoomMaxLength() {
-		return listRoom.size();
-	}
-
-	public ResponseGamingUser checkGaming(String email) {
-		UserData info = SocketController.Instance().getUser(email);//UserController.Instance().getUserInfo(email);
-		
-		int roomNo = -1;
-		boolean isGaming = false;
-		
-		if(info != null) {
-			if(info.getState() == UserState.PLAING) {
-				GameRoom room = findRoom(email);
-				
-				if(room == null) {
-					//UserController.Instance().updateState(UserState.NONE, email);
-					info.setState(UserState.NONE);
-				}else {
-					isGaming = true;
-					roomNo = room.getNo();
-				}
-			}
-		}
-		
-		ResponseGamingUser res = new ResponseGamingUser(isGaming, roomNo);
-		return res;
-	}
-
-	public ResponseRoomInfo onReadyUser(String email, boolean isReady, int roomNo) throws CustomException {
-		GameRoom room = getRoom(roomNo);
-
-		if(isReady) {
-			room.updateUserState(email, UserState.GAME_READY);
-		}else {
-			room.updateUserState(email, UserState.GAME_WAITING);
-		}
-		
-//		ResponseReady res = new ResponseReady(email, isReady);
-		ResponseRoomInfo res = new ResponseRoomInfo(room.getResUserList(), room.getTitle());
-		return res;
-	}
-
-	public void onOutRoomUser(String email, int roomNo) throws CustomException {
-		GameRoom room = getRoom(roomNo);
-		
-		ResponseOutRoom res = new ResponseOutRoom();
-		UserData info = room.getUser(email);
-		RequestController.Instance().response(res, info.getCtx());
-		
-		if( room.getUser(email).isMaster() && room.getUserList().size() > 1) {
-			room.removeUser(email);
-			room.changeMaster(room.getUserList().get(0).email); //changeMaster(0);			
-		}else {
-			room.removeUser(email);
-		}
-		
-		if(room.getUserList().size() == 0)
-			removeRoom(room);
-		else {
-			ResponseRoomInfo resRoomUsers = new ResponseRoomInfo(room.getResUserList(), room.getTitle());
-			for(UserData i : room.getUserList()) {
-				RequestController.Instance().response(resRoomUsers, i.getCtx());
-			}
-		}		
-	}
-	
-	//전체 보내기
-	public void sendMessage(ResponseBase res) {
-		for(GameRoom room : listRoom) {
-			List<UserData> userlist = room.getUserList();
-			for(UserData info : userlist) {
-//				info.sendMessage(res);
-				RequestController.Instance().response(res, info.getCtx());
-			}			
-		}
-	}
-
-	//룸 유저에게만
-	public void sendMessage(int roomNo, ResponseBase res) throws CustomException {
-		GameRoom room = getRoom(roomNo);
-		for(UserData info : room.getUserList()) {
-			//info.sendMessage(res);
-			RequestController.Instance().response(res, info.getCtx());
-		}
-	}	
-
-	public GameRoom getRoom(int roomNo) throws CustomException {
-		for(GameRoom i : listRoom) {
-			if(i.getNo() == roomNo) {
-				return i;				
-			}				
-		}		
-		throw new CustomException(ResCode.ERROR_NOT_FOUND_ROOM.getResCode(), ResCode.ERROR_NOT_FOUND_ROOM.getMessage());
-	}
-	
-	public GameRoom findRoom(String email) {
-		for(GameRoom g : listRoom) {
-			List<UserData> users = g.getUserList();
-			for(UserData i : users) {
-				if(i.getEmail().equals(email)) {
-					return g;		
-				}
-			}
-		}		
-		return null;
-	}
-	
-	public boolean checkRoomPassword(int roomNo, String password) throws CustomException {
-		GameRoom room = getRoom(roomNo);
-		
-		return room.getPassword().equals(password);
-	}
-	
-
 }

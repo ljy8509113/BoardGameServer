@@ -33,6 +33,7 @@ public class SocketController {
 	}
 	
 	public void disConnection(ChannelHandlerContext ctx) {
+		System.out.println("dis mapUser : " + mapUsers);
 		Iterator<String> keys = mapUsers.keySet().iterator();
 		while(keys.hasNext()) {
 			String key = keys.next();
@@ -41,13 +42,16 @@ public class SocketController {
 			if(data.ctx == ctx) {
 				if(data.getState() == UserState.NONE) {
 					mapUsers.remove(key);
-					return;
-				}else {
-//					DavinciCodeController.Instance().disConnectionUser(ctx);
-					return;
+				}else if(data.getState() == UserState.GAME_READY || data.getState() == UserState.GAME_WAITING){
+					RoomController.Instance().disConnection(data);
+					mapUsers.remove(key);
+				}else if(data.getState() == UserState.PLAING) {
+					RoomController.Instance().disConnection(data);
 				}
 			}
 		}
+		
+		
 	}
 	
 	public UserData getUser(String email) {

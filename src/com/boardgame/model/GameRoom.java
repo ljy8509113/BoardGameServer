@@ -171,6 +171,10 @@ public class GameRoom extends Room{
 				if(info.getState() != UserState.GAME_READY)
 					throw new CustomException(ResCode.ERROR_NOT_READY.getResCode(), ResCode.ERROR_NOT_READY.getMessage());
 			}
+			
+			for(UserData info : userList) {
+				info.setState(UserState.PLAING);
+			}
 		}
 	}
 	
@@ -182,5 +186,5 @@ public class GameRoom extends Room{
 	public void updateData(String identifier, String json, ChannelHandlerContext ctx) {
 		game.setData(identifier, json, ctx);
 	}
-
+	
 }

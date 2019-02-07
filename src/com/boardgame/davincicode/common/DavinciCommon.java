@@ -4,7 +4,7 @@ import com.boardgame.common.Common;
 
 public class DavinciCommon extends Common {
 	public static final int GAME_DAVINCICODE = com.database.common.Common.DIVINCHICODE_GAME_CODE;
-	public static final int MAX_CARD_COUNT = 24;
+	public static final int MAX_CARD_COUNT = 26;
 	
 	public static final String IDENTIFIER_START_DAVINCICODE = "start_davincicode";
 	public static final String IDENTIFIER_SELECT_FIELD_CARD	= "select_field_card";

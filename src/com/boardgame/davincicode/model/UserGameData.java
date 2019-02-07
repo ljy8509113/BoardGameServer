@@ -8,7 +8,7 @@ public class UserGameData {
 	private String nickName;
 	private ArrayList<NumberCard> cards;
 	private boolean isLose = false;
-	boolean isInit = true;
+	boolean isInit = false;
 //	Descending descending;
 	
 	public UserGameData(int no, String email, String nickName) {
@@ -69,40 +69,40 @@ public class UserGameData {
 //		return cards.size() == DavinciCodeGame.CARD_COUNT ? true : false;
 //	}
 
-	public boolean openCard(int index, boolean isJoker) {
-		NumberCard card = null;
-		for(NumberCard c : cards) {
-			if(c.index == index) {
-				card = c;
-				break;
-			}
-		}
-		
-		boolean isSuccess = false;
-		
-		if(isJoker) {
-			isSuccess = card.isJoker;
-		}else {
-			if(card == null)
-				isSuccess = false;
-			else
-				isSuccess = true;
-		}
-		
-		if(isSuccess) {
-			card.isOpen = true;
-			boolean isLose = true;
-			for(NumberCard c : cards) {
-				if(c.isOpen == false) {
-					isLose = false;
-					break;
-				}
-			}
-			this.isLose = isLose;
-		}
-		
-		return isSuccess;
-	}
+//	public boolean openCard(int index) {
+//		NumberCard card = null;
+//		for(NumberCard c : cards) {
+//			if(c.index == index) {
+//				card = c;
+//				break;
+//			}
+//		}
+//		
+//		boolean isSuccess = false;
+//		
+//		if(isJoker) {
+//			isSuccess = card.isJoker;
+//		}else {
+//			if(card == null)
+//				isSuccess = false;
+//			else
+//				isSuccess = true;
+//		}
+//		
+//		if(isSuccess) {
+//			card.isOpen = true;
+//			boolean isLose = true;
+//			for(NumberCard c : cards) {
+//				if(c.isOpen == false) {
+//					isLose = false;
+//					break;
+//				}
+//			}
+//			this.isLose = isLose;
+//		}
+//		
+//		return isSuccess;
+//	}
 	
 //	// 내림차순
 //	class Descending implements Comparator<NumberCard> {

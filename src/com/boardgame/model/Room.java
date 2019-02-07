@@ -60,6 +60,10 @@ public class Room {
 		this.password = password;
 	}
 	
+	public int getGameNo() {
+		return gameNo;
+	}
+	
 //	public boolean isFullRoom() {
 //		if(maxUser > 0)
 //			return currentUser == maxUser ? true : false;

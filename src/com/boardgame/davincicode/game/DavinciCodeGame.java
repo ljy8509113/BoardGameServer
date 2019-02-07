@@ -1,6 +1,8 @@
 package com.boardgame.davincicode.game;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Random;
 
 import com.boardgame.common.Common;
@@ -33,13 +35,13 @@ public class DavinciCodeGame extends BaseGame{
 //		return cardInfo.moveCard(email, index);
 //	}
 
-	public void openCard(String reqEmail, String targetEmail, int index, boolean isJoker) {
-		UserGameData user = cardInfo.getUser(targetEmail);
-		boolean isSuccess = user.openCard(index, isJoker);
-		ResponseOpenCard res = new ResponseOpenCard(isSuccess, cardInfo.getUserData());//new ResponseOpenCard(targetEmail, index, isSuccess, reqEmail, user.IsLose());
-
-		room.sendMessage(res);
-	}
+//	public void openCard(String reqEmail, String targetEmail, int index, boolean isJoker) {
+//		UserGameData user = cardInfo.getUser(targetEmail);
+//		boolean isSuccess = user.openCard(index, isJoker);
+//		ResponseOpenCard res = new ResponseOpenCard(isSuccess, cardInfo.getUserData());//new ResponseOpenCard(targetEmail, index, isSuccess, reqEmail, user.IsLose());
+//
+//		room.sendMessage(res);
+//	}
 
 	public void nextTurn(int currentNo, UserGameData user) {
 		int nextNo = currentNo++;
@@ -122,7 +124,26 @@ public class DavinciCodeGame extends BaseGame{
 			}
 		}
 		
+		UserComparator comp = new UserComparator();
+		Collections.sort(users, comp);
+		
 		ResponseStartDavincicode res = new ResponseStartDavincicode(cardInfo, room.getNo());
 		room.sendMessage(res);
+	}
+	
+	class UserComparator implements Comparator<UserGameData> {
+		@Override
+		public int compare(UserGameData first, UserGameData second) {
+			int fValue = first.getNo();
+			int sValue = second.getNo();
+			
+			if(fValue > sValue) {
+				return 1;
+			}else if(fValue < sValue) {
+				return -1;
+			}else {
+				return 0;
+			}
+		}
 	}
 }

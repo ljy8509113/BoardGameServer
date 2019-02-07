@@ -3,8 +3,10 @@ package com.boardgame.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.boardgame.common.Common;
 import com.boardgame.common.UserState;
-import com.boardgame.common.UserType;
+import com.boardgame.davincicode.common.DavincicodeError;
+import com.boardgame.davincicode.response.ResponseGameCardInfo;
 import com.boardgame.model.GameRoom;
 import com.boardgame.model.Room;
 import com.boardgame.model.UserData;
@@ -14,18 +16,23 @@ import com.boardgame.response.ResponseGamingUser;
 import com.boardgame.response.ResponseOutRoom;
 import com.boardgame.response.ResponseRoomInfo;
 import com.database.common.ResCode;
-import com.database.dao.ScoreDao;
-import com.database.dao.UserDao;
 import com.database.util.CustomException;
 
-public class BaseController {
+public class RoomController {
 	private List<GameRoom> listRoom;
-	
-	ScoreDao scoreDao = new ScoreDao();
-	UserDao userDao = new UserDao();
+	private static RoomController instance= null;
 
+	public static RoomController Instance() {
+		if(instance == null) {
+			instance = new RoomController();
+			instance.listRoom = new ArrayList<GameRoom>();
+		}
+		return instance;
+	}
+	
+	
 	public List<UserData> addRoom(GameRoom room) {
-		room.setNo(makeRoomNo());
+		room.setNo( listRoom.size()+1 );
 		listRoom.add(room);	
 
 		return room.getUserList();		
@@ -44,10 +51,8 @@ public class BaseController {
 		listRoom.remove(room);
 	}
 
-	public List<UserDataBase> addUser(int roomNo, UserData info) throws CustomException {
+	public List<UserDataBase> addUser(GameRoom room, UserData info) throws CustomException {
 		boolean isAdd = false;
-		GameRoom room = getRoom(roomNo);
-
 		isAdd = room.addUser(info);
 
 		if(isAdd) {
@@ -58,13 +63,13 @@ public class BaseController {
 		}		
 	}
 
-	public int makeRoomNo() {		
-		if(listRoom.size() == 0)
-			return 1;
-		else
-			return listRoom.get(listRoom.size()-1).getNo() + 1;		
+	public List<UserDataBase> addComputer(GameRoom room) throws CustomException{
+		if(room.addComputer()) {
+			return room.getResUserList();
+		}else {
+			throw new CustomException(DavincicodeError.ERROR_ADD_COMPUTER.getCode(), DavincicodeError.ERROR_ADD_COMPUTER.getMessage());
+		}
 	}
-
 
 	public List<Room> getRoomList(int current, int count){
 		int endCount = current * count;
@@ -86,7 +91,7 @@ public class BaseController {
 		return resultList;
 	}
 
-	public int getRoomMaxLength() {
+	public int getRoomSize() {
 		return listRoom.size();
 	}
 
@@ -135,14 +140,9 @@ public class BaseController {
 		UserData info = room.getUser(email);
 		RequestController.Instance().response(res, info.getCtx());
 		
-		if( room.getUser(email).type == UserType.MASTER.getValue() && room.getUserList().size() > 1) {
+		if( room.getUser(email).isMaster() && room.getUserList().size() > 1) {
 			room.removeUser(email);
-			for(UserData data : room.getUserList()) {
-				if(data.type == UserType.USER.getValue()) {
-					room.changeMaster(room.getUserList().get(0).email);
-					break;
-				}
-			}			
+			room.changeMaster(room.getUserList().get(0).email); //changeMaster(0);			
 		}else {
 			room.removeUser(email);
 		}
@@ -169,11 +169,16 @@ public class BaseController {
 	}
 
 	//룸 유저에게만
-	public void sendMessage(int roomNo, ResponseBase res) throws CustomException {
-		GameRoom room = getRoom(roomNo);
-		for(UserData info : room.getUserList()) {
-			//info.sendMessage(res);
-			RequestController.Instance().response(res, info.getCtx());
+	public void sendMessage(int roomNo, ResponseBase res){
+		
+		try {
+			GameRoom room = getRoom(roomNo);
+			for(UserData info : room.getUserList()) {
+				RequestController.Instance().response(res, info.getCtx());
+			}
+		} catch (CustomException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}	
 
@@ -200,8 +205,18 @@ public class BaseController {
 	
 	public boolean checkRoomPassword(int roomNo, String password) throws CustomException {
 		GameRoom room = getRoom(roomNo);
-		
 		return room.getPassword().equals(password);
 	}
-	
+
+	public void disConnection(UserData data) {
+		if(data.getState() == UserState.PLAING) {
+			data.setState(UserState.DISCONNECT); 
+		}else {
+			GameRoom room = findRoom(data.email);
+			room.removeUser(data.email);
+			
+			ResponseRoomInfo res = new ResponseRoomInfo(room.getResUserList(), room.getTitle());  
+			sendMessage(room.getNo(), res);
+		}
+	}
 }

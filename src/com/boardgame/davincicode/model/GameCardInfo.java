@@ -16,13 +16,32 @@ public class GameCardInfo {
 //		mapFieldCards = new HashMap<Integer, NumberCard>();
 		fieldCardList = new ArrayList<NumberCard>();
 		
+		ArrayList<NumberCard> blackArray = new ArrayList<NumberCard>(); 
+		ArrayList<NumberCard> whiteArray = new ArrayList<NumberCard>();
+		
 		for(int i=0; i<DavinciCommon.MAX_CARD_COUNT; i++) {
 			NumberCard card = new NumberCard(i);
-			card.isJoker = false;
 			card.isOpen = false;
+			
+			if(i % 2 == 0) {
+				blackArray.add(card);
+			}else {
+				whiteArray.add(card);
+			}
+		}
+		
+		Collections.shuffle(blackArray);
+		Collections.shuffle(whiteArray);
+		
+		for(NumberCard c : blackArray) {
+			NumberCard card = new NumberCard(c.index, c.isOpen); 
 			fieldCardList.add(card);
 		}
-		Collections.shuffle(fieldCardList);
+		
+		for(NumberCard c : whiteArray) {
+			NumberCard card = new NumberCard(c.index, c.isOpen); 
+			fieldCardList.add(card);
+		}
 	}
 
 	public void addUserData(UserGameData user) {

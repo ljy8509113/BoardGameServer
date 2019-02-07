@@ -44,8 +44,8 @@ public class DBController {
 	UserDao userDao = new UserDao();
 	GameDao gameDao = new GameDao();
 	
-	public ResponseBase selectUser(String email, String password, ChannelHandlerContext ctx) {
-		ResponseBase res;
+	public UserData selectUser(String email, String password, ChannelHandlerContext ctx) {
+		ResponseBase res = null;
 		try {
 			//				String password = Security.Instance().deCryption(req.password, false);
 			String decPassword = Security.Instance().decrypt(password, false);
@@ -56,62 +56,75 @@ public class DBController {
 
 			UserData info = new UserData(ctx, user.getEmail(), user.getNickname(), UserType.USER, UserState.NONE);
 			//				UserController.Instance().addUser(info);
-			SocketController.Instance().connection(info);
-
-			res = new ResponseLogin(user.getEmail(), user.getNickname());
-			return res;
-
+			return info;
+			
 		}catch (ClassNotFoundException | SQLException e) {
 			res = new ResponseLogin(ResCode.ERROR_DB.getResCode(), ResCode.ERROR_DB.getMessage());
-			return res;
+			
 		}catch (CustomException e) {
 			res = new ResponseLogin(e.getResCode(), e.getMessage());
-			return res;
+			
 		}catch (InvalidKeyException | UnsupportedEncodingException | NoSuchAlgorithmException
 				| NoSuchPaddingException | InvalidAlgorithmParameterException | IllegalBlockSizeException
 				| BadPaddingException e1) {
 
 			e1.printStackTrace();
 			res = new ResponseLogin(ResCode.ERROR_DECRYPTION.getResCode(), ResCode.ERROR_DECRYPTION.getMessage());
-			return res;					
+								
 		}
+		
+		if(res != null) {
+			RequestController.Instance().response(res, ctx);
+		}
+		
+		return null;
 	}
 	
-	public ResponseBase addUser(String email, String nickName, String password, ChannelHandlerContext ctx) {
-		ResponseBase res;
+	public boolean addUser(String email, String nickName, String password, ChannelHandlerContext ctx) {
+		ResponseBase res = null;
 		try {
 			String decPassword = Security.Instance().decrypt(password, false);
 //				String password = Security.Instance().deCryption(req.getPassword(), false);
-			if(email.equals("auto")) {
-				//오토 
-				int count = userDao.getAutoIdCount()+1;
-				String autoEmail = com.database.common.Common.AUTO_ID + count;
-				
-				User user = new User(autoEmail, nickName, decPassword, true);
-				userDao.insert(user, decPassword);
-				res = new ResponseJoin(true, email, decPassword, nickName);
-			}else {
-				User user = new User(email, nickName, decPassword, false);
-				userDao.insert(user, decPassword);
-				res = new ResponseJoin(false, email, password, nickName);
-			}
-			return res;
+//			if(email.equals("auto")) {
+//				//오토 
+//				int count = userDao.getAutoIdCount()+1;
+//				String autoEmail = com.database.common.Common.AUTO_ID + count;
+//				
+//				User user = new User(autoEmail, nickName, decPassword, true);
+//				userDao.insert(user, decPassword);
+//				res = new ResponseJoin(true, email, decPassword, nickName);
+//			}else {
+//				User user = new User(email, nickName, decPassword, false);
+//				userDao.insert(user, decPassword);
+//				res = new ResponseJoin(false, email, password, nickName);
+//			}
+//			return res;
+			
+			User user = new User(email, nickName, decPassword, false);
+			userDao.insert(user, decPassword);
+			return true;
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 			res = new ResponseJoin(ResCode.ERROR_DB.getResCode(), ResCode.ERROR_DB.getMessage());
-			return res;
+			
 		} catch (CustomException e) {
 			e.printStackTrace();
 			res = new ResponseJoin(e.getResCode(), e.getMessage());
-			return res;
+			
 		}catch (InvalidKeyException | UnsupportedEncodingException | NoSuchAlgorithmException
 				| NoSuchPaddingException | InvalidAlgorithmParameterException | IllegalBlockSizeException
 				| BadPaddingException e1) {
 
 			e1.printStackTrace();
 			res = new ResponseJoin(ResCode.ERROR_DECRYPTION.getResCode(), ResCode.ERROR_DECRYPTION.getMessage());
-			return res;					
+								
 		}
+		
+		if(res != null) {
+			RequestController.Instance().response(res, ctx);
+		}
+		
+		return false;
 	}
 	
 	
