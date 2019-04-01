@@ -13,5 +13,6 @@ public class DavinciCommon extends Common {
 	public static final String IDENTIFIER_GAME_CARD_INFO	= "game_card_info";
 	public static final String IDENTIFIER_OPEN_CARD			= "open_card";
 	public static final String IDENTIFIER_GAME_FINISH		= "game_finish";
-		
+	public static final String IDENTIFIER_ATTACK			= "attack";
+	public static final String IDENTIFIER_NEXT				= "next";	
 }

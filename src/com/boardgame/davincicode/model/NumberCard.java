@@ -1,8 +1,8 @@
 package com.boardgame.davincicode.model;
 
 public class NumberCard{
-	int index = -1;
-	boolean isOpen = false;
+	public int index = -1;
+	public boolean isOpen = false;
 	
 	public NumberCard(int index) {
 		this.index = index;

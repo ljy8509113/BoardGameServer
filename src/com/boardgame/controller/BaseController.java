@@ -135,10 +135,10 @@ public class BaseController {
 		UserData info = room.getUser(email);
 		RequestController.Instance().response(res, info.getCtx());
 		
-		if( room.getUser(email).type == UserType.MASTER.getValue() && room.getUserList().size() > 1) {
+		if( room.getUser(email).userType == UserType.MASTER.getValue() && room.getUserList().size() > 1) {
 			room.removeUser(email);
 			for(UserData data : room.getUserList()) {
-				if(data.type == UserType.USER.getValue()) {
+				if(data.userType == UserType.USER.getValue()) {
 					room.changeMaster(room.getUserList().get(0).email);
 					break;
 				}

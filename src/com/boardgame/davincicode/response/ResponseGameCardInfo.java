@@ -1,23 +1,24 @@
 package com.boardgame.davincicode.response;
 
-import com.boardgame.davincicode.common.DavinciCommon;
-import com.boardgame.davincicode.model.GameCardInfo;
-import com.boardgame.response.ResponseBase;
-import com.database.common.ResCode;
+import java.util.ArrayList;
 
-public class ResponseGameCardInfo extends ResponseBase{
-	GameCardInfo cardInfo;
-	public ResponseGameCardInfo(GameCardInfo cardInfo) {
-		super(DavinciCommon.IDENTIFIER_GAME_CARD_INFO, ResCode.SUCCESS.getResCode());
-		this.cardInfo = cardInfo;
+import com.boardgame.davincicode.common.DavinciCommon;
+import com.boardgame.davincicode.model.NumberCard;
+import com.boardgame.davincicode.model.UserGameData;
+
+public class ResponseGameCardInfo extends ResponseBaseDavinci{
+	
+	public ResponseGameCardInfo(ArrayList<UserGameData> userList, ArrayList<NumberCard>fieldCardList, int turnUserNo, int roomNo) {
+		super(DavinciCommon.IDENTIFIER_GAME_CARD_INFO, userList, fieldCardList, turnUserNo, roomNo);
+				
 	}
 	
 	public ResponseGameCardInfo(int resCode, String message) {
 		super(DavinciCommon.IDENTIFIER_GAME_CARD_INFO, resCode, message);
 	}
 	
-	public ResponseGameCardInfo(int resCode, String message, GameCardInfo cardInfo) {
-		super(DavinciCommon.IDENTIFIER_GAME_CARD_INFO, resCode, message);
-		this.cardInfo = cardInfo;		
+	public ResponseGameCardInfo(int resCode, String message, ArrayList<UserGameData> userList, ArrayList<NumberCard>fieldCardList) {
+		super(DavinciCommon.IDENTIFIER_GAME_CARD_INFO, resCode, message, userList, fieldCardList);
+				
 	}
 }

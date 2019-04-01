@@ -1,13 +1,14 @@
 package com.boardgame.davincicode.response;
 
-import com.boardgame.davincicode.common.DavinciCommon;
-import com.boardgame.response.ResponseBase;
-import com.database.common.ResCode;
+import java.util.ArrayList;
 
-public class ResponseTurn extends ResponseBase {
-	int no;
-	public ResponseTurn(int no) {
-		super(DavinciCommon.IDENTIFIER_TURN, ResCode.SUCCESS.getResCode());
-		this.no = no;
+import com.boardgame.davincicode.common.DavinciCommon;
+import com.boardgame.davincicode.model.NumberCard;
+import com.boardgame.davincicode.model.UserGameData;
+
+public class ResponseTurn extends ResponseBaseDavinci {
+	
+	public ResponseTurn(ArrayList<UserGameData> userList, ArrayList<NumberCard> fieldCardList, int turnUserIndex, int roomNo) {
+		super(DavinciCommon.IDENTIFIER_TURN,userList, fieldCardList, turnUserIndex, roomNo);
 	}
 }

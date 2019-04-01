@@ -26,6 +26,13 @@ public class SocketController {
 	public void connection(UserData info) {
 		UserData userData = mapUsers.get(info.email);
 		if(userData != null) {
+			
+			if(userData.state == UserState.DISCONNECT.getValue()) {
+				
+			}else {
+				
+			}
+			
 			ResponseOtherAccept res = new ResponseOtherAccept();
 			RequestController.Instance().response(res, userData.ctx);
 		}
@@ -50,8 +57,6 @@ public class SocketController {
 				}
 			}
 		}
-		
-		
 	}
 	
 	public UserData getUser(String email) {

@@ -1,6 +1,9 @@
 package com.boardgame.davincicode.model;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+
+import com.boardgame.davincicode.game.DavinciCodeGame;
 
 public class UserGameData {
 	private Integer no;
@@ -9,13 +12,16 @@ public class UserGameData {
 	private ArrayList<NumberCard> cards;
 	private boolean isLose = false;
 	boolean isInit = false;
+	int userType;
 //	Descending descending;
 	
-	public UserGameData(int no, String email, String nickName) {
+	public UserGameData(int no, String email, String nickName, int type) {
 		this.no = no;
 		this.email = email;
 		this.nickName = nickName;	
 		cards = new ArrayList<>();
+		this.userType = type;
+				
 //		descending = new Descending();
 	}
 
@@ -59,57 +65,17 @@ public class UserGameData {
 		this.isInit = isInit;
 	}
 
+	public int getUserType() {
+		return userType;
+	}
+
+	public void setUserType(int type) {
+		this.userType = type;
+	}
+
 	public void addCard(NumberCard card) {
 		cards.add(card);
 //		Collections.sort(cards, descending);
 		
 	}
-
-//	public boolean isInit() {
-//		return cards.size() == DavinciCodeGame.CARD_COUNT ? true : false;
-//	}
-
-//	public boolean openCard(int index) {
-//		NumberCard card = null;
-//		for(NumberCard c : cards) {
-//			if(c.index == index) {
-//				card = c;
-//				break;
-//			}
-//		}
-//		
-//		boolean isSuccess = false;
-//		
-//		if(isJoker) {
-//			isSuccess = card.isJoker;
-//		}else {
-//			if(card == null)
-//				isSuccess = false;
-//			else
-//				isSuccess = true;
-//		}
-//		
-//		if(isSuccess) {
-//			card.isOpen = true;
-//			boolean isLose = true;
-//			for(NumberCard c : cards) {
-//				if(c.isOpen == false) {
-//					isLose = false;
-//					break;
-//				}
-//			}
-//			this.isLose = isLose;
-//		}
-//		
-//		return isSuccess;
-//	}
-	
-//	// 내림차순
-//	class Descending implements Comparator<NumberCard> {
-//	    @Override
-//	    public int compare(NumberCard o1, NumberCard o2) {
-//	        return o2.getNumber().compareTo(o1.getNumber());
-//	    }
-//	}
-
 }

@@ -26,7 +26,7 @@ public class GameRoom extends Room{
 
 		UserData info = SocketController.Instance().getUser(email);//UserController.Instance().getUserInfo(email);//new UserInfo(ctx, email, nickName, true, UserState.GAME_WAITING);// UserController.Instance().getUser(email);
 		info.setState(UserState.GAME_READY);
-		info.type = UserType.MASTER.getValue();
+		info.userType = UserType.MASTER.getValue();
 		
 		userList = new ArrayList<>();
 		userList.add(info);		
@@ -91,7 +91,7 @@ public class GameRoom extends Room{
 	public List<UserDataBase> getResUserList(){
 		List<UserDataBase> list = new ArrayList<>();
 		for(UserData i : userList) {
-			UserDataBase data = new UserDataBase(i.getState(), i.email, i.nickName, i.type); 
+			UserDataBase data = new UserDataBase(i.getState(), i.email, i.nickName, i.userType); 
 			list.add(data);
 		}
 		return list;
@@ -154,11 +154,11 @@ public class GameRoom extends Room{
 	public void changeMaster(String email) {
 		for(UserData d : this.userList) {
 			if(d.email.equals(email)) {
-				d.type = UserType.MASTER.getValue();
+				d.userType = UserType.MASTER.getValue();
 				if(d.getState() == UserState.GAME_WAITING)
 					d.setState(UserState.GAME_READY);
 			}else {
-				d.type = UserType.USER.getValue();
+				d.userType = UserType.USER.getValue();
 			}
 		}
 	}

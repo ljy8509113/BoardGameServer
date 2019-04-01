@@ -7,13 +7,13 @@ public class UserDataBase {
 	public int state;
 	public String email;
 	public String nickName;
-	public int type;
+	public int userType;
 	
 	public UserDataBase(UserState state, String email, String nickName, int type) {
 		this.state = state.getValue();
 		this.email = email;
 		this.nickName = nickName;
-		this.type = type;
+		this.userType = type;
 	}
 
 	public UserState getState() {
@@ -41,17 +41,19 @@ public class UserDataBase {
 	}
 
 	public UserType getType() {
-		return UserType.getType(type);
+		return UserType.getType(userType);
 	}
 
 	public void setMode(UserType type) {
-		this.type = type.getValue();
+		this.userType = type.getValue();
 	}
 	
 	public boolean isMaster() {
-		if(UserType.getType(type) == UserType.MASTER)
+		if(UserType.getType(userType) == UserType.MASTER)
 			return true;
 		else
 			return false;
 	}
+	
+	
 }
