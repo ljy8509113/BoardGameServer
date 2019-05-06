@@ -149,7 +149,7 @@ public class DavinciCodeGame extends BaseGame{
 			
 			res = new ResponseAttack(userList, fieldCardList, turnUserIndex, req.selectUser, req.selectIndex, req.attackValue, req.roomNo, openWaitingCard);
 			room.sendMessage(res);
-			openWaitingCard = -1;
+			//openWaitingCard = -1;
 		}
 			break;
 		case DavinciCommon.IDENTIFIER_GAME_CARD_INFO :
@@ -192,6 +192,7 @@ public class DavinciCodeGame extends BaseGame{
 			break;
 		case DavinciCommon.IDENTIFIER_NEXT :
 		{
+			openWaitingCard = -1;
 			setTurn(turnUserIndex + 1);
 		}
 			break;
@@ -324,9 +325,14 @@ public class DavinciCodeGame extends BaseGame{
 	}
 	
 	void addJocker(ArrayList<NumberCard> cards, NumberCard addCard) {
-		Random r = new Random();
-		int addIndex = r.nextInt(cards.size());
-		cards.add(addIndex, addCard);
+		if(cards.size() == 0) {
+			cards.add(addCard);
+		}else {
+			Random r = new Random();
+			int addIndex = r.nextInt(cards.size());
+			cards.add(addIndex, addCard);
+		}
+		
 	}
 	
 	// 내림차순
